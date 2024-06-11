@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>模拟MVVM</title>
+    <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+    <script type="text/javascript" src="./reactive.js"></script>
+    <script>
+      const Vue = {
+        createRenderer({ querySelector }) {
+          return {
+            createApp(options) {
+              return {
+                mount(selector) {
+                  // 处理选项
+                  if (options.setup) this.setupState = options.setup();
+                  if (options.data) this.data = options.data();
+                  this.proxy = new Proxy(this, {
+                    get(target, key) {
+                      if (target.setupState && key in target.setupState) {
+                        return target.setupState[key];
+                      } else if (target.data && key in target.data) {
+                        return target.data[key];
+                      }
+                    },
+                  });
+                  // 1.获取宿主元素
+                  const parent = querySelector(selector);
+                  this.update = effect(() => {
+                    // 2.把options中的数据渲染到视图中
+                    const el = options.render.call(this.proxy);
+                    // 3.将渲染得到的结果追加到宿主元素
+                    parent.innerHTML = "";
+                    parent.appendChild(el);
+                  });
+                  // 4.建立更新机制
+                },
+              };
+            },
+          };
+        },
+        createApp(options) {
+          const renderer = Vue.createRenderer({
+            querySelector(sel) {
+              return document.querySelector(sel);
+            },
+          });
+          return renderer.createApp(options);
+        },
+      };
+    </script>
+  </head>
+
+  <body>
+    <div id="app">
+      <!-- <h2>{{title}}</h2> -->
+    </div>
+
+    <script type="text/javascript">
+      /*
+       * vue3升级动机：
+       * 更友好的类型支持
+       * 利于tree-shaking
+       * 简化API
+       * 聚合、复用
+       * 性能优化
+       * 扩展性：customRender
+       */
+      // const { createApp, reactive } = Vue;
+      const { createApp } = Vue;
+      // 函数式
+      const app = createApp({
+        data() {
+          return {
+            title: "data: hello vue3",
+          };
+        },
+        render() {
+          const h2 = document.createElement("h2");
+          h2.textContent = this.title;
+          return h2;
+        },
+        setup() {
+          const state = reactive({
+            title: "setup: hello vue3",
+          });
+          setTimeout(() => {
+            state.title = "setup: hello vue3!!!";
+          }, 2000);
+          return state;
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

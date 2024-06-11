@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>字符串形式的ref</title>
+</head>
+
+<body>
+  <br>
+  <div id="example"></div>
+
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    /**
+     * 需求: 自定义组件, 功能说明如下:
+     * 1. 点击按钮, 提示第一个输入框中的值
+     * 2. 当第2个输入框失去焦点时, 提示这个输入框中的值
+     */
+
+    /**
+     * 注：官方已经不推荐字符串形式的ref，性能较差
+     */
+
+    class MyComponent extends React.Component {
+      clickHandle = () => {
+        console.log(this) // { current: input }
+        alert(this.refs.input1.value)
+      }
+
+      blurHandle = () => {
+        alert(this.refs.input2.value)
+      }
+
+      render() {
+        return (
+          <div>
+            <input type="text" placeholder="点击按钮时提示" ref="input1" />&nbsp;
+            <button onClick={this.clickHandle}>按钮</button>&nbsp;
+            <input type="text" placeholder="失去焦点时提示" onBlur={this.blurHandle} ref="input2" />
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(<MyComponent />, document.getElementById('example'))
+  </script>
+</body>
+
+</html>

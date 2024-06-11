@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <script type="text/javascript">
+      // 源数据
+      // let person = {
+      //   name: "张三",
+      //   age: 18,
+      //   obj: {
+      //     a: 1,
+      //     b: 2,
+      //   },
+      // };
+      let person = ["a", "b", "c"];
+
+      // 模拟Vue2中实现响应式
+      // #region
+      /* let p = {};
+       Object.defineProperty(p, "name", {
+         configurable: true,
+         get() {
+           // 有人读取name时调用
+           return person.name;
+         },
+         set(value) {
+           // 有人修改name时调用
+           console.log("有人修改了name属性，我发现了，我要去更新界面！");
+           person.name = value;
+         },
+       }); */
+
+      // #endregion
+
+      // 模拟Vue3中实现响应式
+      // #region
+      const p = new Proxy(person, {
+        // 有人读取p的某个属性时调用
+        get(target, key, receiver) {
+          // target-person|receiver-p
+          if (Reflect.ownKeys(target).includes(key)) {
+            console.log(`有人读取了p身上的${key}属性`);
+          }
+          return Reflect.get(target, key, receiver); // 返回结果
+        },
+        // 有人修改p的某个属性、或给p追加某个属性时调用
+        set(target, key, value, receiver) {
+          if (value === target[key]) return true;
+          console.log(`有人修改了p身上的${key}属性，我要去更新界面了！`);
+          return Reflect.set(target, key, value, receiver); // 返回是否设置成功
+        },
+        // 有人删除p的某个属性时调用
+        deleteProperty(target, key) {
+          console.log(`有人删除了p身上的${key}属性，我要去更新界面了！`);
+          return Reflect.deleteProperty(target, key); // 返回是否删除成功
+        },
+      });
+      // #endregion
+
+      let obj = {
+        a: 1,
+        b: 2,
+      };
+    </script>
+  </body>
+</html>

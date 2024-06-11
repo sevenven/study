@@ -1,0 +1,2 @@
+Leetcode提供了堆实现的 优先队列库
+https://github.com/datastructures-js/priority-queue/blob/v5/README.md

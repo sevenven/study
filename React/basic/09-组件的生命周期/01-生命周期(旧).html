@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>声明周期 (旧)</title>
+</head>
+
+<body>
+  <div id="example"></div>
+
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    /**
+     * 需求: 自定义组件
+     * 1. 让指定的文本做显示/隐藏的动画
+     * 2. 切换时间为2S
+     * 3. 点击按钮从界面中移除组件界面（当前组件在页面上消失）
+     */
+
+    /**
+     * 1.初始化
+     * 触发条件：ReactDOM.render(<MyComponent/>)
+     * constructor()
+     * componentWillMount()
+     * render():提供虚拟DOM，可能会调用多次
+     * componentDidMount()：启动定时器、发送Ajax请求、只执行一次
+     * 
+     * 2.更新
+     * 触发条件：this.setState({})
+     * componentWillUpdate()
+     * render()
+     * componentDidUpdate()
+     * 
+     * 3.卸载
+     * 触发条件：ReactDOM.unmountComponentAtNode()
+     * componentWillUnmount()：收尾工作，例如：清除定时器，只执行一次(若不清除定时器则会报错：不能在组件被卸载后更新组件)
+     * 
+     * 在这几个生命周期内this都为组件的实例对象
+     */
+
+    class Life extends React.Component {
+      constructor(props) {
+        console.log('--constructor--')
+        super(props)
+        this.state = { opacity: 1 }
+      }
+
+      // 即将挂载组件
+      componentWillMount() {
+        console.log('--componentWillMount--')
+      }
+
+      // 组件挂载完成
+      componentDidMount() {
+        console.log('--componentDidMount--')
+        this.timeID = setInterval(() => {
+          let { opacity } = this.state
+          opacity -= 0.1
+          if (opacity <= 0) {
+            opacity = 1
+          }
+          this.setState({ opacity })
+        }, 200)
+      }
+
+      death = () => {
+        // 卸载组件
+        ReactDOM.unmountComponentAtNode(document.getElementById('example'))
+        // clearInterval(this.timeID)
+      }
+
+      // 即将卸载组件
+      componentWillUnmount() {
+        console.log('--componentWillUnmount--')
+        clearInterval(this.timeID)
+      }
+
+      // 即将更新组件
+      componentWillUpdate() {
+        console.log('--componentWillUpdate--')
+      }
+
+      // 更新完毕组件
+      componentDidUpdate() {
+        console.log('--componentDidUpdate--')
+      }
+
+      render() {
+        console.log('--render--')
+        let { opacity } = this.state
+        return (
+          <div>
+            <h2 style={{ opacity }}>react学不会怎么办？</h2>
+            <button onClick={this.death}>不活了</button>
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(<Life />, document.getElementById('example'))
+  </script>
+</body>
+
+</html>

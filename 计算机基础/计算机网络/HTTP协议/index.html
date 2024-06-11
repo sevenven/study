@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>HTTP协议</title>
+  </head>
+  <body>
+    <h1>HTTP协议</h1>
+    <!-- [text/plain|multipart/form-data|application/x-www-form-urlencoded] -->
+    <form
+      id="form"
+      action="http://127.0.0.1:8888/form"
+      method="POST"
+      enctype="application/x-www-form-urlencoded"
+    >
+      姓名：<input type="text" name="name" /> <br />
+      密码：<input type="password" name="password" /> <br />
+      文件：<input type="file" name="file" /><br />
+      <input type="submit" />
+    </form>
+    <img src="./images/1.jpg" width="280" />
+    <img src="./images/2.jpg" width="280" />
+    <img src="./images/3.jpg" width="280" />
+    <img src="./images/4.jpg" width="280" />
+  </body>
+  <script src="./js/jquery-1.11.3.js"></script>
+  <script>
+    fetch("http://127.0.0.1:8888/cookie", {
+      method: "get",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+      });
+
+    // const form = document.getElementById("form");
+    // form.addEventListener("submit", function (e) {
+    //   e.preventDefault();
+    //   const formData = new FormData(form);
+    //   fetch("/form", {
+    //     method: "POST",
+    //     body: formData,
+    //   });
+    // });
+  </script>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>虚拟DOM的两种创建方式</title>
+</head>
+<style>
+  .red {
+    color: red;
+  }
+</style>
+
+<body>
+  <div id="demo"></div>
+  <div id="test1"></div>
+  <div id="test2"></div>
+
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+
+  <script>
+    let myID = 'abcd'
+    let myData = 'hello, world'
+  </script>
+
+  <!-- 方式一： 使用原生js创建虚拟DOM -->
+  <script type="text/javascript">
+    let vDOM = React.createElement('h2', { id: myID }, React.createElement('span', {}, myData)) // React.createElement(标签名, 属性, 内容)
+    ReactDOM.render(vDOM, document.getElementById('test1'))
+  </script>
+
+  <!-- 方式二： 使用jsx语法创建虚拟DOM -->
+  <script type="text/babel">
+    let vDOM2 =
+      <h2 id={myID.toUpperCase()}>
+        <span className="red">
+          {myData.toUpperCase()}
+        </span>
+      </h2>
+    ReactDOM.render(vDOM2, document.getElementById('test2'))
+  </script>
+</body>
+
+</html>

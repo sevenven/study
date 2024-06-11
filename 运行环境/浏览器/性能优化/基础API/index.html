@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="utf-8" />
+    <title>前端性能优化相关JS_API</title>
+  </head>
+
+  <body>
+    <img src="./images/nav1.jpg" />
+    <img src="./images/nav2.jpg" />
+    <img src="./images/nav3.jpg" />
+    <script type="text/javascript">
+      // 部分性能监测关键指标计算
+      window.addEventListener("load", (event) => {
+        let timing = performance.getEntriesByType("navigation")[0];
+        // console.log(timing);
+        // TTFB|Time To First Byte
+        let TTFB = timing.responseStart - timing.requestStart;
+        // FP|First Paint
+        let FP = timing.responseEnd - timing.fetchStart;
+        // TTI| Time to Interactive|可交互时间
+        let TTI = timing.domInteractive - timing.fetchStart;
+        // FCP|First Contentful Paint
+        let FCP = timing.domContentLoadedEventEnd - timing.fetchStart;
+        // DCL|DOMContentLoaded Event
+        const DCL = timing.domContentLoadedEventEnd - timing.fetchStart;
+        // LCP|Largest Contentful Paint
+        const LCP = timing.domComplete - timing.fetchStart;
+        // L|Onload Event
+        const L = timing.loadEventStart - timing.fetchStart;
+        console.log("TTFB: " + TTFB);
+        console.log("FP: " + FP);
+        console.log("TTI: " + TTI);
+        console.log("FCP: " + FCP);
+        console.log("DCL: " + DCL);
+        console.log("LCP: " + LCP);
+        console.log("L: " + L);
+      });
+
+      // 观察长任务
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          console.log(entry);
+        }
+      });
+      observer.observe({ entryTypes: ["longtask"] });
+
+      // 页面可见性的状态监听
+      let vEvent = "visibilitychange";
+      // webkit prefix detected
+      if (document.webkitHidden != undefined) vEvent = "webkitvisibilitychange";
+      function visibilityChanged() {
+        if (document.hidden || document.webkitHidden) {
+          console.log("Web page is hidden.");
+        } else {
+          console.log("Web page is visible.");
+        }
+      }
+      document.addEventListener(vEvent, visibilityChanged, false);
+
+      // 网络状态监听
+      const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+      const type = connection.effectiveType;
+      function updateConnectionStatus() {
+        console.log(
+          "Connection type changed from " +
+            type +
+            " to " +
+            connection.effectiveType
+        );
+        type = connection.effectiveType;
+      }
+      connection.addEventListener("change", updateConnectionStatus);
+    </script>
+  </body>
+</html>
