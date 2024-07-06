@@ -139,10 +139,12 @@ export function createPatchFunction(backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+    // 判断传入vnode是否是自定义组件
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
 
+    // html保留标签创建
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag

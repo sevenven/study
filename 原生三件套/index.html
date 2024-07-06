@@ -1,27 +1,50 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>乱七八糟分享</title>
-    <style type="text/css"></style>
-  </head>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>大额存单利率计算</title>
+	</head>
+	<script type="text/javascript">
+		function createInterestCalculator(amount) {
+			// 在此补全代码
+			var interestRate = amount >= 200000 ? 0.05 : 0.03;
+			return function (years) {
+				return (amount * interestRate * years).toFixed(2);
+			};
+		}
+		var calculateInterest = null;
+		function calculate() {
+			var amount = parseFloat(document.getElementById('amount').value);
+			var years = parseInt(document.getElementById('years').value);
+			if (isNaN(amount) || isNaN(years)) return displayMessage('请输入有效的存款金额和年限！');
+			if (amount <= 0 || years <= 0) return displayMessage('存款金额和年限必须大于零！');
+			calculateInterest = createInterestCalculator(amount);
+			var interest = calculateInterest(years);
+			var interestRate = amount >= 200000 ? '5%' : '3%';
+			displayMessage('存款利息金额为：' + interest + '，利率为：' + interestRate);
+			// 在此补全代码
+			interest = null;
+		}
 
-  <body>
-    <div id="app">
-      <h1>JS 乱七八糟分享Demo</h1>
-      <button id="btn1">btn1</button>
-      <button id="btn2" onclick="clear1()">btn2</button>
-      <button id="btn3" onclick="alert(1234)">btn3</button>
-    </div>
-    <script type="text/javascript">
-      var a = 1;
+		function displayMessage(message) {
+			var messageContainer = document.getElementById('message');
+			messageContainer.textContent = message;
+		}
+	</script>
 
-      function clear1() {
-        console.log("执行了clear1函数", arguments.callee);
-      }
-
-      btn1.onclick = function () {
-        clear1();
-      };
-    </script>
-  </body>
+	<body>
+		<div class="deposit">
+			<span>
+				存款金额：
+				<input id="amount" type="number" step="0.01" />
+			</span>
+			<span>
+				存款年限：
+				<input id="years" type="number" />
+			</span>
+			<button onclick="calculate()">计算</button>
+		</div>
+		<div id="message"></div>
+	</body>
 </html>

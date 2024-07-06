@@ -4,23 +4,22 @@
 
 // 模拟Function.prototype.call
 Function.prototype.myCall = function (ctx, ...args) {
-  const context = ctx || window,
-    uniqueKey = Symbol();
-  context[uniqueKey] = this;
-  const result = context[uniqueKey](...args);
-  delete context[uniqueKey];
-  return result;
+	const context = ctx || window;
+	context.fn = this;
+	const result = context.fn(...args);
+	delete context.fn;
+	return result;
 };
 
-var name = "seven-window";
+var name = 'seven-window';
 const foo = {
-  name: "seven",
+	name: 'seven'
 };
 function bar(age, gender) {
-  console.log(this.name, age, gender);
-  return "bobozanzan";
+	console.log(this.name, age, gender);
+	return 'bobozanzan';
 }
 
-console.log(bar.myCall(null, 25, "female"));
-console.log(bar.myCall(foo, 25, "female"));
+console.log(bar.myCall(null, 25, 'female'));
+console.log(bar.myCall(foo, 25, 'female'));
 console.log(bar.myCall(foo));

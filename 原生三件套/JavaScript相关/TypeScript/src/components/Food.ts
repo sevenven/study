@@ -1,22 +1,20 @@
 export default class Food {
+	element: HTMLElement;
 
-  element: HTMLElement;
+	constructor() {
+		this.element = document.getElementById('food')!;
+	}
 
-  constructor () {
-    this.element = document.getElementById('food')!;
-  }
+	get X() {
+		return this.element.offsetLeft;
+	}
 
-  get X () {
-    return this.element.offsetLeft;
-  }
+	get Y() {
+		return this.element.offsetTop;
+	}
 
-  get Y () {
-    return this.element.offsetTop;
-  }
-
-  change () {
-    this.element.style.left = Math.round((Math.random() * 29)) * 10 + 'px';
-    this.element.style.top = Math.round((Math.random() * 29)) * 10 + 'px';
-  }
-
+	change() {
+		this.element.style.left = Math.round(Math.random() * 29) * 10 + 'px';
+		this.element.style.top = Math.round(Math.random() * 29) * 10 + 'px';
+	}
 }

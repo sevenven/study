@@ -19,7 +19,7 @@ var search = function (nums, target) {
 		// 位运算 + 防止大数溢出
 		mid = L + ((R - L) >> 1);
 		if (nums[mid] < target) L = mid + 1;
-		else if (nums[mid] > target) R = mid - 1; // 接下来的搜索区间不需要再包含target 右闭 所以right=mid-1
+		else if (nums[mid] > target) R = mid - 1; // 接下来的搜索区间不需要再包含target 右闭 所以right = mid - 1
 		else return mid;
 	}
 	return -1;

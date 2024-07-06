@@ -1,0 +1,11 @@
+@font-face {
+	font-family: 'Ma Shan Zheng';
+	src: url('../fonts/MaShanZheng-Regular.ttf');
+}
+.content {
+	font-family: 'Ma Shan Zheng', cursive;
+	font-style: normal;
+	text-align: center;
+	font-size: 24px;
+	margin-top: 20px;
+}

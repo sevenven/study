@@ -68,12 +68,14 @@
           console.log('comp-a', 'destroyed')
         }
       })
+      debugger
       const app = new Vue({
         el: '#demo',
         // 局部注册
         components: {
           'comp-b': {
-            template: '<button @click="handleCilck"><slot>comp-b button</slot></button>',
+            template:
+              '<button @click="handleCilck"><slot>comp-b button</slot></button>',
             methods: {
               handleCilck() {
                 this.$emit('myclick')

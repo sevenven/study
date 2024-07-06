@@ -18,6 +18,7 @@ import {
 import { normalizeChildren, simpleNormalizeChildren } from './helpers/index'
 import type { Component } from 'types/component'
 import type { VNodeData } from 'types/vnode'
+import { debug } from 'console'
 
 const SIMPLE_NORMALIZE = 1
 const ALWAYS_NORMALIZE = 2
@@ -40,6 +41,7 @@ export function createElement(
   if (isTrue(alwaysNormalize)) {
     normalizationType = ALWAYS_NORMALIZE
   }
+  debugger
   return _createElement(context, tag, data, children, normalizationType)
 }
 
@@ -51,6 +53,7 @@ export function _createElement(
   children?: any,
   normalizationType?: number
 ): VNode | Array<VNode> {
+  debugger
   if (isDef(data) && isDef((data as any).__ob__)) {
     __DEV__ &&
       warn(
@@ -93,7 +96,7 @@ export function _createElement(
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
-    // html保留标签 直接创建vnode
+    // html保留标签vnode
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       if (
@@ -120,7 +123,7 @@ export function _createElement(
       isDef((Ctor = resolveAsset(context.$options, 'components', tag)))
     ) {
       // component
-      // 自定义组件创建过程
+      // 自定义组件vnode
       vnode = createComponent(Ctor, data, context, children, tag)
     } else {
       // unknown or unlisted namespaced elements

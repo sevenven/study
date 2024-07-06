@@ -1,41 +1,198 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>JSX练习</title>
-  </head>
+	<head>
+		<meta charset="UTF-8" />
+		<title>JSX练习</title>
+	</head>
 
-  <body>
-    <div id="example1"></div>
+	<body>
+		<div id="example1"></div>
 
-    <script type="text/javascript" src="../js/react.development.js"></script>
-    <script
-      type="text/javascript"
-      src="../js/react-dom.development.js"
-    ></script>
-    <script type="text/javascript" src="../js/babel.min.js"></script>
+		<script type="text/javascript" src="../js/react.development.js"></script>
+		<script type="text/javascript" src="../js/react-dom.development.js"></script>
+		<script type="text/javascript" src="../js/babel.min.js"></script>
 
-    <script type="text/babel">
-      // 定义一个数组，存放数据，存放的是纯数据
-      let arr = ["A", "B", "C", "D"];
-      // let arr2 = [<li>A</li>, <li>B</li>, <li>C</li>, <li>D</li>]
+		<script type="text/babel">
+			// 获取变量 插值
+			const name = 'seven';
+			const pElem = <p>{name}</p>;
 
-      // 1.创建虚拟DOM
-      let vDOM = (
-        <div>
-          <h2>前端框架</h2>
-          {/* 将数组中的数据进行加工 */}
-          {
-            /* 暂时使用index作为key，但这种方式会出现某些问题 */
-            arr.map((item, index) => {
-              return <li key={index}>{item}</li>;
-            })
-          }
-        </div>
-      );
+			// 表达式
+			const flag = true;
+			const exprElem = <p>{flag ? 'yes' : 'no'}</p>;
 
-      // 2.渲染虚拟DOM到页面
-      ReactDOM.render(vDOM, document.getElementById("example1"));
-    </script>
-  </body>
+			// 子元素
+			const imgUrl = './images/1.webp';
+			const imgElem = (
+				<div>
+					<p>我的头像</p>
+					<img src="./images/1.webp" width="120px" />
+					<img src={imgUrl} width="120px" />
+				</div>
+			);
+
+			// class
+			const classElem = <p className="title">设置 css class</p>;
+
+			/* // style
+           const styleData = { fontSize: "30px", color: "blue" };
+           let styleElem = <p style={styleData}>设置 style</p>;
+           // 内联写法;
+           styleElem = <p style={{ fontSize: "30px", color: "blue" }}>设置 style</p>; */
+
+			// 原生 html
+			const rawHtml = '<span>富文本内容<i>斜体</i><b>加粗</b></span>';
+			const rawHtmlElem = (
+				<div>
+					<p
+						dangerouslySetInnerHTML={{
+							__html: rawHtml // 注意，必须是这种格式
+						}}
+					></p>
+					<p>{rawHtml}</p>
+				</div>
+			);
+
+			// 条件判断
+			const theme = 'black';
+			const blackBtn = <button className="btn-black">black btn</button>;
+			const whiteBtn = <button className="btn-white">white btn</button>;
+			// if else
+			// if (this.state.theme === "black") return blackBtn;
+			// else return whiteBtn;
+			// 三元运算符
+			let conditionElm = <div>{theme === 'black' ? blackBtn : whiteBtn}</div>;
+			// &&
+			conditionElm = <div>{theme === 'black' && blackBtn}</div>;
+
+			// 循环
+			let arr = ['A', 'B', 'C', 'D'];
+			// arr = [<li>A</li>, <li>B</li>, <li>C</li>, <li>D</li>]
+			const listElm = (
+				<div>
+					<h2>前端框架</h2>
+					{
+						/* 将数组中的数据进行加工
+         		暂时使用index作为key，但这种方式会出现某些问题 */
+						arr.map((item, index) => {
+							return <li key={index}>{item}</li>;
+						})
+					}
+				</div>
+			);
+
+			// 事件
+			class EventDemo extends React.Component {
+				constructor(props) {
+					super(props);
+					this.state = {
+						name: 'zhangsan',
+						list: [
+							{
+								id: 'id-1',
+								title: '标题1'
+							},
+							{
+								id: 'id-2',
+								title: '标题2'
+							},
+							{
+								id: 'id-3',
+								title: '标题3'
+							}
+						]
+					};
+
+					// 修改方法的 this 指向
+					this.clickHandler1 = this.clickHandler1.bind(this);
+				}
+				render() {
+					// 使用 bind 绑定this
+					// return <p onClick={this.clickHandler1}>{this.state.name}</p>;
+
+					// 箭头函数
+					// return (
+					//   <p onClick={this.clickHandler2}>clickHandler2 {this.state.name}</p>
+					// );
+
+					// 参数传递
+					// return (
+					//   <ul>
+					//     {this.state.list.map((item, index) => {
+					//       return (
+					//         <li
+					//           key={item.id}
+					//           onClick={this.clickHandler3.bind(this, item.id, item.title)}
+					//         >
+					//           index {index}; title {item.title}
+					//         </li>
+					//       );
+					//     })}
+					//   </ul>
+					// );
+
+					// event参数解析
+					return (
+						<a href="https://imooc.com/" onClick={this.clickHandler4}>
+							click me
+						</a>
+					);
+				}
+				// 使用 bind 绑定this
+				clickHandler1() {
+					// console.log('this....', this) // this 默认是 undefined
+					this.setState({
+						name: 'seven'
+					});
+				}
+				// 箭头函数
+				clickHandler2 = () => {
+					this.setState({
+						name: 'seven'
+					});
+				};
+				// 参数传递
+				clickHandler3(id, title, event) {
+					console.log(id, title);
+					console.log('event', event); // 最后追加一个参数，即可接收 event
+				}
+				// event参数解析
+				clickHandler4 = event => {
+					event.preventDefault(); // 阻止默认行为
+					event.stopPropagation(); // 阻止冒泡
+
+					console.log('target', event.target); // 指向当前触发元素
+					console.log('current target', event.currentTarget); // 指向当前触发元素
+
+					// 注意，event 其实是 React 封装的。
+					// 可以看 __proto__指向SyntheticEvent.prototype event.__proto__ === SyntheticEvent.prototype||event.__proto__.constructor === SyntheticEvent
+					console.log('event', event); // 不是原生的Event 是SyntheticEvent组合时间
+					console.log('event.__proto__', event.__proto__);
+
+					// 原生 event 如下。其 __proto__指向 PointerEvent.prototype
+					console.log('nativeEvent', event.nativeEvent);
+					console.log('nativeEvent target', event.nativeEvent.target); // 指向当前触发元素
+					console.log('nativeEvent current target', event.nativeEvent.currentTarget); // 指向 document ！！！
+
+					/* event参数结论:
+					 * 1. event 是 SyntheticEvent ，模拟出来 DOM 事件所有能力
+					 * 2. event.nativeEvent指向原生事件对象
+					 * 3. 事件是绑定在document上的
+					 */
+				};
+			}
+
+			// 加载组件
+			const componentElem = (
+				<div>
+					<p>JSX 中加载一个组件</p>
+					<hr />
+					<EventDemo />
+				</div>
+			);
+
+			// 2.渲染虚拟DOM到页面
+			ReactDOM.render(componentElem, document.getElementById('example1'));
+		</script>
+	</body>
 </html>

@@ -7,8 +7,6 @@ const Form = React.forwardRef(_Form);
 
 Form.useForm = useForm;
 
-export {
-  Field
-};
+export { Field };
 
 export default Form;

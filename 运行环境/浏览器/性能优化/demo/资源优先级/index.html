@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>资源优先级</title>
+		<!-- preload: 提前加载较晚出现 但对当前页面非常重要的资源 优先级高 -->
+		<link rel="preload" as="image" href="./images/product2.png" />
+		<!-- prefetch: 提前加载后继路由需要的资源，优先级低-->
+		<link rel="prefetch" as="font" href="./fonts/MaShanZheng-Regular.ttf" />
+		<style>
+			#wrapper {
+				display: flex;
+				flex-flow: column;
+			}
+			.link {
+				width: 150px;
+				height: 150px;
+			}
+			.link-image {
+				width: 100px;
+				height: 100px;
+				margin: 5px;
+				padding: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>看一下Network</h1>
+		<div id="wrapper">
+			<a class="link" href="./product1.html">
+				<img class="link-image" src="./images/product1.webp" />
+			</a>
+			<a class="link" href="./product2.html">
+				<img class="link-image" src="./images/product2.png" />
+			</a>
+		</div>
+		<script type="text/javascript"></script>
+	</body>
+</html>

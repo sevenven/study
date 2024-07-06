@@ -36,6 +36,7 @@ export function getComponentName(options: ComponentOptions) {
 // 虚拟DOM钩子
 const componentVNodeHooks = {
   init(vnode: VNodeWithData, hydrating: boolean): boolean | void {
+    debugger
     if (
       vnode.componentInstance &&
       !vnode.componentInstance._isDestroyed &&
@@ -46,6 +47,7 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
+      debugger
       // 正常初始化-组件实例化
       const child = (vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
@@ -116,6 +118,7 @@ export function createComponent(
 
   // plain options object: turn it into a constructor
   // 组件声明转换为构造函数--用于组件局部声明
+  debugger
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor as typeof Component)
   }
@@ -194,6 +197,7 @@ export function createComponent(
 
   // install component management hooks onto the placeholder node
   // 组件安装钩子
+  debugger
   installComponentHooks(data)
 
   // return a placeholder vnode
