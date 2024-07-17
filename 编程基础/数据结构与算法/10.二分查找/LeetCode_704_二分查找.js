@@ -14,8 +14,8 @@ var search = function (nums, target) {
 	let L = 0,
 		R = nums.length - 1,
 		mid;
+	// 左闭右闭 L == R 是合法的
 	while (L <= R) {
-		// 左闭右闭 L==R是合法的
 		// 位运算 + 防止大数溢出
 		mid = L + ((R - L) >> 1);
 		if (nums[mid] < target) L = mid + 1;

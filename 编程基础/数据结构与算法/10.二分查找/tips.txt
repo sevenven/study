@@ -1,10 +1,20 @@
-二分法易错点:
+二分法易错点: 搜索区间的定义
 
-while(left <= right)|while(left < right)
-二分过程中 if (nums[middle] > target) right= mid - 1|right = mid
-
+一般应定义为
 左闭右闭[left, right]写法|左闭右开[left, right)写法
 
+example: 一开始 区间定义为左闭右闭 后续处理的时候区间也应遵循左闭右闭原则
+
+[while(left <= right)|while(left < right)]
+二分过程中 if (nums[middle] > target) [right = mid - 1|right = mid]
+
 二分法做题顺序为:
-704
-其他
+704 74
+查找插入点
+查找边界
+367 69
+33 153 
+
+
+
+410可以先不管
