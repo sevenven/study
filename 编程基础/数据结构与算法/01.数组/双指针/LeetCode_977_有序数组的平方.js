@@ -22,16 +22,18 @@ var sortedSquares = function (nums) {
 var sortedSquares = function (nums) {
 	let L = 0,
 		R = (p = nums.length - 1),
-		result = Array(nums.length);
+		LSquare,
+		RSquare,
+		result = [];
 	while (L <= R) {
-		const left = nums[L] * nums[L],
-			right = nums[R] * nums[R];
-		if (left < right) {
-			result[p--] = right;
-			R--;
-		} else {
-			result[p--] = left;
+		LSquare = nums[L] * nums[L];
+		RSquare = nums[R] * nums[R];
+		if (LSquare >= RSquare) {
+			result[p--] = LSquare;
 			L++;
+		} else {
+			result[p--] = RSquare;
+			R--;
 		}
 	}
 	return result;
