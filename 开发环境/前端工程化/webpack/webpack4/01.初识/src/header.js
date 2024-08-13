@@ -5,5 +5,5 @@ function Header() {
 	dom.append(header);
 }
 
-// export default Header;
-module.exports = Header;
+// module.exports = Header;
+export default Header;

@@ -11,12 +11,12 @@
 // 快慢指针法-快慢指针相等，只移动快指针|快慢指针不相等，慢指针自增并赋值给快指针，快指针自增
 // 时间复杂度O(n) 空间复杂度O(1)
 var removeDuplicates = function (nums) {
-	let p = 0;
+	let sP = 0;
 	for (let i = 1; i < nums.length; i++) {
-		if (nums[i] === nums[p]) continue;
-		nums[++p] = nums[i];
+		if (nums[i] === nums[sP]) continue;
+		nums[++sP] = nums[i];
 	}
-	return p + 1;
+	return sP + 1;
 };
 
 const nums = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4];

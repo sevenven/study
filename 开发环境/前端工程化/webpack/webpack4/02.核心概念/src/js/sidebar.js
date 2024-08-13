@@ -5,4 +5,5 @@ function Sidebar() {
 	root.append(sidebar);
 }
 
-module.exports = Sidebar;
+// module.exports = Sidebar;
+export default Sidebar;

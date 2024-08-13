@@ -12,9 +12,7 @@ var rotate = function (nums, k) {
 	let temp;
 	for (let i = 0; i < k % nums.length; i++) {
 		temp = nums[nums.length - 1];
-		for (let j = nums.length - 2; j >= 0; j--) {
-			nums[j + 1] = nums[j];
-		}
+		for (let j = nums.length - 2; j >= 0; j--) nums[j + 1] = nums[j];
 		nums[0] = temp;
 	}
 };
@@ -56,6 +54,5 @@ var rotate = function (nums, k) {
 	}
 };
 
-const arr = [1, 2, 3, 4, 5, 6];
-rotate(arr, 2);
+rotate((arr = [1, 2, 3, 4, 5, 6]), 2);
 console.log(arr); // [ 5, 6, 1, 2, 3, 4 ]

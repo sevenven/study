@@ -8,7 +8,7 @@
 
 var RandomizedSet = function () {
 	this.element = [];
-	this.exits = {};
+	this.exits = new Map();
 };
 
 /**
@@ -16,9 +16,9 @@ var RandomizedSet = function () {
  * @return {boolean}
  */
 RandomizedSet.prototype.insert = function (val) {
-	if (this.exits[val] !== undefined) return false;
+	if (this.exits.get(val) !== undefined) return false;
 	this.element.push(val);
-	this.exits[val] = this.element.length - 1;
+	this.exits.set(val, this.element.length - 1);
 	return true;
 };
 
@@ -27,12 +27,12 @@ RandomizedSet.prototype.insert = function (val) {
  * @return {boolean}
  */
 RandomizedSet.prototype.remove = function (val) {
-	if (this.exits[val] === undefined) return false;
-	let index = this.exits[val];
+	const index = this.exits.get(val);
+	if (index === undefined) return false;
 	this.element[index] = this.element[this.element.length - 1];
 	this.element.pop();
-	this.exits[this.element] = index;
-	delete this.exits[val];
+	this.element[index] && this.exits.set(this.element[index], index);
+	this.exits.delete(val);
 	return true;
 };
 
@@ -44,10 +44,11 @@ RandomizedSet.prototype.getRandom = function () {
 };
 
 var obj = new RandomizedSet();
+console.log(obj.insert(1), obj.element, obj.exits);
 console.log(obj.insert(1), obj.element);
-console.log(obj.insert(1), obj.element);
-console.log(obj.insert(2), obj.element);
-console.log(obj.insert(9), obj.element);
-console.log(obj.remove(0), obj.element);
-console.log(obj.remove(9), obj.element);
-console.log(obj.getRandom());
+console.log(obj.insert(2), obj.element, obj.exits);
+console.log(obj.insert(9), obj.element, obj.exits);
+// console.log(obj.remove(0), obj.element);
+// console.log(obj.remove(2), obj.element, obj.exits);
+// console.log(obj.remove(9), obj.element, obj.exits);
+console.log(obj.getRandom(), obj.getRandom(), obj.getRandom());

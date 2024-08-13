@@ -13,7 +13,7 @@
  * @param {character[][]} board
  * @return {boolean}
  */
-// 使用Set
+// 时间复杂度O(n * n) 空间复杂度O(n * n)
 var isValidSudoku = function (board) {
 	const rows = Array.from({ length: 9 }, () => new Set()),
 		cols = Array.from({ length: 9 }, () => new Set()),

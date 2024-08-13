@@ -27,10 +27,10 @@ var merge = function (nums1, m, nums2, n) {
 // 双指针法
 // 时间复杂度O(m+n) 空间复杂度O(1)
 var merge = function (nums1, m, nums2, n) {
-	let pos = m-- + n-- - 1;
-	while (n >= 0) {
-		nums1[pos--] = nums1[m] > nums2[n] ? nums1[m--] : nums2[n--];
-	}
+	let p = m + n - 1;
+	m--;
+	n--;
+	while (n >= 0) nums1[p--] = nums1[m] > nums2[n] ? nums1[m--] : nums2[n--];
 };
 
 merge((nums1 = [1, 2, 3, 0, 0, 0]), 3, (nums2 = [2, 5, 6]), 3);

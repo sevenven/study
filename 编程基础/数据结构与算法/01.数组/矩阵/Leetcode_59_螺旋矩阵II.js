@@ -12,25 +12,23 @@
  * 填充下行从右到左
  * 填充左列从下到上
  */
+// 时间复杂度O() 空间复杂度O()
 var generateMatrix = function (n) {
 	let start = 0,
+		end = n - 1,
 		loop = (mid = n >> 1),
 		count = 1,
 		result = Array.from({ length: n }, () => Array(n).fill(0));
 	while (loop--) {
-		let row = (col = start);
-		// 上行从左到右（左闭右开）
-		for (; col < n - start - 1; col++) result[row][col] = count++;
-		// 右列从上到下（左闭右开）
-		for (; row < n - start - 1; row++) result[row][col] = count++;
-		// 下行从右到左（左闭右开）
-		for (; col > start; col--) result[row][col] = count++;
-		// 左列做下到上（左闭右开）
-		for (; row > start; row--) result[row][col] = count++;
-		// 更新起始位置
+		for (let j = start; j < end; j++) result[start][j] = count++;
+		for (let i = start; i < end; i++) result[i][end] = count++;
+		for (let j = end; j > start; j--) result[end][j] = count++;
+		for (let i = end; i > start; i--) result[i][start] = count++;
+		// 更新起点&终点
 		start++;
+		end--;
 	}
-	if (n % 2 === 1) result[mid][mid] = count++;
+	if (n % 2) result[mid][mid] = count++;
 	return result;
 };
 

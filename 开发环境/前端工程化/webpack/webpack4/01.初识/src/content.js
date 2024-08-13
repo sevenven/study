@@ -5,5 +5,5 @@ function Content() {
 	dom.append(content);
 }
 
-// export default Content;
-module.exports = Content;
+// module.exports = Content;
+export default Content;

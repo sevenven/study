@@ -13,28 +13,24 @@
 // 时间复杂度O(n^3) 空间复杂度O(1)
 var fourSum = function (nums, target) {
 	nums.sort((a, b) => a - b);
-	console.log(nums);
 	let result = [],
 		L,
 		R;
-	for (let i = 0; i <= nums.length - 4; i++) {
-		if (nums[i] >= 0 && nums[i] > target) break;
-		if (i > 0 && nums[i] === nums[i - 1]) continue;
-		for (let j = i + 1; j <= nums.length - 3; j++) {
-			if (nums[i] + nums[j] >= 0 && nums[i] + nums[j] > target) break;
-			if (j > i + 1 && nums[j] === nums[j - 1]) continue;
+	for (let i = 0; i < nums.length - 3; i++) {
+		for (let j = i + 1; j < nums.length - 2; j++) {
 			L = j + 1;
 			R = nums.length - 1;
 			while (L < R) {
 				const sum = nums[i] + nums[j] + nums[L] + nums[R];
-				if (sum === target) {
-					console.log(i, j, L, R);
-					result.push([nums[i], nums[j], nums[L++], nums[R--]]);
-					while (L < R && nums[L] === nums[L - 1]) L++;
-					while (L < R && nums[R] === nums[R + 1]) R--;
-				} else if (sum < target) {
+				if (sum == 0) {
+					result.push([nums[i], nums[j], nums[L], nums[R]]);
+					while (nums[L + 1] === nums[L]) L++;
+					while (nums[R - 1] === nums[R]) R--;
 					L++;
-				} else {
+					R--;
+				} else if (sum < 0) {
+					L++;
+				} else if (sum > 0) {
 					R--;
 				}
 			}
@@ -43,5 +39,5 @@ var fourSum = function (nums, target) {
 	return result;
 };
 
-console.log(fourSum([1, 0, -1, 0, -2, 2], 0));
-console.log(fourSum([-3, -1, 0, 2, 4, 5], 0));
+console.log(fourSum([1, 0, -1, 0, -2, 2], 0)); // [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]];
+console.log(fourSum([-3, -1, 0, 2, 4, 5], 0)); // [[-3, -1, 0, 4]];

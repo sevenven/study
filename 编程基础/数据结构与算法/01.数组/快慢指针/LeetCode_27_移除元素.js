@@ -29,12 +29,12 @@ var removeElement = function (nums, val) {
 // 快慢指针法-慢指针->新数组需要更新的下标|快指针->新数组里需要的值的下标
 // 时间复杂度O(n) 空间复杂度O(1)
 var removeElement = function (nums, val) {
-	let p = 0;
+	let sP = 0;
 	for (let i = 0; i < nums.length; i++) {
 		if (nums[i] === val) continue;
-		nums[p++] = nums[i];
+		nums[sP++] = nums[i];
 	}
-	return p;
+	return sP;
 };
 
 console.log(removeElement((nums = [0, 1, 2, 2, 3, 0, 4, 2]), 2), nums); // 5

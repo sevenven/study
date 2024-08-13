@@ -6,14 +6,15 @@
  * @param {number[]} nums
  * @return {number}
  */
+// 时间复杂度O(n) 空间复杂度O(1)
 var removeDuplicates = function (nums) {
 	if (nums.length < 2) return 2;
-	let p = 2;
+	let sP = 1;
 	for (let i = 2; i < nums.length; i++) {
-		if (nums[i] === nums[p - 1] && nums[i] === nums[p - 2]) continue;
-		nums[p++] = nums[i];
+		if (nums[i] === nums[sP] && nums[i] === nums[sP - 1]) continue;
+		nums[++sP] = nums[i];
 	}
-	return p;
+	return sP + 1;
 };
 
 console.log(removeDuplicates((nums = [1, 1, 1, 2, 2, 3])), nums);

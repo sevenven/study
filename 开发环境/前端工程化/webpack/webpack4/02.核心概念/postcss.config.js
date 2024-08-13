@@ -1,16 +1,6 @@
 module.exports = {
-  plugins: [
-    require("autoprefixer")({
-      overrideBrowserslist: [
-        "defaults",
-        "Android 4.1",
-        "iOS 7.1",
-        "Chrome>31",
-        "ff>31",
-        "ie>=8",
-        "last 2 versions",
-        ">0%"
-      ]
-    })
-  ]
-}
+	plugins: [
+		// 使用的插件 => 对于新特性，自动添加厂商前缀
+		require('autoprefixer')
+	]
+};

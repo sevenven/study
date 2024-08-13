@@ -5,4 +5,5 @@ function Header() {
 	root.append(header);
 }
 
-module.exports = Header;
+// module.exports = Header;
+export default Header;

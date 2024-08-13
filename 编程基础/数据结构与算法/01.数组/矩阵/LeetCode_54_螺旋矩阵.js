@@ -5,21 +5,28 @@
  * @param {number[][]} matrix
  * @return {number[]}
  */
+// 时间复杂度O() 空间复杂度O()
 var spiralOrder = function (matrix) {
-	let L = 0,
-		R = matrix[0].length - 1,
-		U = 0,
-		D = matrix.length - 1,
+	let start = 0,
+		endI = matrix.length - 1,
+		endJ = matrix[0].length - 1,
+		loop = (mid = Math.min(matrix.length, matrix[0].length) >> 1),
 		result = [];
-	while (true) {
-		for (let i = L; i <= R; i++) result.push(matrix[U][i]);
-		if (++U > D) break;
-		for (let i = U; i <= D; i++) result.push(matrix[i][R]);
-		if (L > --R) break;
-		for (let i = R; i >= L; i--) result.push(matrix[D][i]);
-		if (U > --D) break;
-		for (let i = D; i >= U; i--) result.push(matrix[i][L]);
-		if (++L > R) break;
+	while (loop--) {
+		for (let j = start; j < endJ; j++) result.push(matrix[start][j]);
+		for (let i = start; i < endI; i++) result.push(matrix[i][endJ]);
+		for (let j = endJ; j > start; j--) result.push(matrix[endI][j]);
+		for (let i = endI; i > start; i--) result.push(matrix[i][start]);
+		start++;
+		endI--;
+		endJ--;
+	}
+	if (Math.min(matrix.length, matrix[0].length) % 2) {
+		if (matrix.length < matrix[0].length) {
+			for (let j = start; j <= endJ; j++) result.push(matrix[mid][j]);
+		} else {
+			for (let i = start; i <= endI; i++) result.push(matrix[i][mid]);
+		}
 	}
 	return result;
 };
@@ -30,7 +37,16 @@ console.log(
 		[4, 5, 6],
 		[7, 8, 9]
 	])
-);
+); // [ 1, 2, 3, 6, 9, 8, 7, 4, 5 ]
+
+console.log(
+	spiralOrder([
+		[1, 2, 3],
+		[4, 5, 6],
+		[7, 8, 9],
+		[10, 11, 12]
+	])
+); //  [ 1, 2, 3, 6, 9, 12, 11, 10, 7, 4, 5, 8 ]
 
 console.log(
 	spiralOrder([
@@ -38,4 +54,4 @@ console.log(
 		[5, 6, 7, 8],
 		[9, 10, 11, 12]
 	])
-);
+); // [ 1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7 ]

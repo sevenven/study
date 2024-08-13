@@ -32,23 +32,24 @@ var threeSum = function (nums) {
  * @param {number[]} nums
  * @return {number[][]}
  */
-// 排序+Map
+// 排序 + Map
 // 时间复杂度O(n^2) 空间复杂度O(n)
 // a + b + c = 0 -> a + b = -c;
 var threeSum = function (nums) {
 	// 排序----改变了入参-实际写业务代码的时候一定要慎重
 	nums.sort((a, b) => a - b);
-	let another,
+	nums = nums.sort((a, b) => a - b);
+	let result = [],
 		exits,
-		result = [];
-	for (let i = 0; i < nums.length - 2; i++) {
+		another;
+	for (let i = 0; i < nums.length - 1; i++) {
 		if (nums[i] > 0) break;
 		if (i > 0 && nums[i] === nums[i - 1]) continue;
-		exits = new Map();
+		exits = new Set();
 		for (let j = i + 1; j < nums.length; j++) {
 			another = -nums[i] - nums[j];
-			if (exits.get(another) !== undefined) result.push([nums[i], nums[exits.get(another)], nums[j]]);
-			exits.set(nums[j], j);
+			if (exits.has(another)) result.push([nums[i], another, nums[j]]);
+			exits.add(nums[j]);
 			while (nums[j + 1] === nums[j]) j++;
 		}
 	}
@@ -59,25 +60,27 @@ var threeSum = function (nums) {
  * @param {number[]} nums
  * @return {number[][]}
  */
-// 排序加双指针
+// 排序 + 双指针
 // 时间复杂度O(n^2) 空间复杂度O(1)
 var threeSum = function (nums) {
 	// 排序----改变了入参-实际写业务代码的时候一定要慎重
 	nums.sort((a, b) => a - b);
-	let L,
-		R,
-		result = [];
-	for (let i = 0; i <= nums.length - 3; i++) {
+	let result = [],
+		L,
+		R;
+	for (let i = 0; i < nums.length - 2; i++) {
 		if (nums[i] > 0) break;
 		if (i > 0 && nums[i] === nums[i - 1]) continue;
 		L = i + 1;
 		R = nums.length - 1;
 		while (L < R) {
-			sum = nums[i] + nums[L] + nums[R];
+			const sum = nums[i] + nums[L] + nums[R];
 			if (sum === 0) {
-				result.push([nums[i], nums[L++], nums[R--]]);
-				while (nums[L] === nums[L - 1]) L++;
-				while (nums[R] === nums[R - 1]) R--;
+				result.push([nums[i], nums[L], nums[R]]);
+				while (nums[L + 1] === nums[L]) L++;
+				while (nums[R - 1] === nums[R]) R--;
+				L++;
+				R--;
 			} else if (sum < 0) {
 				L++;
 			} else if (sum > 0) {

@@ -23,12 +23,12 @@ var isAnagram = function (s, t) {
 // 时间复杂度O(n) 空间复杂度O(1)
 var isAnagram = function (s, t) {
 	if (s.length !== t.length) return false;
-	const count = Array(26).fill(0);
+	const hash = Array(26).fill(0);
 	for (let i = 0; i < s.length; i++) {
-		count[s[i].charCodeAt() - 97]++;
-		count[t[i].charCodeAt() - 97]--;
+		hash[s[i].charCodeAt() - 97]++;
+		hash[t[i].charCodeAt() - 97]--;
 	}
-	for (let c of count) if (count[c] !== 0) return false;
+	for (let c of hash) if (c !== 0) return false;
 	return true;
 };
 
@@ -41,10 +41,12 @@ var isAnagram = function (s, t) {
 // 时间复杂度O(n) 空间复杂度O(n)
 var isAnagram = function (s, t) {
 	if (s.length !== t.length) return false;
-	const count = {};
-	for (let c of s) count[c] = count[c] ? ++count[c] : 1;
-	for (let c of t) count[c] = count[c] ? --count[c] : 1;
-	for (let c in count) if (count[c] !== 0) return false;
+	const map = {};
+	for (let i = 0; i < s.length; i++) {
+		map[s[i]] = map[s[i]] === undefined ? 1 : ++map[s[i]];
+		map[t[i]] = map[t[i]] === undefined ? -1 : --map[t[i]];
+	}
+	for (let k in map) if (map[k] !== 0) return false;
 	return true;
 };
 
