@@ -8,7 +8,7 @@ import Number from './js/number';
 
 import avatar from './img/avatar.jpeg';
 
-import style from './index.css';
+import style from './css/index.css';
 import icon from './css/iconfont.css';
 
 new Header();

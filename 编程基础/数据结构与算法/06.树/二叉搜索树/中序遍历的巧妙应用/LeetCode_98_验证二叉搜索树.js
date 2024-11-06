@@ -25,11 +25,11 @@ var isValidBST = function (root, global = { prev: null }) {
  * @return {boolean}
  */
 // 递归验证-中序遍历有序-左根右
-var isValidBST = function (root, pre = null, next = null) {
+var isValidBST = function (root, prev = null, next = null) {
 	if (!root) return true;
-	if (pre && pre.val >= root.val) return false;
+	if (prev && prev.val >= root.val) return false;
 	if (next && root.val >= next.val) return false;
-	return isValidBST(root.left, pre, root) && isValidBST(root.right, root, next);
+	return isValidBST(root.left, prev, root) && isValidBST(root.right, root, next);
 };
 
 /**

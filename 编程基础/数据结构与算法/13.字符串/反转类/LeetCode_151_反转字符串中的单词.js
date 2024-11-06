@@ -37,12 +37,12 @@ var reverseWords = function (s) {
 };
 
 function removeEmpty(arr) {
-	let p = 0;
-	for (let i = 0; i < arr.length; i++) {
-		if (arr[i] === ' ' && (i === 0 || arr[i - 1] === ' ')) continue;
-		arr[p++] = arr[i];
+	let s = 0;
+	for (let f = 0; f < arr.length; f++) {
+		if (arr[f] === ' ' && (f === 0 || arr[f - 1] === ' ')) continue;
+		arr[s++] = arr[f];
 	}
-	arr.length = arr[p - 1] === ' ' ? p - 1 : p;
+	arr.length = arr[s - 1] === ' ' ? s - 1 : s;
 }
 
 function reverse(arr, L, R) {

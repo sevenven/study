@@ -13,30 +13,12 @@ module.exports = {
 	// 打包的出口
 	output: {
 		path: distPath, // 打包产物存放路径
-		// publicPath: 'http://cdn.abc.com'  // 修改所有静态文件 url 的前缀（如 cdn 域名），这里暂时用不到
-		filename: '[name]_[hash:8].js' // name 即多入口时 entry 的 key
+		filename: '[name]_[hash:8].js' // name即多入口时entry的key
+		// publicPath: 'http://cdn.abc.com'  // 修改所有静态文件url的前缀（如cdn域名），这里暂时用不到
+		// chunkFilename: '[name].[hash:8].js'
 	},
 	module: {
 		rules: [
-			{
-				test: /\.(png|jpg|jpeg|gif)$/,
-				// use: {
-				//   loader: 'file-loader', // 将图片打包移动到指定目录下
-				//   options: {
-				//     // 占位符(placeholder)写法
-				//     name: '[name]_[hash].[ext]',
-				//     outputPath: 'images/'
-				//   }
-				// },
-				use: {
-					loader: 'url-loader', // 当文件体积小于limit时会打包成base64随js加载，大于limit时将图片打包移动到指定目录下
-					options: {
-						name: '[name]_[hash:8].[ext]',
-						outputPath: 'images/',
-						limit: 2 * 1024 // 2048Byte = 2KB
-					}
-				}
-			},
 			{
 				test: /\.(css|scss)$/,
 				// loader的执行顺序是从后往前的
@@ -60,6 +42,27 @@ module.exports = {
 				]
 			},
 			{
+				test: /\.(png|jpg|jpeg|gif)$/,
+				// use: {
+				//   loader: 'file-loader', // 将图片打包移动到指定目录下
+				//   options: {
+				//     // [占位符|placeholder]写法
+				//     name: '[name]_[hash].[ext]',
+				//     outputPath: 'images/'
+				//   }
+				// },
+				use: {
+					loader: 'url-loader', // 当文件体积小于limit时会打包成base64随js加载，大于limit时将图片打包移动到指定目录下
+					options: {
+						name: '[name]_[hash:8].[ext]',
+						limit: 2 * 1024, // 2048Byte = 2KB
+						outputPath: 'images/'
+						// 设置图片的 cdn 地址（也可以统一在外面的 output 中设置，那将作用于所有静态资源）
+						// publicPath: 'http://cdn.abc.com'
+					}
+				}
+			},
+			{
 				// 处理字体文件
 				test: /\.(eot|ttf|woff|svg)$/,
 				use: {
@@ -67,6 +70,8 @@ module.exports = {
 					options: {
 						name: '[name]_[hash:8].[ext]',
 						outputPath: 'fonts/'
+						// 设置字体文件的 cdn 地址（也可以统一在外面的 output 中设置，那将作用于所有静态资源）
+						// publicPath: 'http://cdn.abc.com'
 					}
 				}
 			},
@@ -90,7 +95,7 @@ module.exports = {
 						// 		}
 						// 	]
 						// ]
-						plugins: [['@babel/plugin-transform-runtime']] // 不会污染全局环境
+						plugins: [['@babel/plugin-transform-runtime']] // 语法转换&垫片 不会污染全局环境
 					}
 				}
 			}
@@ -108,28 +113,27 @@ module.exports = {
 		// js需要写相应支持热更新的的代码
 		new webpack.HotModuleReplacementPlugin()
 	],
-	// source-map 映射关系 example: 映射dist目录下main.js文件96行实际对应的是src目录下index.js文件的第一行
-	// source-map常见配置关键字含义
+	// devtool配置常见关键字含义
+	// source-map: 映射代码关系 example-映射dist目录下main.js文件96行实际对应的是src目录下index.js文件的第一行
 	// inline: 映射关系会直接打包到构建产物中，不会单独生成一个xxx.js.map文件
 	// cheap: 1.映射精确到行 而不是某行某列 2.映射只针对项目中编写的代码，不映射引入的三方库
 	// module: 映射关系包含引入的三方库
 	// eval: 打包后的模块都使用eval()执行，行映射可能不准；不产生独立的 map 文件
-	// 开发环境推荐 cheap-module-eval-source-map|线上调试推荐 cheap-module-source-map
-	devtool: 'cheap-module-eval-source-map',
+	devtool: 'cheap-module-eval-source-map', // 开发环境推荐 cheap-module-eval-source-map|线上调试推荐 cheap-module-source-map
 	// webpack-dev-server的配置项
 	devServer: {
 		contentBase: distPath, // 服务器根路径 默认会启动在output.path下
-		port: 300, // 设置端口号
+		port: 3000, // 设置端口号
+		open: true, // 服务器启动后打开浏览器
+		hot: true, // 使用Hot Module Replacement 配置中需要有webpack.HotModuleReplacementPlugin
+		// hotOnly: false, // 默认值false 通常推荐设置为false 设置为true时 即使Hot Module Replacement不生效 浏览器也不自动刷新页面
 		progress: true, // 显示打包的进度条
 		compress: true, // 启动 gzip 压缩
-		open: true, // 服务器启动后打开浏览器
-		hot: true, // 使用Hot Module Replacement
-		// hotOnly: false, // 默认值false 通常推荐设置为false 设置为true时 即使Hot Module Replacement不生效 浏览器也不自动刷新页面
 		// 设置代理
 		proxy: {
-			// 将本地 /api/xxx 代理到 localhost:3000/api/xxx
+			// 将本地 /api/xxx 代理到 'http://localhost:3000/api/xxx
 			'/api': 'http://localhost:3000',
-			// 将本地 /api2/xxx 代理到 localhost:3000/xxx
+			// 将本地 /api2/xxx 代理到 'http://localhost:3000/xxx
 			'/api2': {
 				target: 'http://localhost:3000',
 				pathRewrite: {

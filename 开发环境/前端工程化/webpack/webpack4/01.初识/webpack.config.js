@@ -1,14 +1,13 @@
 const path = require('path');
 
 module.exports = {
-	//mode: 'production', // 默认
-	mode: 'development',
+	mode: 'development', // 默认 'production'
 	//entry: './src/index.js',
 	entry: {
 		main: './src/index.js'
 	},
 	output: {
-		filename: 'bundle.js',
-		path: path.resolve(__dirname, 'bundle')
+		filename: 'main.js',
+		path: path.resolve(__dirname, 'dist')
 	}
 };

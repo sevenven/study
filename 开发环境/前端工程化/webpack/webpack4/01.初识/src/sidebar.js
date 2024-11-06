@@ -1,6 +1,6 @@
 function Sidebar() {
-	var dom = document.getElementById('root');
-	var sidebar = document.createElement('div');
+	let dom = document.getElementById('root');
+	let sidebar = document.createElement('div');
 	sidebar.innerText = 'sidebar';
 	dom.append(sidebar);
 }

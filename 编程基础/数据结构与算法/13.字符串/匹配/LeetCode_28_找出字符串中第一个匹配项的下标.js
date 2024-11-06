@@ -7,14 +7,15 @@
  * @param {string} needle
  * @return {number}
  */
+// 时间复杂度O(n) 空间复杂度O(m)
 var strStr = function (haystack, needle) {
 	if (needle.length === 0) return 0;
 	let next = getNext(needle);
 	let j = 0;
-	for (let i = 0; i < haystack.length; ++i) {
+	for (let i = 0; i < haystack.length; i++) {
 		while (haystack[i] !== needle[j] && j > 0) j = next[j - 1];
 		if (haystack[i] === needle[j]) j++;
-		if (j === needle.length) return i - needle.length + 1;
+		if (j === needle.length) return i - (needle.length - 1);
 	}
 
 	return -1;
