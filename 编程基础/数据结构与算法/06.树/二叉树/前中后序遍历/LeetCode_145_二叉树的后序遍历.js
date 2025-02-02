@@ -6,7 +6,7 @@
  * @return {number[]}
  */
 // 递归遍历
-// 时间复杂度O(n) 空间复杂度O(logn)
+// 时间复杂度O(n) 空间复杂度O(n)
 var postorderTraversal = function (root, result = []) {
 	if (!root) return result;
 	postorderTraversal(root.left, result);
@@ -19,7 +19,37 @@ var postorderTraversal = function (root, result = []) {
  * @param {TreeNode} root
  * @return {number[]}
  */
-// 基于栈遍历
+// 模拟栈-深度优先入栈
+// 时间复杂度O(n) 空间复杂度O(n)
+var postorderTraversal = function (root) {
+	if (!root) return [];
+	let cur = root,
+		prev = null, // 上一个 result node
+		stack = [],
+		res = [];
+	while (cur || stack.length) {
+		while (cur) {
+			stack.push(cur);
+			cur = cur.left;
+		}
+		cur = stack.pop();
+		if (!cur.right || cur.right === prev) {
+			res.push(cur.val);
+			prev = cur;
+			cur = null;
+		} else {
+			stack.push(cur);
+			cur = cur.right;
+		}
+	}
+	return res;
+};
+
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+// 模拟栈-广度优先入栈
 // 时间复杂度O(n) 空间复杂度O(n)
 var postorderTraversal = function (root) {
 	if (!root) return [];
@@ -34,36 +64,3 @@ var postorderTraversal = function (root) {
 	}
 	return result;
 };
-
-/**
- * @param {TreeNode} root
- * @return {number[]}
- */
-// 基于栈遍历-标记法 优点：统一迭代遍历方式 缺点：一个元素需要入栈两次
-// 后序遍历-左右根 压栈顺序-根右左
-var postorderTraversal = function (root) {
-	let stack = [],
-		result = [],
-		cur;
-	if (root) stack.push(root);
-	while (stack.length) {
-		cur = stack.pop();
-		if (!cur) {
-			result.push(stack.pop().val);
-			continue;
-		}
-		stack.push(cur);
-		stack.push(null);
-		cur.right && stack.push(cur.right);
-		cur.left && stack.push(cur.left);
-	}
-	return result;
-};
-
-/**
- * @param {TreeNode} root
- * @return {number[]}
- */
-// 莫里斯遍历
-// 时间复杂度O(n) 空间复杂度O(1)
-var postorderTraversal = function (root) {};

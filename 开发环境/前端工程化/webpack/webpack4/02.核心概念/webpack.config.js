@@ -15,7 +15,7 @@ module.exports = {
 		path: distPath, // 打包产物存放路径
 		filename: '[name]_[hash:8].js' // name即多入口时entry的key
 		// publicPath: 'http://cdn.abc.com'  // 修改所有静态文件url的前缀（如cdn域名），这里暂时用不到
-		// chunkFilename: '[name].[hash:8].js'
+		// chunkFilename: '[name].chunk.[hash:8].js'
 	},
 	module: {
 		rules: [
@@ -29,7 +29,7 @@ module.exports = {
 					{
 						loader: 'css-loader',
 						options: {
-							// css里面使用import引入的文件可以执行哪些loader
+							// scss里面使用import引入的文件可以执行哪些loader
 							importLoaders: 2, // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader&sass-loader
 							// css模块化打包 => style.xxx 类名打包后会变成'ZYAf6xDyRZF56xdN2Ybxug=='
 							modules: true
@@ -129,6 +129,7 @@ module.exports = {
 		// hotOnly: false, // 默认值false 通常推荐设置为false 设置为true时 即使Hot Module Replacement不生效 浏览器也不自动刷新页面
 		progress: true, // 显示打包的进度条
 		compress: true, // 启动 gzip 压缩
+		historyApiFallback: true, // 当在浏览器中输入地址，服务器中找不到对应的页面时，会直接将index.html页面渲染出来。
 		// 设置代理
 		proxy: {
 			// 将本地 /api/xxx 代理到 'http://localhost:3000/api/xxx

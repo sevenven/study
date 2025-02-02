@@ -12,7 +12,7 @@ module.exports = {
 	output: {
 		path: distPath,
 		filename: 'main.js',
-		chunkFilename: '[name].[contentHash:8].js'
+		chunkFilename: '[name].chunk.[contentHash:8].js'
 	},
 	module: {
 		rules: [

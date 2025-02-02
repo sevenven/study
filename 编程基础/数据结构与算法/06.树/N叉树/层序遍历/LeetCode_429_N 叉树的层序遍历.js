@@ -10,7 +10,7 @@
 var levelOrder = function (root) {
 	if (!root) return [];
 	let queue = [root],
-		result = [];
+		res = [];
 	while (queue.length) {
 		const curLevel = [],
 			len = queue.length;
@@ -19,9 +19,9 @@ var levelOrder = function (root) {
 			curLevel.push(cur.val);
 			for (let child of cur.children) queue.push(child);
 		}
-		result.push(curLevel);
+		res.push(curLevel);
 	}
-	return result;
+	return res;
 };
 
 /**
@@ -30,10 +30,10 @@ var levelOrder = function (root) {
  */
 // DFS解法
 // 时间复杂度O(n) 空间复杂度O(logn)
-var levelOrder = function (root, level = 0, result = []) {
-	if (!root) return result;
-	if (!result[level]) result[level] = [];
-	result[level].push(root.val);
-	for (let child of root.children) levelOrder(child, level + 1, result);
-	return result;
+var levelOrder = function (root, level = 0, res = []) {
+	if (!root) return res;
+	if (!res[level]) res[level] = [];
+	res[level].push(root.val);
+	for (let child of root.children) levelOrder(child, level + 1, res);
+	return res;
 };

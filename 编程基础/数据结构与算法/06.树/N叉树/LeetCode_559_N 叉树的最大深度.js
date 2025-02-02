@@ -7,13 +7,13 @@
  * @param {Node|null} root
  * @return {number}
  */
-// DFS解法
-// 时间复杂度O(n) 空间复杂度O(logn)
+// DFS解法-后序遍历
+// 时间复杂度O(n) 空间复杂度O(n)
 var maxDepth = function (root) {
 	if (!root) return 0;
 	let depth = 0;
 	for (child of root.children) depth = Math.max(depth, maxDepth(child));
-	return 1 + depth;
+	return depth + 1;
 };
 
 /**

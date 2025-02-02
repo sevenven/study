@@ -1,0 +1,15 @@
+{
+	"presets": [
+		[
+			"@babel/preset-env",
+			{
+				"targets": {
+					"chrome": "67"
+				},
+				"useBuiltIns": "usage",
+				"corejs": "3.6.5"
+			}
+		]
+	]
+	// "plugins": ["@babel/plugin-syntax-dynamic-import"] // 可以支持魔法注释
+}

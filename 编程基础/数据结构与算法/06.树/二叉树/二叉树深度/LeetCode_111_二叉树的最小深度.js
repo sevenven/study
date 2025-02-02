@@ -7,18 +7,13 @@
  * @param {TreeNode} root
  * @return {number}
  */
-// DFS解法
+// DFS解法-前序遍历
 // 时间复杂度O(n) 空间复杂度O(logn)
 var minDepth = function (root) {
 	if (!root) return 0;
-	const leftDepth = minDepth(root.left);
-	const rightDepth = minDepth(root.right);
-	if (!root.left || !root.right) return 1 + Math.max(leftDepth, rightDepth);
-	return 1 + Math.min(leftDepth, rightDepth);
-	// if (!root) return 0;
-	// // 当 root 节点左右孩子有一个为空时，返回不为空的孩子节点的深度
-	// if (!root.left || !root.right) return 1 + Math.max(minDepth(root.left), minDepth(root.right));
-	// return 1 + Math.min(minDepth(root.left), minDepth(root.right));
+	// 当 root 节点左右孩子有一个为空时，返回不为空的孩子节点的深度
+	if (!root.left || !root.right) return Math.max(minDepth(root.left), minDepth(root.right)) + 1;
+	return Math.min(minDepth(root.left), minDepth(root.right)) + 1;
 };
 
 /**

@@ -7,8 +7,33 @@
  * @param {TreeNode} root
  * @return {number}
  */
-// DFS解法
-// 时间复杂度O(n) 空间复杂度O(logn)
+// 标准回溯写法
+// 时间复杂度O(n) 空间复杂度O(n)
+var findBottomLeftValue = function (root, curDepth = 1, global = { maxDepth: 0, nodeVal: undefined }) {
+	if (!root.left && !root.right && curDepth > global.maxDepth) {
+		global.maxDepth = curDepth;
+		global.nodeVal = root.val;
+		return global.nodeVal;
+	}
+	if (root.left) {
+		curDepth++;
+		findBottomLeftValue(root.left, curDepth, global);
+		curDepth--;
+	}
+	if (root.right) {
+		curDepth++;
+		findBottomLeftValue(root.right, curDepth, global);
+		curDepth--;
+	}
+	return global.nodeVal;
+};
+
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+// 精简写法
+// 时间复杂度O(n) 空间复杂度O(n)
 var findBottomLeftValue = function (root, curDepth = 1, global = { maxDepth: 0, nodeVal: undefined }) {
 	if (!root.left && !root.right && curDepth > global.maxDepth) {
 		global.maxDepth = curDepth;

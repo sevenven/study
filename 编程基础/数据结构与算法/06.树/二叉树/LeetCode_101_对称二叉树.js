@@ -6,7 +6,7 @@
  * @param {TreeNode} root
  * @return {boolean}
  */
-// DFS解法
+// DFS解法-后序遍历
 // 时间复杂度O(n) 空间复杂度O(n)
 var isSymmetric = function (root) {
 	return isSame(root.left, root.right);

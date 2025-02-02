@@ -10,7 +10,7 @@
 var levelOrder = function (root) {
 	if (!root) return [];
 	const queue = [root],
-		result = [];
+		res = [];
 	while (queue.length) {
 		const curLevel = [],
 			len = queue.length;
@@ -20,9 +20,9 @@ var levelOrder = function (root) {
 			cur.left && queue.push(cur.left);
 			cur.right && queue.push(cur.right);
 		}
-		result.push(curLevel);
+		res.push(curLevel);
 	}
-	return result;
+	return res;
 };
 
 /**
@@ -30,12 +30,12 @@ var levelOrder = function (root) {
  * @return {number[][]}
  */
 // DFS解法
-// 时间复杂度O(n) 空间复杂度O(logn)
-var levelOrder = function (root, level = 0, result = []) {
-	if (!root) return result;
-	if (!result[level]) result[level] = [];
-	result[level].push(root.val);
-	levelOrder(root.left, level + 1, result);
-	levelOrder(root.right, level + 1, result);
-	return result;
+// 时间复杂度O(n) 空间复杂度O(n)
+var levelOrder = function (root, level = 0, res = []) {
+	if (!root) return res;
+	if (!res[level]) res[level] = [];
+	res[level].push(root.val);
+	levelOrder(root.left, level + 1, res);
+	levelOrder(root.right, level + 1, res);
+	return res;
 };

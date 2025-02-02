@@ -8,6 +8,32 @@
  * @param {number} targetSum
  * @return {boolean}
  */
+// 标准回溯写法
+// 时间复杂度O(n) 空间复杂度O(logn)
+var hasPathSum = function (root, targetSum) {
+	if (!root) return false;
+	if (!root.left && !root.right) return root.val === targetSum;
+	let leftResult = false;
+	if (root.left) {
+		targetSum -= root.val;
+		leftResult = hasPathSum(root.left, targetSum);
+		targetSum += root.val;
+	}
+	let rightResult = false;
+	if (root.right) {
+		targetSum -= root.val;
+		rightResult = hasPathSum(root.right, targetSum);
+		targetSum += root.val;
+	}
+	return leftResult || rightResult;
+};
+
+/**
+ * @param {TreeNode} root
+ * @param {number} targetSum
+ * @return {boolean}
+ */
+// 精简写法
 // 时间复杂度O(n) 空间复杂度O(logn)
 var hasPathSum = function (root, targetSum) {
 	if (!root) return false;

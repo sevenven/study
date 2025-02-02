@@ -11,17 +11,17 @@
 var levelOrderBottom = function (root) {
 	if (!root) return [];
 	const queue = [root],
-		result = [];
+		res = [];
 	while (queue.length) {
-		const len = queue.length,
-			curLevel = [];
+		const curLevel = [],
+			len = queue.length;
 		for (let i = 0; i < len; i++) {
 			const cur = queue.shift();
 			curLevel.push(cur.val);
 			cur.left && queue.push(cur.left);
 			cur.right && queue.push(cur.right);
 		}
-		result.unshift(curLevel);
+		res.unshift(curLevel);
 	}
-	return result;
+	return res;
 };

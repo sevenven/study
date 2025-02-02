@@ -19,11 +19,11 @@
  */
 var constructMaximumBinaryTree = function (nums) {
 	if (!nums.length) return null;
-	const max = Math.max(...nums),
-		node = new TreeNode(max),
-		mid = nums.indexOf(max);
-	node.left = constructMaximumBinaryTree(nums.slice(0, mid));
-	node.right = constructMaximumBinaryTree(nums.slice(mid + 1));
+	let maxIndex = 0;
+	for (let i = 1; i < nums.length; i++) maxIndex = nums[maxIndex] > nums[i] ? maxIndex : i;
+	const node = new TreeNode(nums[maxIndex]);
+	node.left = constructMaximumBinaryTree(nums.slice(0, maxIndex));
+	node.right = constructMaximumBinaryTree(nums.slice(maxIndex + 1));
 	return node;
 };
 

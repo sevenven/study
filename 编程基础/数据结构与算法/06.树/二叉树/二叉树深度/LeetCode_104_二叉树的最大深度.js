@@ -7,15 +7,11 @@
  * @param {TreeNode} root
  * @return {number}
  */
-// DFS解法
-// 时间复杂度O(n) 空间复杂度O(logn)
+// DFS解法-后序遍历
+// 时间复杂度O(n) 空间复杂度O(n)
 var maxDepth = function (root) {
 	if (!root) return 0;
-	return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
-	// if (!root) return 0;
-	// const leftDepth = maxDepth(root.left),
-	// 	rightDepth = maxDepth(root.right);
-	// return 1 + Math.max(leftDepth, rightDepth);
+	return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
 };
 
 /**
