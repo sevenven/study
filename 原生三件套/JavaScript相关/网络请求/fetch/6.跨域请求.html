@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>跨域请求</title>
+	</head>
+	<body>
+		<script>
+			// fetch 默认遵循同源策略，跨域请求需要服务器支持 CORS（跨域资源共享）。
+			fetch('http://localhost:3000/items', {
+				mode: 'cors', // 允许跨域请求
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+				.then(response => response.json())
+				.then(data => console.log(data))
+				.catch(error => console.error('Error:', error));
+		</script>
+	</body>
+</html>

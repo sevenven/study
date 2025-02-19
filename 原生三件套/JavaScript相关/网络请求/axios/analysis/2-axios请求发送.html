@@ -1,90 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>请求发送过程</title>
-    <!-- <script src="./node_modules/axios/dist/mine-axios.js"></script> -->
-</head>
-<body>
-    <script>
-        // axios 发送请求   axios  Axios.prototype.request  bind
-        //1. 声明构造函数
-        function Axios(config){
-            this.config = config;
-        }
-        Axios.prototype.request = function(config){
-            //发送请求
-            //创建一个 promise 对象
-            let promise = Promise.resolve(config);
-            //声明一个数组
-            let chains = [dispatchRequest, undefined];// undefined 占位
-            //调用 then 方法指定回调
-            let result = promise.then(chains[0], chains[1]);
-            //返回 promise 的结果
-            return result;
-        }
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>请求发送过程</title>
+	</head>
+	<body>
+		<script>
+			// 1. 声明 Axios 构造函数
+			function Axios(config) {
+				// 将传入的配置保存到实例的 config 属性中
+				this.config = config;
+			}
 
-        //2. dispatchRequest 函数
-        function dispatchRequest(config){
-            //调用适配器发送请求
-            return xhrAdapter(config).then(response => {
-                //响应的结果进行转换处理
-                //....
-                return response;
-            }, error => {
-                throw error;
-            });
-        }
+			// 在 Axios 的原型上添加 request 方法
+			Axios.prototype.request = function (config) {
+				// 创建一个立即解决的 Promise 对象，初始值为传入的配置
+				let promise = Promise.resolve(config);
 
-        //3. adapter 适配器
-        function xhrAdapter(config){
-            console.log('xhrAdapter 函数执行');
-            return new Promise((resolve, reject) => {
-                //发送 AJAX 请求
-                let xhr = new XMLHttpRequest();
-                //初始化
-                xhr.open(config.method, config.url);
-                //发送
-                xhr.send();
-                //绑定事件
-                xhr.onreadystatechange = function(){
-                    if(xhr.readyState === 4){
-                        //判断成功的条件
-                        if(xhr.status >= 200 && xhr.status < 300){
-                            //成功的状态
-                            resolve({
-                                //配置对象
-                                config: config,
-                                //响应体
-                                data: xhr.response,
-                                //响应头
-                                headers: xhr.getAllResponseHeaders(), //字符串  parseHeaders
-                                // xhr 请求对象
-                                request: xhr,
-                                //响应状态码
-                                status: xhr.status,
-                                //响应状态字符串
-                                statusText: xhr.statusText
-                            });
-                        }else{
-                            //失败的状态
-                            reject(new Error('请求失败 失败的状态码为' + xhr.status));
-                        }
-                    }
-                }
-            });
-        }
+				// 声明一个数组，包含请求分发函数和占位符（用于错误处理）
+				let chains = [dispatchRequest, undefined]; // undefined 是错误处理的占位符
 
+				// 调用 then 方法，将 chains[0] 作为成功回调，chains[1] 作为失败回调
+				let result = promise.then(chains[0], chains[1]);
 
-        //4. 创建 axios 函数
-        let axios = Axios.prototype.request.bind(null);
-        axios({
-            method:'GET',
-            url:'http://localhost:3000/posts'
-        }).then(response => {
-            console.log(response);
-        });
-    </script>
-</body>
+				// 返回 Promise 的结果
+				return result;
+			};
+
+			// 2. 定义 dispatchRequest 函数，用于分发请求
+			function dispatchRequest(config) {
+				// 调用适配器发送请求
+				return xhrAdapter(config).then(
+					response => {
+						// 对响应的结果进行转换处理（例如：格式化数据）
+						// 这里可以添加响应拦截器的逻辑
+						return response;
+					},
+					error => {
+						// 如果请求失败，抛出错误
+						throw error;
+					}
+				);
+			}
+
+			// 3. 定义 xhrAdapter 适配器，用于发送实际的 AJAX 请求
+			function xhrAdapter(config) {
+				console.log('xhrAdapter 函数执行');
+
+				// 返回一个 Promise 对象
+				return new Promise((resolve, reject) => {
+					// 创建 XMLHttpRequest 对象
+					let xhr = new XMLHttpRequest();
+
+					// 初始化请求
+					xhr.open(config.method, config.url);
+
+					// 发送请求
+					xhr.send();
+
+					// 绑定 readyStateChange 事件
+					xhr.onreadystatechange = function () {
+						// 当请求完成时
+						if (xhr.readyState === 4) {
+							// 判断请求是否成功（状态码在 200-299 之间）
+							if (xhr.status >= 200 && xhr.status < 300) {
+								// 请求成功，返回响应对象
+								resolve({
+									config: config, // 请求的配置对象
+									data: xhr.response, // 响应体
+									headers: xhr.getAllResponseHeaders(), // 响应头（字符串）
+									request: xhr, // XMLHttpRequest 对象
+									status: xhr.status, // 响应状态码
+									statusText: xhr.statusText // 响应状态文本
+								});
+							} else {
+								// 请求失败，返回错误
+								reject(new Error('请求失败，失败的状态码为 ' + xhr.status));
+							}
+						}
+					};
+				});
+			}
+
+			// 4. 创建 axios 函数
+			let axios = Axios.prototype.request.bind(null);
+
+			// 示例：使用 axios 发送 GET 请求
+			axios({
+				method: 'GET',
+				url: 'http://localhost:3000/posts'
+			})
+				.then(response => {
+					// 请求成功，打印响应结果
+					console.log(response);
+				})
+				.catch(error => {
+					// 请求失败，打印错误信息
+					console.error(error);
+				});
+		</script>
+	</body>
 </html>

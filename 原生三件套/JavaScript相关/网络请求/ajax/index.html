@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>AJAX Example</title>
+	</head>
+	<body>
+		<div id="content"></div>
+
+		<script>
+			// AJAX（Asynchronous JavaScript and XML）是一种用于创建快速动态网页的技术。它允许网页在不重新加载整个页面的情况下，与服务器进行异步通信并更新部分页面内容。
+
+			// 基本概念
+			// 异步通信：AJAX允许浏览器在后台与服务器进行通信，而不影响用户的操作。
+			// XMLHttpRequest对象：这是AJAX的核心对象，用于在后台与服务器交换数据。
+			// JSON：虽然名字中有XML，但现在更常用JSON格式来传输数据。
+
+			var xhr = new XMLHttpRequest(); // 首先，你需要创建一个XMLHttpRequest对象，这是AJAX的基础。
+			// 用open方法来配置请求，open方法有三个参数：
+			// 请求方法（如GET或POST）
+			// 请求的URL
+			// 是否异步（通常为true）
+			xhr.open('GET', 'http://localhost:3000/items', true);
+			xhr.onreadystatechange = function () {
+				// 使用onreadystatechange事件来处理服务器的响应。
+				// readyState属性表示请求的状态，status属性表示HTTP状态码。
+				if (xhr.readyState === 4 && xhr.status === 200) {
+					// 解析响应数据
+					// 通常，服务器返回的数据是JSON格式的，可以使用JSON.parse方法将其转换为JavaScript对象。
+					var response = JSON.parse(xhr.responseText);
+					document.getElementById('content').innerHTML = JSON.stringify(response);
+				}
+			};
+			// 使用send方法发送请求。对于GET请求，参数可以为空；对于POST请求，可以传递数据。
+			xhr.send();
+		</script>
+	</body>
+</html>

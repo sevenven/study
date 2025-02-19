@@ -14,18 +14,35 @@ const { count } = require('console');
  * @return {number[]}
  */
 // 回溯
+// 时间复杂度O(n) 空间复杂度O(h)
 var findMode = function (root, result = [], global = { prev: null, count: 0, maxCount: 1 }) {
-	if (!root) return null;
+	if (!root) return null; // 基本情况：空节点直接返回
+
+	// 递归遍历左子树
 	findMode(root.left, result, global);
-	if (global.prev?.val === root.val) global.count++;
-	else global.count = 1;
-	if (global.count === global.maxCount) result.push(root.val);
-	else if (global.count > global.maxCount) {
-		result.length = 0;
-		result.push(root.val);
-		global.maxCount = global.count;
+
+	// 统计当前节点值的频率
+	if (global.prev?.val === root.val) {
+		global.count++; // 如果当前节点值与前一个节点值相同，频率加 1
+	} else {
+		global.count = 1; // 否则重置频率为 1
 	}
+
+	// 更新结果数组
+	if (global.count === global.maxCount) {
+		result.push(root.val); // 如果当前频率等于最大频率，将当前节点值加入结果数组
+	} else if (global.count > global.maxCount) {
+		result.length = 0; // 如果当前频率大于最大频率，清空结果数组
+		result.push(root.val); // 将当前节点值加入结果数组
+		global.maxCount = global.count; // 更新最大频率
+	}
+
+	// 更新前一个节点
 	global.prev = root;
+
+	// 递归遍历右子树
 	findMode(root.right, result, global);
+
+	// 返回结果数组
 	return result;
 };

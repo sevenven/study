@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<title>axios基本用法</title>
+	</head>
+	<body>
+		<button onclick="axiosGet()">发送 GET 请求 - 用于从服务器获取数据</button><br />
+		<button onclick="axiosPost()">发送 POST 请求 - 用于从服务器新增数据</button><br />
+		<button onclick="axiosPut()">发送 PUT 请求 - 用于更新服务器上的数据</button><br />
+		<button onclick="axiosPatch()">发送 PATCH 请求 - 用于部分更新服务器上的数据</button><br />
+		<button onclick="axiosDelete()">发送 DELETE 请求 - 用于删除服务器上的数据</button><br />
+		<button onclick="axiosRequest()">通用请求方法</button><br />
+		<script>
+			axios.interceptors.response.use(
+				response => {
+					const { data, status, statusText, headers, config, request } = response;
+					console.log('data', data); // 服务器返回的数据
+					console.log('status', status); // HTTP 状态码
+					console.log('statusText', statusText); // HTTP 状态消息
+					console.log('headers', headers); // 响应头
+					console.log('config', config); // 请求配置
+					console.log('request', request); // 请求对象
+					return response;
+				},
+				error => {
+					const {
+						// 错误消息
+						message,
+						// 请求配置
+						config: {
+							url,
+							method,
+							headers
+							// 其他配置项
+						},
+						// 请求对象（在浏览器中是 XMLHttpRequest，在 Node.js 中是 ClientRequest）
+						request,
+						// 响应对象（如果服务器返回了响应）
+						response: {
+							data, // 服务器返回的数据
+							status, // HTTP 状态码
+							statusText, // HTTP 状态消息
+							// headers, // 响应头
+							config // 请求配置
+							// request // 请求对象
+						}
+					} = error;
+
+					console.log('error.message: ', error.message); // 错误消息
+					console.log('error.config: ', error.config); // 请求配置
+					console.log(error.config.url);
+					console.log(error.config.method);
+					console.log(error.config.headers);
+					console.log('error.request: ', error.request); // 请求对象（在浏览器中是 XMLHttpRequest，在 Node.js 中是 ClientRequest）
+					console.log('error.response: ', error.response); // 响应对象（如果服务器返回了响应）
+					console.log(error.response.status);
+					console.log(error.response.statusText);
+					console.log(error.response.data);
+					console.log(error.response.headers);
+					let err;
+					if (error.response) {
+						// 请求已发出，服务器响应状态码不在 2xx 范围内
+						err = `Status Code: ${error.response.status}, Error Msg: ${JSON.stringify(error.response.data)}`;
+					} else if (error.request) {
+						// 请求已发出，但没有收到响应
+						err = error.request;
+					} else {
+						err = error;
+					}
+					return Promise.reject(err);
+				}
+			);
+
+			function axiosGet() {
+				// 发送 GET 请求
+				// 通过 params 传递查询参数：
+				axios
+					.get('http://localhost:3000/items', {
+						params: {
+							id: 1,
+							name: 'John'
+						}
+					})
+					.then(response => {
+						console.log(response.data);
+					})
+					.catch(error => {
+						console.error(error);
+					});
+			}
+
+			function axiosPost() {
+				// 发送 POST 请求
+				axios
+					.post('http://localhost:3000/items', { id: 3, name: 'Item 3' })
+					.then(response => {
+						console.log(response.data);
+					})
+					.catch(error => {
+						console.error(error);
+					});
+			}
+
+			function axiosPut() {
+				// 发送 PUT 请求
+				axios
+					.put('http://localhost:3000/items/3', { id: 3, name: 'Item 3 New' })
+					.then(response => {
+						console.log(response.data);
+					})
+					.catch(error => {
+						console.error(error);
+					});
+			}
+
+			function axiosPatch() {
+				axios
+					.put('http://localhost:3000/items/2', { id: 2, name: 'Item 2 New' })
+					.then(response => {
+						console.log(response.data);
+					})
+					.catch(error => {
+						console.error(error);
+					});
+			}
+
+			function axiosDelete() {
+				// 发送 DELETE 请求
+				axios
+					.delete('http://localhost:3000/items/3')
+					.then(response => {
+						console.log(response.data);
+					})
+					.catch(error => {
+						console.error(error);
+					});
+			}
+
+			function axiosRequest() {
+				axios
+					.request({
+						method: 'get', // 请求方法
+						url: 'http://localhost:3000/items', // 请求地址
+						params: { id: 1 }, // 查询参数
+						headers: { Authorization: 'Bearer token' } // 请求头
+					})
+					.then(response => {
+						console.log(response.data);
+					})
+					.catch(error => {
+						console.error(error);
+					});
+			}
+		</script>
+	</body>
+</html>

@@ -9,6 +9,7 @@
  * @return {TreeNode}
  */
 // 后序遍历-左右根--从下往上处理
+// 时间复杂度O(n) 空间复杂度O(h)
 var lowestCommonAncestor = function (root, p, q) {
 	if (!root || root === p || root === q) return root;
 	const left = lowestCommonAncestor(root.left, p, q);

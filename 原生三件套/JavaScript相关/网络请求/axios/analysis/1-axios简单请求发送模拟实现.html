@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>axios 的由来</title>
+	</head>
+	<body>
+		<script>
+			// 定义 Axios 构造函数
+			function Axios(config) {
+				this.defaults = config; // 将传入的配置保存到实例的 defaults 属性中
+				this.intercepters = {
+					request: {}, // 请求拦截器
+					response: {} // 响应拦截器
+				};
+			}
+
+			// 在 Axios 的原型上添加 request 方法
+			Axios.prototype.request = function (config) {
+				// 模拟发送 AJAX 请求，打印请求类型
+				console.log('发送 AJAX 请求，请求的类型为 ' + config.method);
+			};
+
+			// 在 Axios 的原型上添加 get 方法
+			Axios.prototype.get = function (config) {
+				// 调用 request 方法，传入 GET 请求的配置
+				return this.request({ method: 'GET' });
+			};
+
+			// 在 Axios 的原型上添加 post 方法
+			Axios.prototype.post = function (config) {
+				// 调用 request 方法，传入 POST 请求的配置
+				return this.request({ method: 'POST' });
+			};
+
+			// 创建实例的函数
+			function createInstance(config) {
+				// 实例化 Axios 对象，传入配置
+				let context = new Axios(config);
+				// context 是一个对象，可以调用 get、post 方法，但不能作为函数调用 context()
+
+				// 创建一个请求函数 instance，绑定 context 作为 this
+				let instance = Axios.prototype.request.bind(context);
+				// instance 是一个函数，可以直接调用 instance(config)，但不能调用 instance.get()
+
+				// 将 Axios 原型上的方法（如 get、post）添加到 instance 函数对象中
+				Object.keys(Axios.prototype).forEach(key => {
+					// 将原型方法绑定到 context，并赋值给 instance
+					instance[key] = Axios.prototype[key].bind(context);
+				});
+
+				// 将 context 实例的属性（如 defaults、intercepters）添加到 instance 函数对象中
+				Object.keys(context).forEach(key => {
+					instance[key] = context[key];
+				});
+
+				// 返回 instance，此时 instance 既是一个函数，又具有 get、post 方法和 defaults、intercepters 属性
+				return instance;
+			}
+
+			// 使用 createInstance 创建一个 Axios 实例
+			const axios = createInstance({ baseURL: 'https://api.example.com' });
+
+			// 示例：调用 get 方法
+			// axios({method:'POST'})
+			axios.get(); // 输出：发送 AJAX 请求，请求的类型为 GET
+
+			// 示例：调用 post 方法
+			axios.post(); // 输出：发送 AJAX 请求，请求的类型为 POST
+
+			// 示例：直接调用 instance 函数
+			axios({ method: 'GET' }); // 输出：发送 AJAX 请求，请求的类型为 GET
+		</script>
+	</body>
+</html>
