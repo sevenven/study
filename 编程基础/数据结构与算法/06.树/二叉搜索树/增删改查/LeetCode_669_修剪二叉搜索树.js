@@ -11,17 +11,15 @@
  * @return {TreeNode}
  */
 // 递归修剪
+// 时间复杂度O(n) 空间复杂度O(h)
 var trimBST = function (root, low, high) {
-	if (!root) return root;
-	if (root.val < low) {
-		const right = trimBST(root.right, low, high);
-		return right;
-	} else if (root.val > high) {
-		const left = trimBST(root.left, low, high);
-		return left;
-	} else if (root.val >= low && root.val <= high) {
-		root.left = trimBST(root.left, low, high);
-		root.right = trimBST(root.right, low, high);
-		return root;
+	if (!root) return null; // 如果当前节点为空，直接返回null
+	if (root.val < low) return trimBST(root.right, low, high); // 如果当前节点的值小于low，说明左子树的所有节点都小于low，直接修剪右子树
+	else if (root.val > high) return trimBST(root.left, low, high); // 如果当前节点的值大于high，说明右子树的所有节点都大于high，直接修剪左子树
+	else {
+		// 如果当前节点的值在[low, high]范围内，递归修剪左右子树
+		root.left = trimBST(root.left, low, high); // 修剪左子树
+		root.right = trimBST(root.right, low, high); // 修剪右子树
+		return root; // 返回修剪后的当前节点
 	}
 };
