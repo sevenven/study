@@ -43,5 +43,5 @@ print(fruits)
 # print(list("hello"))
 
 # 使用列表推导式创建列表
-# print([x for x in range(1, 6)])
-# print([x * x for x in range(1, 6)])
+# print([x for x in range(1, 6)]) # 基本的列表推导式
+# print([x * x for x in range(1, 6) if x > 2]) # 带条件的列表推导式
