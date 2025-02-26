@@ -12,7 +12,7 @@
  * @param {ListNode} head
  * @return {boolean}
  */
-// 哈希表(使用ES6 Set) \
+// 哈希表(使用ES6 Set)
 // 时间复杂度O(n) 空间复杂度O(n)
 var hasCycle = function (head) {
 	let cur = head,
