@@ -1,3 +1,5 @@
+# 提供与操作系统交互的功能
+
 import os
 
 os.mkdir("new_directory")  # 创建新目录
