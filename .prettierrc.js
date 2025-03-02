@@ -1,5 +1,5 @@
 module.exports = {
-	printWidth: 260, // 一行的字符数，如果超过会进行换行
+	printWidth: 300, // 一行的字符数，如果超过会进行换行
 	tabWidth: 2, // 一个tab代表几个空格数，默认就是2
 	useTabs: true, // 是否启用tab取代空格符缩进，.editorconfig设置tab缩进，所以设置为true
 	semi: true, // 行尾是否使用分号，默认为true
