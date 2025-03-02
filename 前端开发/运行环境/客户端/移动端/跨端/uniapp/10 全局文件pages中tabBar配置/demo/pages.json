@@ -1,0 +1,73 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		},
+		{
+			"path": "pages/index/aa",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		},
+		{
+			"path": "pages/index/bb",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		},
+		{
+			"path": "pages/index/cc",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		}
+	],
+	"tabBar": {
+		"color":"#000",
+		"selectedColor":"orange",
+		"backgroundColor":"#fff",
+		"borderStyle":"white",
+		"list": [
+			{
+				"pagePath":"pages/index/index",
+				"text":"首页",
+				"iconPath":"static/image/home.png",
+				"selectedIconPath": "static/image/home1.png"
+			},
+			{
+				"pagePath":"pages/index/aa",
+				"text":"aa",
+				"iconPath":"static/image/usedCar.png",
+				"selectedIconPath": "static/image/usedCar1.png"
+			},
+			{
+				"pagePath":"pages/index/bb",
+				"text":"bb",
+				"iconPath":"static/image/newCar.png",
+				"selectedIconPath": "static/image/newCar1.png"
+			},
+			{
+				"pagePath":"pages/index/cc",
+				"text":"cc",
+				"iconPath":"static/image/lease.png",
+				"selectedIconPath": "static/image/lease1.png"
+			}
+		],
+		"midButton":{
+			"text":"发布",
+			"iconPath":"static/image/add.png",
+			"height":"65px",
+			"iconWidth":"40px"
+		}
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {}
+}

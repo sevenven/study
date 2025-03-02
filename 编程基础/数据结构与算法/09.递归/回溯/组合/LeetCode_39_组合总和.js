@@ -20,7 +20,7 @@ var combinationSum = function (candidates, target, startIndex = 0, path = [], re
 	for (let i = startIndex; i < candidates.length; i++) {
 		path.push(candidates[i]);
 		combinationSum(candidates, target - candidates[i], i, path, result);
-		path.pop();
+		path.pop(); // 标准回溯
 	}
 	return result;
 };

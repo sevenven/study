@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>自定义遍历数据</title>
+	</head>
+
+	<body>
+		<script>
+			// 声明一个对象
+			const banji = {
+				name: '终极一班',
+				status: ['xiaoming', 'xiaoning', 'xiaotian', 'knight'],
+				[Symbol.iterator]() {
+					// 索引变量
+					let index = 0;
+					return {
+						next: () => {
+							// 返回结果 下标自增
+							if (index < this.status.length) return { value: this.status[index++], done: false };
+							return { value: undefined, done: true };
+						}
+					};
+				}
+			};
+
+			// 遍历这个对象
+			for (let v of banji) {
+				console.log(v);
+			}
+		</script>
+	</body>
+</html>

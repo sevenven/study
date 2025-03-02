@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link href="./css/main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">service worker</div>
+  </body>
+  <script type="text/javascript">
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker
+        .register("./register.js", { scope: "./" })
+        .then(function (reg) {})
+        .catch(function (e) {
+          console.log(e);
+        });
+    } else {
+      alert("Service Worker is not supported");
+    }
+  </script>
+</html>

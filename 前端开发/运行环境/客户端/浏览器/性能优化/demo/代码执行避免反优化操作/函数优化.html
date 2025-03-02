@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>函数优化</title>
+	</head>
+	<body>
+		<h1>函数优化</h1>
+		<script type="text/javascript">
+			const add = (a, b) => a * b; // lazy parsing
+			// const add = ((a, b) => a*b); // eager parsing
+			const num1 = 1;
+			const num2 = 2;
+			add(num1, num2);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,33 @@
+<html>
+  <head></head>
+  <body>
+    <ul id="msg-box"></ul>
+    <input type="text" id="msg-input" />
+    <button id="send-msg-button">发送</button>
+    <script>
+      if (navigator.serviceWorker) {
+        const msgBox = document.getElementById("msg-box");
+        const sendBtn = document.getElementById("send-msg-button");
+        const msgInput = document.getElementById("msg-input");
+
+        // 注册serviceWorker
+        navigator.serviceWorker
+          .register("./register.js")
+          .then((registration) => {
+            // 主页面发送信息到serviceworker
+            sendBtn.addEventListener("click", function () {
+              registration.active.postMessage(msgInput.value);
+              msgInput.value = "";
+            });
+          });
+        // 接受serviceWorker发回来的消息
+        navigator.serviceWorker.addEventListener("message", function (event) {
+          msgBox.innerHTML =
+            msgBox.innerHTML + ("<li>" + event.data.message + "</li>");
+        });
+      } else {
+        alert("Service Worker is not supported");
+      }
+    </script>
+  </body>
+</html>

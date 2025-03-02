@@ -1,0 +1,28 @@
+一、页面传值
+
+	A页面:传
+
+		uni.navigateTo({
+			url:`/pages/search/search?key=${this.key}&id=111`
+		})
+
+	B页面:接
+
+		onLoad( options ) {
+			this.keyName = options.key;
+		}
+
+二、其他传值
+
+	
+	组件：父传子（和vue一样）
+
+	其他：
+
+		传：uni.$emit('名称',值)
+		接：uni.$on('名称',函数:( 参数值 )=>{
+				
+		})
+
+
+

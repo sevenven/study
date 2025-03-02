@@ -12,15 +12,17 @@
  */
 // 回溯 + 剪枝
 var combinationSum3 = function (k, n, startIndex = 1, path = [], result = []) {
-	if (n < 0) return;
+	if (n < 0) return result; // 剪枝：如果当前总和已经小于0 则直接返回
 	if (n === 0 && path.length === k) {
 		result.push([...path]);
-		return;
+		return result;
 	}
+	// 剪枝： 如果剩下的数字不够选了 则不在进行计算
 	for (let i = startIndex; i <= 9 - (k - path.length) + 1; i++) {
 		path.push(i);
+		// n&startIndex: 隐藏回溯
 		combinationSum3(k, n - i, i + 1, path, result);
-		path.pop();
+		path.pop(); // 标准回溯
 	}
 	return result;
 };

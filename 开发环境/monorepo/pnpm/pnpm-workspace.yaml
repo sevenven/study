@@ -1,7 +1,0 @@
-packages:
-  # 子项目
-  - 'packages/*'
-  # 公共组件-子项目们使用的组件
-  - 'components/*'
-  # 公共的方法-子项目们使用的方法
-  - 'utils/**'
