@@ -8,17 +8,17 @@
  * @return {number[][]}
  */
 var subsetsWithDup = function (nums) {
-	nums.sort((a, b) => a - b);
+	nums.sort((a, b) => a - b); // 排序
 	return backtracking(nums);
 };
 
 function backtracking(nums, startIndex = 0, path = [], result = []) {
 	result.push([...path]);
 	for (let i = startIndex; i < nums.length; i++) {
-		if (i > startIndex && nums[i] === nums[i - 1]) continue;
+		if (i > startIndex && nums[i] === nums[i - 1]) continue; // 去重
 		path.push(nums[i]);
-		backtracking(nums, i + 1, path, result);
-		path.pop();
+		backtracking(nums, i + 1, path, result); // startIndex: 隐藏回溯
+		path.pop(); // 标准回溯
 	}
 	return result;
 }

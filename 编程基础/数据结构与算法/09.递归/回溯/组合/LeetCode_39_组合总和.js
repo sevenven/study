@@ -10,15 +10,16 @@
  * @param {number} target
  * @return {number[][]}
  */
-// 回溯 + 剪枝
+// 回溯
 var combinationSum = function (candidates, target, startIndex = 0, path = [], result = []) {
-	if (target < 0) return;
+	if (target < 0) return result;
 	if (target === 0) {
 		result.push([...path]);
-		return;
+		return result;
 	}
 	for (let i = startIndex; i < candidates.length; i++) {
 		path.push(candidates[i]);
+		// target隐藏回溯
 		combinationSum(candidates, target - candidates[i], i, path, result);
 		path.pop(); // 标准回溯
 	}

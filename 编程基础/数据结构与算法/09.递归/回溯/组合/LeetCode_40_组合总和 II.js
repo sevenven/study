@@ -9,24 +9,25 @@
  * @param {number} target
  * @return {number[][]}
  */
-// 回溯 + 剪枝
+// 回溯
 var combinationSum2 = function (candidates, target) {
-	candidates.sort((a, b) => a - b);
+	candidates.sort((a, b) => a - b); // 排序
 	return backtracking(candidates, target);
 };
 
 function backtracking(candidates, target, startIndex = 0, path = [], result = []) {
-	if (target < 0) return;
+	if (target < 0) return result;
 	if (target === 0) {
 		result.push([...path]);
-		return;
+		return result;
 	}
 	for (let i = startIndex; i < candidates.length; i++) {
-		if (candidates[i] > target) break;
-		if (i > startIndex && candidates[i] == candidates[i - 1]) continue;
+		if (candidates[i] > target) break; // 剪枝
+		if (i > startIndex && candidates[i] == candidates[i - 1]) continue; // 去重
 		path.push(candidates[i]);
+		// target&startIndex 隐藏回溯
 		backtracking(candidates, target - candidates[i], i + 1, path, result);
-		path.pop();
+		path.pop(); // 标准回溯
 	}
 	return result;
 }

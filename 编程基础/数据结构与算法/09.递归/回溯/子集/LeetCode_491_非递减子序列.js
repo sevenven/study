@@ -14,8 +14,8 @@ var findSubsequences = function (nums, startIndex = 0, path = [], result = []) {
 		if (set.has(nums[i])) continue;
 		path.push(nums[i]);
 		set.add(nums[i]);
-		findSubsequences(nums, i + 1, path, result);
-		path.pop();
+		findSubsequences(nums, i + 1, path, result); // startIndex: 隐藏回溯
+		path.pop(); // 标准回溯
 	}
 	return result;
 };

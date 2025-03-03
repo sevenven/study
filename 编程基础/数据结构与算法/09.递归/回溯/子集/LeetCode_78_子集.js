@@ -11,8 +11,8 @@ var subsets = function (nums, startIndex = 0, path = [], result = []) {
 	result.push([...path]);
 	for (let i = startIndex; i < nums.length; i++) {
 		path.push(nums[i]);
-		subsets(nums, i + 1, path, result);
-		path.pop();
+		subsets(nums, i + 1, path, result); // startIndex: 隐藏回溯
+		path.pop(); // 标准回溯
 	}
 	return result;
 };

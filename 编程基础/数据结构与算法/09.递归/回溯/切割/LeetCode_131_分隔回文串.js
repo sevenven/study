@@ -10,21 +10,20 @@
 var partition = function (s, startIndex = 0, path = [], result = []) {
 	if (startIndex === s.length) {
 		result.push(Array.from(path));
-		return;
+		return result;
 	}
 	for (let i = startIndex; i < s.length; i++) {
 		if (!isPalindrome(s, startIndex, i)) continue;
-		path.push(s.slice(startIndex, i + 1));
-		partition(s, i + 1, path, result);
-		path.pop();
+		path.push(s.slice(startIndex, i + 1)); // slice: 左闭右开
+
+		partition(s, i + 1, path, result); // startIndex: 隐藏回溯
+		path.pop(); // 标准回溯
 	}
 	return result;
 };
 
 function isPalindrome(s, L, R) {
-	while (L < R) {
-		if (s[L++] !== s[R--]) return false;
-	}
+	while (L < R) if (s[L++] !== s[R--]) return false;
 	return true;
 }
 
