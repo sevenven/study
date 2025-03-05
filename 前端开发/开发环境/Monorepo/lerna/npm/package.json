@@ -5,6 +5,6 @@
 		"packages/*"
 	],
 	"devDependencies": {
-		"lerna": "^6.5.1"
+		"lerna": "8.2.1"
 	}
 }
