@@ -11,17 +11,17 @@
  * @return {void} Do not return anything,   modify board in-place instead.
  */
 var solveSudoku = function (board) {
+	// 遍历行
 	for (let i = 0; i < 9; i++) {
-		// 遍历行
+		// 遍历列
 		for (let j = 0; j < 9; j++) {
-			// 遍历列
 			if (board[i][j] !== '.') continue;
 			for (let k = 1; k <= 9; k++) {
 				// i,j 的位置放 k 是否合适
 				if (!isValid(board, i, j, k + '')) continue;
 				board[i][j] = k + '';
 				if (solveSudoku(board)) return true; // 期盼在某一个递归树的分支填满了 立即返回
-				board[i][j] = '.';
+				board[i][j] = '.'; // 标准回溯
 			}
 			return false; // 9个数都试过了不行 返回false 当前棋盘找不到解决数独问题的解
 		}
@@ -30,13 +30,13 @@ var solveSudoku = function (board) {
 };
 
 function isValid(board, row, col, k) {
-	const startX = Math.floor(row / 3) * 3;
-	const startY = Math.floor(col / 3) * 3;
-	// 判断同行及同列是否有重复
-	for (let i = 0; i < 9; i++) {
-		if (board[row][i] === k || board[i][col] === k) return false;
-	}
-	// 判断九宫格里是否有重复
+	const startX = Math.floor(row / 3) * 3; // 3x3 宫格的起始行
+	const startY = Math.floor(col / 3) * 3; // 3x3 宫格的起始列
+	// 检查当前行是否有重复的数字 k
+	for (let i = 0; i < 9; i++) if (board[row][i] === k) return false;
+	// 检查当前列是否有重复的数字 k
+	for (let i = 0; i < 9; i++) if (board[i][col] === k) return false;
+	// 检查当前 3x3 宫格是否有重复的数字 k
 	for (let i = startX; i < startX + 3; i++) {
 		for (let j = startY; j < startY + 3; j++) {
 			if (board[i][j] === k) return false;

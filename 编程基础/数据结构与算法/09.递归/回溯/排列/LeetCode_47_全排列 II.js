@@ -6,25 +6,30 @@
  * @return {number[][]}
  */
 // 回溯 + 剪枝解法
-var permuteUnique = function (nums) {
-	nums.sort((a, b) => a - b);
-	return backtracking(nums);
-};
+function permuteUnique(nums) {
+	const result = [];
+	nums.sort((a, b) => a - b); // 排序，方便跳过重复元素
+	const used = new Array(nums.length).fill(false); // 记录元素是否被使用过
 
-function backtracking(nums, used = Array.from(nums.length), path = [], result = []) {
-	if (path.length === nums.length) {
-		result.push([...path]);
-		return;
+	function backtrack(path) {
+		if (path.length === nums.length) {
+			result.push([...path]); // 找到一个排列，加入结果
+			return;
+		}
+
+		for (let i = 0; i < nums.length; i++) {
+			// 如果当前元素已经被使用过，或者当前元素与前一个元素相同且前一个元素未被使用过，跳过
+			if (used[i] || (i > 0 && nums[i] === nums[i - 1] && !used[i - 1])) continue;
+
+			used[i] = true;
+			path.push(nums[i]);
+			backtrack(path);
+			path.pop(); // 标准回溯
+			used[i] = false; // 标准回溯
+		}
 	}
-	for (let i = 0; i < nums.length; i++) {
-		if (i > 0 && nums[i] === nums[i - 1] && !used[i - 1]) continue;
-		if (used[i]) continue;
-		path.push(nums[i]);
-		used[i] = true;
-		backtracking(nums, used, path, result);
-		path.pop();
-		used[i] = false;
-	}
+
+	backtrack([]);
 	return result;
 }
 

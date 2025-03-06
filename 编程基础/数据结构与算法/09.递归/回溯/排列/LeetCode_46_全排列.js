@@ -16,8 +16,8 @@ var permute = function (nums, used = Array.from(nums.length), path = [], result 
 		path.push(nums[i]);
 		used[i] = true;
 		permute(nums, used, path, result);
-		path.pop();
-		used[i] = false;
+		path.pop(); // 标准回溯
+		used[i] = false; // 标准回溯
 	}
 	return result;
 };

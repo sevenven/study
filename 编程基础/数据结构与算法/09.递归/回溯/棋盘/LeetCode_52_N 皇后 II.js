@@ -13,8 +13,8 @@ var totalNQueens = function (n, curRow = 0, solution = []) {
 	for (let j = 0; j < n; j++) {
 		if (solution.some((col, row) => j === col || curRow - j === row - col || curRow + j === row + col)) continue;
 		solution.push(j);
-		total += totalNQueens(n, curRow + 1, solution, total);
-		solution.pop();
+		total += totalNQueens(n, curRow + 1, solution, total); // curRow: 隐藏回溯
+		solution.pop(); // 标准回溯
 	}
 	return total;
 };
