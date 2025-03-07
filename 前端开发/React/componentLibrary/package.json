@@ -1,32 +1,53 @@
 {
 	"name": "my-library",
 	"version": "1.0.0",
+	"description": "React component library with Ant Design",
 	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"files": [
-		"dist"
-	],
 	"scripts": {
-		"build": "webpack --config webpack.config.js",
+		"dev": "start-storybook -p 6006",
+		"build": "webpack --config config/webpack.prod.js",
 		"generate-dts": "node generate-dts.js",
-		"prepare": "pnpm build && pnpm generate-dts"
+		"buildwithts": "pnpm build && pnpm generate-dts",
+		"test": "jest",
+		"test:watch": "jest --watch"
 	},
 	"author": "seven",
 	"license": "ISC",
-	"peerDependencies": {
+	"dependencies": {
 		"antd": "4.24.16",
+		"classnames": "2.3.2",
+		"dts-bundle-generator": "9.5.1",
 		"react": "17.0.2",
 		"react-dom": "17.0.2"
 	},
 	"devDependencies": {
+		"@babel/core": "7.26.8",
+		"@babel/preset-env": "7.21.5",
+		"@babel/preset-react": "7.18.6",
+		"@babel/preset-typescript": "7.21.5",
+		"@storybook/addon-essentials": "6.5.16",
+		"@storybook/react": "6.5.16",
+		"@testing-library/jest-dom": "5.16.5",
+		"@testing-library/react": "11.2.7",
+		"@types/classnames": "2.3.1",
+		"@types/jest": "26.0.24",
+		"@types/node": "14.18.63",
 		"@types/react": "17.0.83",
 		"@types/react-dom": "17.0.26",
-		"css-loader": "5.2.7",
-		"dts-bundle-generator": "^9.5.1",
-		"style-loader": "2.0.0",
-		"ts-loader": "8.4.0",
+		"@types/testing-library__jest-dom": "5.14.5",
+		"babel-jest": "26.6.3",
+		"babel-loader": "8.4.1",
+		"css-loader": "4.3.0",
+		"html-webpack-plugin": "4.5.2",
+		"jest": "26.6.3",
+		"less": "4.2.2",
+		"less-loader": "7.3.0",
+		"style-loader": "1.3.0",
+		"ts-jest": "26.5.6",
 		"typescript": "4.9.5",
 		"webpack": "4.47.0",
-		"webpack-cli": "3.3.12"
+		"webpack-cli": "3.3.12",
+		"webpack-dev-server": "3.11.3",
+		"webpack-merge": "4.1.5"
 	}
 }
