@@ -1,3 +1,6 @@
+const merge = require('webpack-merge');
+const commonConfig = require('../config/webpack.common.js');
+
 module.exports = {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'], // 配置 Storybook 要加载的故事文件
 	// 配置 Storybook 插件系统
@@ -9,24 +12,11 @@ module.exports = {
 	// Webpack 最终配置扩展函数
 	// 用于自定义 Storybook 的 Webpack 配置
 	webpackFinal: async config => {
-		config.module.rules.push({
-			test: /\.less$/,
-			use: [
-				'style-loader',
-				'css-loader',
-				{
-					loader: 'less-loader',
-					options: {
-						lessOptions: {
-							// 启用 JavaScript 表达式解析（Ant Design 等库需要）
-							// 允许在 LESS 中使用类似 @color: `function(){}` 的 JS 表达式
-							javascriptEnabled: true
-						}
-					}
-				}
-			]
+		// 合并项目的通用 webpack 配置
+		const mergedConfig = merge(config, {
+			module: commonConfig.module,
+			resolve: commonConfig.resolve
 		});
-
-		return config;
+		return mergedConfig;
 	}
 };
