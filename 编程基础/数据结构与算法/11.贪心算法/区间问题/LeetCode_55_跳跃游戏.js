@@ -8,11 +8,13 @@
  */
 // 时间复杂度O(n) 空间复杂度O(1)
 var canJump = function (nums) {
-	var lastPos = nums.length - 1;
-	for (var i = nums.length - 2; i >= 0; i--) {
-		if (i + nums[i] >= lastPos) lastPos = i;
+	let maxReach = 0; // 一开始的时候在起点
+	for (let i = 0; i <= nums.length - 1; i++) {
+		if (i > maxReach) return false; // 当前位置i超过了maxReach，说明无法继续前进
+		maxReach = Math.max(maxReach, i + nums[i]); // 当前能到达的最远位置
+		if (maxReach >= nums.length - 1) return true; // 如果【当前能到达的最远位置 >= 数组的最后一个位置】 说明可以到达终点，返回true
 	}
-	return lastPos === 0;
+	return false; // 如果遍历结束后仍未到达终点，返回false
 };
 
 console.log(canJump([2, 3, 1, 1, 4])); // true

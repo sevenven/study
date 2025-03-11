@@ -9,40 +9,22 @@
  * @param {number[]} nums
  * @return {number}
  */
-// 时间复杂度O(n^2) 空间复杂度O(1)
-var jump = function (nums) {
-	var lastPos = nums.length - 1,
-		steps = 0;
-	while (lastPos != 0) {
-		for (var i = 0; i < lastPos; i++) {
-			if (nums[i] + i >= lastPos) {
-				lastPos = i;
-				steps++;
-				break;
-			}
-		}
-	}
-	return steps;
-};
-
-/**
- * @param {number[]} nums
- * @return {number}
- */
 // 时间复杂度O(n) 空间复杂度O(1)
 var jump = function (nums) {
-	var len = nums.length - 1,
-		maxPos = 0,
-		end = 0,
-		steps = 0;
-	for (var i = 0; i < len; i++) {
-		maxPos = Math.max(maxPos, nums[i] + i);
-		if (i === end) {
-			end = maxPos;
-			steps++;
+	if (nums.length === 1) return 0; // 如果数组长度为1，不需要跳跃
+	let jumps = 0; // 跳跃次数
+	let curMaxReach = 0; // 当前跳跃能到达的最远位置
+	let nextMaxReach = 0; // 下一次跳跃能到达的最远位置
+	// 遍历数组（注意：最后一个位置不需要遍历，因为题目保证一定能到达）
+	for (let i = 0; i <= nums.length - 2; i++) {
+		nextMaxReach = Math.max(nextMaxReach, i + nums[i]); // 更新下一步能到达的最远位置
+		// 如果到达当前能到达的最远位置，必须进行一次跳跃
+		if (i === curMaxReach) {
+			jumps++;
+			curMaxReach = nextMaxReach;
 		}
 	}
-	return steps;
+	return jumps;
 };
 
 console.log(jump([2, 3, 1, 1, 4])); // 2

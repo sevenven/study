@@ -7,7 +7,15 @@
  * @return {number}
  */
 // 时间复杂度O(n) 空间复杂度O(1)
-var maxSubArray = function (nums) {};
+var maxSubArray = function (nums) {
+	let maxSum = nums[0]; // 记录全局最大和
+	let currentSum = nums[0]; // 记录当前连续子数组的和
+	for (let i = 1; i < nums.length; i++) {
+		currentSum = Math.max(nums[i], currentSum + nums[i]); // 贪心的关键：如果currentSum为负数，那么放弃前面的和重新开始
+		maxSum = Math.max(maxSum, currentSum); // 更新全局最大和
+	}
+	return maxSum;
+};
 
 console.log(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])); // 6
 console.log(maxSubArray([1])); // 1
