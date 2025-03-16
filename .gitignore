@@ -1,24 +1,33 @@
-# 依赖
-node_modules/
+# 依赖目录
+/node_modules
+/.pnpm-store
+/.yarn
+/.pnp
+/.yarn/cache
+/.yarn/unplugged
+/.yarn/build-state.yml
+/.yarn/install-state.gz
+/.yarn/berry/cache
 
-# local env files
-.env.local
-.env.*.local
+# 构建输出目录
+/dist
+/build
+/out
+/.next
+/.nuxt
+/.output
 
-# Log files
+# 日志文件
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Editor directories and files
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
+# 其他
+.DS_Store
 cankaoziliao/
-dist/
+
+
+
 

@@ -1,0 +1,13 @@
+{
+	"name": "@npm/core",
+	"version": "1.0.0",
+	"main": "src/index.js",
+	"bin": "bin/index.js",
+	"scripts": {},
+	"dependencies": {
+		"@npm/utils": "1.0.0",
+		"commander": "11.0.0"
+	},
+	"author": "seven",
+	"license": "ISC"
+}

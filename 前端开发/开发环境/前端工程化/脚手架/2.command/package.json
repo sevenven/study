@@ -1,0 +1,12 @@
+{
+	"$schema": "http://json.schemastore.org/package",
+	"name": "cmd",
+	"version": "1.0.0",
+	"description": "命令注册&参数解析",
+	"main": "index.js",
+	"bin": "bin/index.js",
+	"keywords": [],
+	"author": "seven",
+	"license": "ISC",
+	"packageManager": "pnpm@10.5.2"
+}

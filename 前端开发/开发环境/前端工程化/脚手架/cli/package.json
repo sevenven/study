@@ -1,13 +1,11 @@
 {
-	"name": "npm",
+	"name": "cli",
 	"version": "1.0.0",
 	"main": "index.js",
 	"author": "seven",
 	"license": "ISC",
-	"description": "lerna + npm 实现一个简单的monorepo项目",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
+	"description": "cli",
+	"scripts": {},
 	"workspaces": [
 		"packages/*"
 	],
