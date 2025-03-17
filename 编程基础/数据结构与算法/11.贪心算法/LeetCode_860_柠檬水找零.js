@@ -10,20 +10,25 @@
  */
 // 时间复杂度O(n) 空间复杂度O(1)
 var lemonadeChange = function (bills) {
-	var five = 0,
-		ten = 0;
+	var five = 0, // 5美元的数量
+		ten = 0; // 10美元的数量
 	for (bill of bills) {
 		if (bill === 5) {
+			// 收到5美元
 			five++;
 		} else if (bill === 10) {
+			// 收到10美元
 			if (five <= 0) return false;
 			five--;
 			ten++;
 		} else {
+			// 收到20美元
 			if (ten > 0 && five > 0) {
+				// 优先使用10+5组合
 				ten--;
 				five--;
 			} else if (five >= 3) {
+				// 其次使用5+5+5组合
 				five -= 3;
 			} else {
 				return false;

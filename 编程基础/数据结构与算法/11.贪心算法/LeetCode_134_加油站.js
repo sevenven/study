@@ -11,7 +11,24 @@
  * @return {number}
  */
 // 时间复杂度O(n) 空间复杂度O(1)
-var canCompleteCircuit = function (gas, cost) {};
+var canCompleteCircuit = function (gas, cost) {
+	let start = 0; // 起始位置
+	let curSum = 0; // 当前累计剩余油量
+	let totalSum = 0; // 总剩余油量
+
+	for (let i = 0; i < gas.length; i++) {
+		curSum += gas[i] - cost[i];
+		totalSum += gas[i] - cost[i];
+
+		if (curSum < 0) {
+			// 当前累计剩余油量小于0
+			start = i + 1; // 将起点设为下一个加油站
+			curSum = 0; // 重置当前累计剩余油量
+		}
+	}
+
+	return totalSum >= 0 ? start : -1;
+};
 
 console.log(canCompleteCircuit([1, 2, 3, 4, 5], [3, 4, 5, 1, 2])); // 3
 console.log(canCompleteCircuit([2, 3, 4], [3, 4, 3])); // -1

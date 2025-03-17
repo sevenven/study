@@ -1,18 +1,18 @@
 # 依赖目录
-/node_modules
-/.pnpm-store
-/.yarn
-/.pnp
-/.yarn/cache
-/.yarn/unplugged
-/.yarn/build-state.yml
-/.yarn/install-state.gz
-/.yarn/berry/cache
+node_modules/
+.pnpm-store/
+.yarn/
+.pnp/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn/berry/cache/
 
 # 构建输出目录
-/dist
-/build
-/out
+dist/
+build/
+out/
 /.next
 /.nuxt
 /.output

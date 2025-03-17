@@ -8,4 +8,20 @@
  * @param {number[][]} people
  * @return {number[][]}
  */
-var reconstructQueue = function (people) {};
+var reconstructQueue = function (people) {
+	// 1. 按身高h降序、k升序排序
+	people.sort((a, b) => {
+		if (a[0] !== b[0]) {
+			return b[0] - a[0]; // 身高降序
+		}
+		return a[1] - b[1]; // k升序
+	});
+
+	// 2. 按照k为下标插入
+	const result = [];
+	for (const person of people) {
+		result.splice(person[1], 0, person);
+	}
+
+	return result;
+};

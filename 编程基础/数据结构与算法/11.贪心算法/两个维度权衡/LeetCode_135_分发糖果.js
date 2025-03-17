@@ -9,4 +9,24 @@
  * @param {number[]} ratings
  * @return {number}
  */
-var candy = function (ratings) {};
+var candy = function (ratings) {
+	const n = ratings.length;
+	const candies = new Array(n).fill(1); // 初始每人分配1个糖果
+
+	// 从左向右遍历，保证右边评分高的孩子比左边的糖果多
+	for (let i = 1; i < n; i++) {
+		if (ratings[i] > ratings[i - 1]) {
+			candies[i] = candies[i - 1] + 1;
+		}
+	}
+
+	// 从右向左遍历，保证左边评分高的孩子比右边的糖果多
+	for (let i = n - 2; i >= 0; i--) {
+		if (ratings[i] > ratings[i + 1]) {
+			candies[i] = Math.max(candies[i], candies[i + 1] + 1);
+		}
+	}
+
+	// 计算总糖果数
+	return candies.reduce((sum, num) => sum + num, 0);
+};

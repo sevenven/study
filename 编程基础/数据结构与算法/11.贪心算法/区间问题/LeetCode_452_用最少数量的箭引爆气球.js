@@ -10,7 +10,26 @@
  * @return {number}
  */
 // 时间复杂度O(nlogn) 空间复杂度O(1)
-var findMinArrowShots = function (points) {};
+var findMinArrowShots = function (points) {
+	if (points.length === 0) return 0;
+
+	// 按照气球右边界升序排序
+	points.sort((a, b) => a[1] - b[1]);
+
+	let arrows = 1; // 至少需要一支箭
+	let lastEnd = points[0][1]; // 记录上一个气球的右边界
+
+	for (let i = 1; i < points.length; i++) {
+		// 如果当前气球的左边界大于上一个气球的右边界
+		// 说明需要新增一支箭
+		if (points[i][0] > lastEnd) {
+			arrows++;
+			lastEnd = points[i][1];
+		}
+	}
+
+	return arrows;
+};
 
 console.log(
 	findMinArrowShots([
