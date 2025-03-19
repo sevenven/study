@@ -9,7 +9,7 @@
  * @param {number[]} s - 饼干的尺寸数组
  * @return {number}
  */
-// 时间复杂度O(n) 空间复杂度O(1)
+// 时间复杂度O(nlogn) 空间复杂度O(1)
 var findContentChildren = function (g, s) {
 	// 将孩子的胃口值和饼干的尺寸升序排序
 	g.sort((a, b) => a - b);
@@ -29,3 +29,9 @@ var findContentChildren = function (g, s) {
 
 console.log(findContentChildren([1, 2], [1, 2, 3])); // 2
 console.log(findContentChildren([10, 9, 8, 7], [5, 6, 7, 8])); // 2
+// 测试用例3：没有饼干的情况
+console.log(findContentChildren([1, 2, 3], [])); // 输出: 0
+// 测试用例4：没有孩子的情况
+console.log(findContentChildren([], [1, 2, 3])); // 输出: 0
+// 测试用例5：饼干都太小的情况
+console.log(findContentChildren([7, 8, 9, 10], [1, 2, 3, 4])); // 输出: 0

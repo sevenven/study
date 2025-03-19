@@ -18,11 +18,11 @@ var wiggleMaxLength = function (nums) {
 	let result = 1; // 记录峰值的个数
 	// 遍历数组，寻找峰值
 	for (let i = 1; i < nums.length; i++) {
-		curDiff = nums[i + 1] - nums[i]; // 计算当前差值
+		curDiff = nums[i] - nums[i - 1]; // 计算当前差值
 		// 出现峰值或谷值的情况：
-		// 1. preDiff <= 0 且 curDiff > 0 说明出现波峰
-		// 2. preDiff >= 0 且 curDiff < 0 说明出现波谷
-		// 注意：当preDiff为0时，是序列的起始位置，需要记录
+		// 1. preDiff < 0 且 curDiff > 0 说明出现波峰
+		// 2. preDiff > 0 且 curDiff < 0 说明出现波谷
+		// tips：当preDiff为0时，是序列的起始位置，需要判断
 		if ((preDiff <= 0 && curDiff > 0) || (preDiff >= 0 && curDiff < 0)) {
 			result++;
 			preDiff = curDiff; // 只有在出现峰值时才更新preDiff，这样可以避免连续相同的差值的情况
@@ -30,3 +30,15 @@ var wiggleMaxLength = function (nums) {
 	}
 	return result;
 };
+
+// 测试用例1
+console.log(wiggleMaxLength([1, 7, 4, 9, 2, 5])); // 输出: 6
+// 测试用例2
+console.log(wiggleMaxLength([1, 17, 5, 10, 13, 15, 10, 5, 16, 8])); // 输出: 7
+// 测试用例3：处理相等元素
+console.log(wiggleMaxLength([1, 2, 2, 2, 1])); // 输出: 2
+// 测试用例4：单调序列
+console.log(wiggleMaxLength([1, 2, 3, 4, 5])); // 输出: 2
+// 测试用例5：空序列和单个元素
+console.log(wiggleMaxLength([])); // 输出: 0
+console.log(wiggleMaxLength([1])); // 输出: 1

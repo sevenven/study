@@ -18,5 +18,11 @@ var maxSubArray = function (nums) {
 };
 
 console.log(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])); // 6
-console.log(maxSubArray([1])); // 1
-console.log(maxSubArray([5, 4, -1, 7, 8])); // 23
+// 示例2：全是正数
+console.log(maxSubArray([1, 2, 3, 4, 5])); // 输出: 15
+// 示例3：全是负数
+console.log(maxSubArray([-1, -2, -3, -4])); // 输出: -1
+// 示例4：有0的情况
+console.log(maxSubArray([-2, 0, -1])); // 输出: 0
+// 示例5：单个元素
+console.log(maxSubArray([5])); // 输出: 5

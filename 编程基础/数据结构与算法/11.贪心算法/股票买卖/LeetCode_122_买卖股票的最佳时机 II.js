@@ -9,7 +9,7 @@
  */
 // 时间复杂度O(n) 空间复杂度O(1)
 var maxProfit = function (prices) {
-	if (prices.length <= 1) return 0;
+	if (prices.length < 2) return 0;
 	let totalProfit = 0;
 	// 遍历价格数组，寻找所有上涨的区间
 	for (let i = 1; i < prices.length; i++) {
@@ -21,5 +21,12 @@ var maxProfit = function (prices) {
 };
 
 console.log(maxProfit([7, 1, 5, 3, 6, 4])); // 7
-console.log(maxProfit([7, 6, 4, 3, 1])); // 0
-console.log(maxProfit([])); // 0
+// 示例2：连续上涨
+console.log(maxProfit([1, 2, 3, 4, 5])); // 输出: 4
+// 示例3：连续下跌
+console.log(maxProfit([5, 4, 3, 2, 1])); // 输出: 0
+// 示例4：波动上涨
+console.log(maxProfit([1, 2, 1, 4, 3, 5])); // 输出: 6
+// 示例5：边界情况
+console.log(maxProfit([])); // 输出: 0
+console.log(maxProfit([1])); // 输出: 0

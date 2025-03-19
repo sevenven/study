@@ -11,20 +11,29 @@
  */
 // 时间复杂度O(n) 空间复杂度O(1)
 var jump = function (nums) {
-	if (nums.length === 1) return 0; // 如果数组长度为1，不需要跳跃
-	let jumps = 0; // 跳跃次数
-	let curMaxReach = 0; // 当前跳跃能到达的最远位置
-	let nextMaxReach = 0; // 下一次跳跃能到达的最远位置
-	// 遍历数组（注意：最后一个位置不需要遍历，因为题目保证一定能到达）
-	for (let i = 0; i <= nums.length - 2; i++) {
-		nextMaxReach = Math.max(nextMaxReach, i + nums[i]); // 更新下一步能到达的最远位置
-		// 如果到达当前能到达的最远位置，必须进行一次跳跃
-		if (i === curMaxReach) {
-			jumps++;
-			curMaxReach = nextMaxReach;
+	if (nums.length <= 1) return 0;
+
+	let curCover = 0;
+	let maxCover = 0;
+	let step = 0;
+
+	for (let i = 0; i <= maxCover; i++) {
+		maxCover = Math.max(maxCover, i + nums[i]);
+		if (i === curCover) {
+			step++;
+			curCover = maxCover;
+			if (maxCover >= nums.length - 1) return step;
 		}
 	}
-	return jumps;
 };
 
-console.log(jump([2, 3, 1, 1, 4])); // 2
+// 测试用例1：标准情况
+console.log(jump([2, 3, 1, 1, 4])); // 输出: 2
+// 测试用例2：刚好到达
+console.log(jump([3, 2, 1])); // 输出: 1
+// 测试用例3：大跳跃
+console.log(jump([1, 2, 3, 4, 5])); // 输出: 3
+// 测试用例4：单元素
+console.log(jump([0])); // 输出: 0
+// 测试用例5：最小跳跃
+console.log(jump([1, 1, 1, 1])); // 输出: 3

@@ -8,15 +8,29 @@
  */
 // 时间复杂度O(n) 空间复杂度O(1)
 var canJump = function (nums) {
-	let maxReach = 0; // 一开始的时候在起点
-	for (let i = 0; i <= nums.length - 1; i++) {
-		if (i > maxReach) return false; // 当前位置i超过了maxReach，说明无法继续前进
-		maxReach = Math.max(maxReach, i + nums[i]); // 当前能到达的最远位置
-		if (maxReach >= nums.length - 1) return true; // 如果【当前能到达的最远位置 >= 数组的最后一个位置】 说明可以到达终点，返回true
+	if (nums.length === 1) return true; // 单个元素的情况
+
+	let cover = 0; // 当前能覆盖的最远距离
+
+	// 只需要遍历到当前覆盖范围
+	for (let i = 0; i <= cover; i++) {
+		// 更新最远覆盖范围
+		cover = Math.max(cover, i + nums[i]);
+
+		// 如果覆盖范围已经可以到达终点，直接返回true
+		if (cover >= nums.length - 1) return true;
 	}
-	return false; // 如果遍历结束后仍未到达终点，返回false
+
+	return false; // 无法到达终点
 };
 
-console.log(canJump([2, 3, 1, 1, 4])); // true
-console.log(canJump([3, 2, 1, 0, 4])); // false
-console.log(canJump([2, 0])); // true
+// 示例1：可以到达终点
+console.log(canJump([2, 3, 1, 1, 4])); // 输出: true
+// 示例2：无法到达终点
+console.log(canJump([3, 2, 1, 0, 4])); // 输出: false
+// 示例3：单个元素
+console.log(canJump([0])); // 输出: true
+// 示例4：全零数组（除第一个元素外）
+console.log(canJump([2, 0, 0, 0])); // 输出: false
+// 示例5：刚好能到达终点
+console.log(canJump([1, 1, 1, 1])); // 输出: true
