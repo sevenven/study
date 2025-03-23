@@ -1,15 +1,16 @@
 {
 	"name": "cli",
 	"version": "1.0.0",
-	"main": "index.js",
-	"author": "seven",
-	"license": "ISC",
-	"description": "cli",
-	"scripts": {},
+	"private": true,
 	"workspaces": [
-		"packages/*"
+		"core",
+		"commands",
+		"models",
+		"utils"
 	],
-	"devDependencies": {
-		"lerna": "^7.4.2"
+	"dependencies": {
+		"import-local": "^3.2.0",
+		"npmlog": "^7.0.1",
+		"root-check": "^2.0.0"
 	}
 }
