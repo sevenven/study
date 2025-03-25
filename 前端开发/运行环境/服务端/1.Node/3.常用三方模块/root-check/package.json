@@ -1,0 +1,8 @@
+{
+	"name": "root-check-demo",
+	"version": "1.0.0",
+	"type": "module",
+	"dependencies": {
+		"root-check": "^2.0.0"
+	}
+}

@@ -1,0 +1,17 @@
+@prefixCls: base-button;
+
+.@{prefixCls} {
+  border-radius: 2px;
+
+  &.ant-btn-primary {
+    background: var(--color);
+    border-color: var(--color);
+
+    &:hover,
+    &:focus {
+      color: #fff;
+      background: var(--hover-color);
+      border-color: var(--hover-color);
+    }
+  }
+}

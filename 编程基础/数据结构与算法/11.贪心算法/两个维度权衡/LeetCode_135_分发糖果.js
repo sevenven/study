@@ -30,3 +30,38 @@ var candy = function (ratings) {
 	// 计算总糖果数
 	return candies.reduce((sum, num) => sum + num, 0);
 };
+
+// 测试用例
+const testCases = [
+	{
+		ratings: [1, 0, 2],
+		expected: 5, // 分配方案：[2,1,2]
+		description: '三个孩子，中间评分最低'
+	},
+	{
+		ratings: [1, 2, 2],
+		expected: 4, // 分配方案：[1,2,1]
+		description: '三个孩子，后两个评分相同'
+	},
+	{
+		ratings: [1, 3, 2, 2, 1],
+		expected: 7, // 分配方案：[1,3,2,1,1]
+		description: '五个孩子，有相同评分'
+	},
+	{
+		ratings: [1, 2, 87, 87, 87, 2, 1],
+		expected: 13, // 分配方案：[1,2,3,3,3,2,1]
+		description: '中间有连续相同的高分'
+	}
+];
+
+// 运行测试
+testCases.forEach((test, index) => {
+	const result = candy(test.ratings);
+	console.log(`测试用例 ${index + 1}: ${test.description}`);
+	console.log(`输入: ratings = [${test.ratings}]`);
+	console.log(`预期输出: ${test.expected}`);
+	console.log(`实际输出: ${result}`);
+	console.log(`结果: ${result === test.expected ? '通过' : '失败'}`);
+	console.log('------------------------');
+});

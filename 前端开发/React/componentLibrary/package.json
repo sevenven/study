@@ -4,6 +4,8 @@
 	"description": "React component library with Ant Design",
 	"main": "dist/index.js",
 	"scripts": {
+		"start": "dumi dev",
+		"build:dumi": "dumi build",
 		"dev": "start-storybook -p 6006",
 		"build": "webpack --config config/webpack.prod.js",
 		"generate-dts": "node generate-dts.js",
@@ -37,7 +39,9 @@
 		"@types/testing-library__jest-dom": "5.14.5",
 		"babel-jest": "26.6.3",
 		"babel-loader": "8.4.1",
+		"babel-plugin-import": "1.13.8",
 		"css-loader": "4.3.0",
+		"dumi": "1.1.54",
 		"html-webpack-plugin": "4.5.2",
 		"jest": "26.6.3",
 		"less": "4.2.2",

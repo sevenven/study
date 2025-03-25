@@ -1,0 +1,11 @@
+{
+	"name": "import-local",
+	"version": "1.0.0",
+	"bin": {
+		"import-local": "bin\\index.js"
+	},
+	"license": "ISC",
+	"dependencies": {
+		"import-local": "^3.2.0"
+	}
+}

@@ -20,8 +20,8 @@ var canCompleteCircuit = function (gas, cost) {
 		curSum += gas[i] - cost[i];
 		totalSum += gas[i] - cost[i];
 
+		// 当前累计剩余油量小于0
 		if (curSum < 0) {
-			// 当前累计剩余油量小于0
 			start = i + 1; // 将起点设为下一个加油站
 			curSum = 0; // 重置当前累计剩余油量
 		}
@@ -30,5 +30,35 @@ var canCompleteCircuit = function (gas, cost) {
 	return totalSum >= 0 ? start : -1;
 };
 
-console.log(canCompleteCircuit([1, 2, 3, 4, 5], [3, 4, 5, 1, 2])); // 3
-console.log(canCompleteCircuit([2, 3, 4], [3, 4, 3])); // -1
+// 测试用例
+const testCases = [
+	{
+		gas: [1, 2, 3, 4, 5],
+		cost: [3, 4, 5, 1, 2],
+		expected: 3,
+		description: '从位置3出发可以绕一圈'
+	},
+	{
+		gas: [2, 3, 4],
+		cost: [3, 4, 3],
+		expected: -1,
+		description: '无法绕一圈'
+	},
+	{
+		gas: [5, 1, 2, 3, 4],
+		cost: [4, 4, 1, 5, 1],
+		expected: 4,
+		description: '从位置4出发可以绕一圈'
+	}
+];
+
+// 运行测试
+testCases.forEach((test, index) => {
+	const result = canCompleteCircuit(test.gas, test.cost);
+	console.log(`测试用例 ${index + 1}: ${test.description}`);
+	console.log(`输入: gas = [${test.gas}], cost = [${test.cost}]`);
+	console.log(`预期输出: ${test.expected}`);
+	console.log(`实际输出: ${result}`);
+	console.log(`结果: ${result === test.expected ? '通过' : '失败'}`);
+	console.log('------------------------');
+});

@@ -1,0 +1,11 @@
+{
+	"name": "npmlog",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {},
+	"author": "seven",
+	"license": "ISC",
+	"dependencies": {
+		"npmlog": "^7.0.1"
+	}
+}
