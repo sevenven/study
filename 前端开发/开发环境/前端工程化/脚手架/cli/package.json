@@ -9,8 +9,14 @@
 		"utils"
 	],
 	"dependencies": {
-		"import-local": "^3.2.0",
-		"npmlog": "^7.0.1",
-		"root-check": "^2.0.0"
+		"axios": "1.4.0",
+		"colors": "1.4.0",
+		"dotenv": "16.0.3",
+		"import-local": "3.2.0",
+		"minimist": "1.2.8",
+		"npmlog": "7.0.1",
+		"root-check": "2.0.0",
+		"semver": "7.5.4",
+		"url-join": "4.0.1"
 	}
 }

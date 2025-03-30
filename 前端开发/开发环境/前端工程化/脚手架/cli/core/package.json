@@ -1,9 +1,7 @@
 {
 	"name": "@cli/core",
 	"version": "1.0.0",
-	"bin": {
-		"cli": "bin/index.js"
-	},
+	"bin": "bin/index.js",
 	"dependencies": {
 		"@cli/utils": "workspace:*"
 	}

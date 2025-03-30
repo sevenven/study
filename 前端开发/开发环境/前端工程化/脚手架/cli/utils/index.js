@@ -1,5 +1,7 @@
 const log = require('./log');
+const npmUtils = require('./npm');
 
 module.exports = {
-	log
+	log,
+	npmUtils
 };
