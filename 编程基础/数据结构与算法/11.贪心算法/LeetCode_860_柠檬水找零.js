@@ -38,5 +38,33 @@ var lemonadeChange = function (bills) {
 	return true;
 };
 
-console.log(lemonadeChange([5, 5, 5, 10, 20]));
-console.log(lemonadeChange([5, 5, 10, 10, 20]));
+// 测试用例
+const testCases = [
+	{
+		bills: [5, 5, 5, 10, 20], // 正常情况，应该返回 true
+		expected: true
+	},
+	{
+		bills: [5, 5, 10, 10, 20], // 没有足够的5美元，应该返回 false
+		expected: false
+	},
+	{
+		bills: [10, 10], // 一开始就没有5美元找零，应该返回 false
+		expected: false
+	},
+	{
+		bills: [5, 5, 10, 20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 10, 5, 5, 20, 5, 20, 5], // 复杂情况，应该返回 true
+		expected: true
+	}
+];
+
+// 运行测试
+testCases.forEach((test, index) => {
+	const result = lemonadeChange(test.bills);
+	console.log(`测试用例 ${index + 1}:`);
+	console.log(`输入: [${test.bills.join(',')}]`);
+	console.log(`预期输出: ${test.expected}`);
+	console.log(`实际输出: ${result}`);
+	console.log(`结果: ${result === test.expected ? '通过' : '失败'}`);
+	console.log('------------------------');
+});

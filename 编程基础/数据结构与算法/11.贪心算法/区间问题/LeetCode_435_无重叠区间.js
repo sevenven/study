@@ -29,24 +29,70 @@ var eraseOverlapIntervals = function (intervals) {
 	return count;
 };
 
-console.log(
-	eraseOverlapIntervals([
-		[1, 2],
-		[2, 3],
-		[3, 4],
-		[1, 3]
-	])
-); // 1
-console.log(
-	eraseOverlapIntervals([
-		[1, 2],
-		[1, 2],
-		[1, 2]
-	])
-); // 2
-console.log(
-	eraseOverlapIntervals([
-		[1, 2],
-		[2, 3]
-	])
-); // 0
+// 测试用例
+const testCases = [
+	{
+		intervals: [
+			[1, 2],
+			[2, 3],
+			[3, 4],
+			[1, 3]
+		],
+		expected: 1,
+		description: '移除[1,3]后，其他区间互不重叠'
+	},
+	{
+		intervals: [
+			[1, 2],
+			[1, 2],
+			[1, 2]
+		],
+		expected: 2,
+		description: '三个相同区间，需要移除两个'
+	},
+	{
+		intervals: [
+			[1, 4],
+			[2, 3],
+			[3, 6],
+			[1, 3]
+		],
+		expected: 2,
+		description: '复杂重叠情况，需要移除两个区间'
+	},
+	{
+		intervals: [
+			[1, 2],
+			[3, 4],
+			[5, 6]
+		],
+		expected: 0,
+		description: '已经互不重叠，不需要移除'
+	},
+	{
+		intervals: [],
+		expected: 0,
+		description: '空数组边界情况'
+	},
+	{
+		intervals: [
+			[1, 100],
+			[11, 22],
+			[1, 11],
+			[2, 12]
+		],
+		expected: 2,
+		description: '包含大区间的情况'
+	}
+];
+
+// 运行测试
+testCases.forEach((test, index) => {
+	const result = eraseOverlapIntervals(test.intervals);
+	console.log(`测试用例 ${index + 1}: ${test.description}`);
+	console.log('输入:', test.intervals);
+	console.log('预期输出:', test.expected);
+	console.log('实际输出:', result);
+	console.log('测试结果:', result === test.expected ? '通过' : '失败');
+	console.log('------------------------');
+});
