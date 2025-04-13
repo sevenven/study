@@ -4,55 +4,116 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-// const util = require('util');
 
 // 三方依赖
 const colors = require('colors/safe');
 const dotenv = require('dotenv');
-const minimist = require('minimist');
 const semver = require('semver');
+const commander = require('commander');
 
 // 项目依赖
 const pkg = require('../package.json');
 const { log, npmUtils } = require('@cli/utils');
 const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./constants');
+const { initProject } = require('@cli/commands');
+const exec = require('./exec');
 
-const args = minimist(process.argv.slice(2)); // 解析命令行参数
 const userHome = os.homedir(); // 获取用户主目录
+const program = new commander.Command();
 let config = {}; // 全局配置对象
 
 // 核心业务逻辑
 async function core() {
 	try {
-		// 初始化检查
-		checkPkgVersion();
-		checkNodeVersion();
-		await checkRoot();
-		checkUserHome();
-
-		// 参数和环境初始化
-		checkInputArgs();
-		await checkEnv();
-
-		// 更新检查
-		await checkGlobalUpdate();
-
-		// 环境变量输出
-		// log.verbose(
-		// 	util.inspect(process.env, {
-		// 		depth: 1, // 展开层级
-		// 		colors: true, // 启用颜色
-		// 		compact: false, // 展开对象
-		// 		sorted: true // 按键排序
-		// 	})
-		// );
+		registerCommand();
+		await program.parseAsync(process.argv); // 使用异步解析
 	} catch (error) {
 		log.error('命令执行失败', error.message);
+		process.exitCode = 1; // 标准化退出码设置
 		if (process.env.LOG_LEVEL === 'verbose') {
-			console.error(error);
+			console.error(error.stack); // 输出完整堆栈
 		}
-	} finally {
-		log.verbose('命令执行完成');
+	}
+}
+
+function registerCommand() {
+	// 命令注册前置配置
+	program
+		.name(pkg.name.split('/')[1])
+		.usage('<command> [options]') // 标准化选项写法
+		.version(pkg.version, '-v, --version', '输出版本号')
+		.helpOption('-h, --help', '显示帮助信息')
+		.option('-d, --debug', '开启调试模式', false)
+		.option('-tp, --targetPath <targetPath>', '指定本地调试目录', '')
+		.allowUnknownOption(false) // 禁止未知选项
+		.showHelpAfterError(); // 错误后显示帮助
+
+	// 调试选项处理
+	program.on('option:debug', function () {
+		if (this.opts().debug) {
+			process.env.LOG_LEVEL = 'verbose';
+			log.level = 'verbose';
+			log.verbose('调试模式已激活');
+		}
+	});
+
+	// init命令增强
+	program.command('init <project-name>').description('初始化新项目').option('-f, --force', '覆盖已有目录').action(exec);
+	// .action(async (projectName, options) => {
+	// 	try {
+	// 		// 合并全局选项和命令选项
+	// 		const globalOptions = program.opts();
+	// 		const commandOptions = {
+	// 			...options,
+	// 			targetPath: globalOptions.targetPath,
+	// 			debug: globalOptions.debug
+	// 		};
+
+	// 		// log.verbose('开始项目初始化', projectName);
+	// 		// log.verbose('命令选项：', commandOptions);
+	// 		await initProject(projectName, commandOptions);
+	// 	} catch (e) {
+	// 		log.error('项目初始化失败', e.message);
+	// 		process.exitCode = 1;
+	// 	}
+	// });
+
+	program.on('option:targetPath', function () {
+		const targetPath = this.opts().targetPath;
+		if (targetPath) {
+			process.env.CLI_TARGET_PATH = targetPath;
+		}
+	});
+
+	// 全局钩子优化
+	program
+		.hook('preAction', async command => {
+			try {
+				await sequentialCheck([checkPkgVersion, checkNodeVersion, checkUserHome, checkRoot, checkEnv, checkGlobalUpdate]);
+			} catch (e) {
+				log.error('前置检查失败', e.message);
+				command.error(e, { exitCode: 1 }); // 使用Commander错误处理
+			}
+		})
+		.hook('postAction', command => {
+			log.verbose(`命令 [${command.name()}] 执行完成`);
+		});
+
+	// 增强帮助信息
+	program.addHelpText(
+		'after',
+		`
+示例:
+  $ ${program.name()} init my-project
+  $ ${program.name()} init my-project --force
+  `
+	);
+}
+
+// 辅助函数：顺序执行检查
+async function sequentialCheck(checkList) {
+	for (const check of checkList) {
+		await (typeof check === 'function' ? check() : check);
 	}
 }
 
@@ -84,11 +145,6 @@ function checkUserHome() {
 	if (!userHome || !fs.existsSync(userHome)) {
 		throw new Error(colors.red('当前登录用户主目录不存在！'));
 	}
-}
-
-function checkInputArgs() {
-	process.env.LOG_LEVEL = args.debug ? 'verbose' : 'info';
-	log.level = process.env.LOG_LEVEL;
 }
 
 // 检查并加载环境变量

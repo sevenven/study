@@ -3,6 +3,8 @@
 	"version": "1.0.0",
 	"bin": "bin/index.js",
 	"dependencies": {
-		"@cli/utils": "workspace:*"
+		"@cli/utils": "workspace:*",
+		"@cli/commands": "workspace:*",
+		"@cli/models": "workspace:*"
 	}
 }
