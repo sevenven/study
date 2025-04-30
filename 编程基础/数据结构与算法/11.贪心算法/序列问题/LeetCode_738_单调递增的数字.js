@@ -8,28 +8,73 @@
  */
 // 时间复杂度O(n) 空间复杂度O(n)
 var monotoneIncreasingDigits = function (n) {
-	const strNum = n.toString().split('');
-	let flag = strNum.length; // 标记需要变为9的位置
+	if (n < 10) return n;
 
-	// 从右向左遍历
-	for (let i = strNum.length - 1; i > 0; i--) {
-		// 如果左边数字大于右边数字
-		if (strNum[i - 1] > strNum[i]) {
-			flag = i; // 记录位置
-			strNum[i - 1]--; // 左边数字减1
+	const digits = String(n).split('').map(Number);
+	let changeIndex = digits.length;
+
+	// 从右向左遍历，找到需要调整的位置
+	for (let i = digits.length - 1; i > 0; i--) {
+		if (digits[i - 1] > digits[i]) {
+			digits[i - 1]--;
+			changeIndex = i;
 		}
 	}
 
-	// 将flag位置及其右边的数字都变为9
-	for (let i = flag; i < strNum.length; i++) {
-		strNum[i] = '9';
+	// 填充9
+	for (let i = changeIndex; i < digits.length; i++) {
+		digits[i] = 9;
 	}
 
-	return parseInt(strNum.join(''));
+	return parseInt(digits.join(''), 10);
 };
 
-console.log(monotoneIncreasingDigits(332)); // 299
-console.log(monotoneIncreasingDigits(100)); // 99
-console.log(monotoneIncreasingDigits(1234)); // 1234
-console.log(monotoneIncreasingDigits(120)); // 119
-console.log(monotoneIncreasingDigits(543)); // 499
+// 测试用例
+const testCases = [
+	{
+		input: 10,
+		expected: 9,
+		description: '基本情况：需要将左边数字减1'
+	},
+	{
+		input: 1234,
+		expected: 1234,
+		description: '已经是单调递增的数字'
+	},
+	{
+		input: 332,
+		expected: 299,
+		description: '需要处理多位数字的情况'
+	},
+	{
+		input: 100,
+		expected: 99,
+		description: '包含0的情况'
+	},
+	{
+		input: 668841,
+		expected: 666999,
+		description: '复杂情况：需要多次调整'
+	},
+	{
+		input: 1000,
+		expected: 999,
+		description: '连续的0需要全部变为9'
+	},
+	{
+		input: 9,
+		expected: 9,
+		description: '单个数字的边界情况'
+	}
+];
+
+// 运行测试
+testCases.forEach((test, index) => {
+	const result = monotoneIncreasingDigits(test.input);
+	console.log(`测试用例 ${index + 1}: ${test.description}`);
+	console.log('输入:', test.input);
+	console.log('预期输出:', test.expected);
+	console.log('实际输出:', result);
+	console.log('测试结果:', result === test.expected ? '通过' : '失败');
+	console.log('------------------------');
+});

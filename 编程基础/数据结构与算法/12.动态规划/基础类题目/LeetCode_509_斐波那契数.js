@@ -18,14 +18,25 @@
 		5.填充dp表
 */
 var fib = function (n) {
-  // const MOD = 1000000007;
-  // const dp = [0, 1];
-  // for (let i = 2; i <= n; i++) dp[i] = (dp[i - 1] + dp[i - 2]) % MOD;
-  // return dp[n];
-  if (n < 2) return n;
-  const MOD = 1000000007;
-  let dp0 = 0,
-    dp1 = 1;
-  for (let i = 2; i <= n; i++) [dp0, dp1] = [dp1, (dp0 + dp1) % MOD];
-  return dp1;
+	// const MOD = 1000000007;
+	// const dp = [0, 1];
+	// for (let i = 2; i <= n; i++) dp[i] = (dp[i - 1] + dp[i - 2]) % MOD;
+	// return dp[n];
+	if (n < 2) return n;
+	const MOD = 1000000007; // 取模 防止数值溢出
+	let dp0 = 0,
+		dp1 = 1;
+	for (let i = 2; i <= n; i++) [dp0, dp1] = [dp1, (dp0 + dp1) % MOD];
+	return dp1;
 };
+
+// 测试用例
+console.log(fib(0)); // 0 (边界情况)
+console.log(fib(1)); // 1 (边界情况)
+console.log(fib(2)); // 1 (0+1)
+console.log(fib(3)); // 2 (1+1)
+console.log(fib(5)); // 5 (2+3)
+console.log(fib(10)); // 55
+console.log(fib(20)); // 6765
+console.log(fib(30)); // 832040 (测试较大数值)
+console.log(fib(45)); // 134903163 (测试大数值和模运算)

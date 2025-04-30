@@ -46,22 +46,68 @@ var minCameraCover = function (root) {
 	return result;
 };
 
-// 示例1：
-//     0
-//    / \
-//   0   0
-const root1 = new TreeNode(0);
-root1.left = new TreeNode(0);
-root1.right = new TreeNode(0);
-console.log(minCameraCover(root1)); // 输出：1
+// 测试用例
+const testCases = [
+	{
+		description: '基本情况：只有根节点',
+		tree: new TreeNode(0),
+		expected: 1
+	},
+	{
+		description: '简单树：一个父节点两个子节点',
+		tree: (() => {
+			const root = new TreeNode(0);
+			root.left = new TreeNode(0);
+			root.right = new TreeNode(0);
+			return root;
+		})(),
+		expected: 1
+	},
+	{
+		description: '链式结构：需要多个摄像头',
+		tree: (() => {
+			const root = new TreeNode(0);
+			root.left = new TreeNode(0);
+			root.left.left = new TreeNode(0);
+			root.left.left.left = new TreeNode(0);
+			return root;
+		})(),
+		expected: 2
+	},
+	{
+		description: '完全二叉树：三层',
+		tree: (() => {
+			const root = new TreeNode(0);
+			root.left = new TreeNode(0);
+			root.right = new TreeNode(0);
+			root.left.left = new TreeNode(0);
+			root.left.right = new TreeNode(0);
+			root.right.left = new TreeNode(0);
+			root.right.right = new TreeNode(0);
+			return root;
+		})(),
+		expected: 2
+	},
+	{
+		description: '不平衡树：左侧较深',
+		tree: (() => {
+			const root = new TreeNode(0);
+			root.left = new TreeNode(0);
+			root.right = new TreeNode(0);
+			root.left.left = new TreeNode(0);
+			root.left.left.left = new TreeNode(0);
+			return root;
+		})(),
+		expected: 2
+	}
+];
 
-// 示例2：
-//     0
-//    /
-//   0
-//  /
-// 0
-const root2 = new TreeNode(0);
-root2.left = new TreeNode(0);
-root2.left.left = new TreeNode(0);
-console.log(minCameraCover(root2)); // 输出：2
+// 运行测试
+testCases.forEach((test, index) => {
+	const result = minCameraCover(test.tree);
+	console.log(`测试用例 ${index + 1}: ${test.description}`);
+	console.log('预期输出:', test.expected);
+	console.log('实际输出:', result);
+	console.log('测试结果:', result === test.expected ? '通过' : '失败');
+	console.log('------------------------');
+});
