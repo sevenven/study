@@ -50,15 +50,15 @@ var climbStairs = function (n, caches = [0, 1, 2]) {
 		5.填充dp表 [1, 2, 3, 5, 8, 13, 21, 34, 55]
 */
 var climbStairs = function (n) {
-	const dp = [1, 2];
-	for (let i = 2; i < n; i++) dp[i] = dp[i - 1] + dp[i - 2];
-	return dp[n - 1];
+	const dp = [0, 1, 2];
+	for (let i = 3; i <= n; i++) dp[i] = dp[i - 1] + dp[i - 2];
+	return dp[n];
 	// 状态压缩
 	if (n <= 2) return n;
-	let dp0 = 1,
-		dp1 = 2;
-	for (let i = 2; i < n; i++) [dp0, dp1] = [dp1, dp0 + dp1];
-	return dp1;
+	let dp1 = 1,
+		dp2 = 2;
+	for (let i = 3; i <= n; i++) [dp1, dp2] = [dp2, dp1 + dp2];
+	return dp2;
 };
 
 // 变形1：爬楼梯最小代价

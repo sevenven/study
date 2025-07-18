@@ -1,6 +1,11 @@
 // https://leetcode-cn.com/problems/unique-paths/
+// 一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+// 机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+// 问总共有多少条不同的路径？
 
-// dp方程：dp[i, j] = dp[i, j-1] + dp[i-1, j]
+// 提示：
+// 1 <= m, n <= 100
+// 题目数据保证答案小于等于 2 * 10^9
 
 /**
  * @param {number} m
@@ -9,12 +14,12 @@
  */
 // 动态规划：时间复杂度O(m*n) 空间复杂度[O(m*n)|O(n)]
 /* 
-	动规五部曲
-		1.确定dp表及其下标的含义 从[0, 0]到[i, j]有多少种不同的路径
-		2.确定递推公式 dp[i, j] = dp[i - 1, j] + dp[i, j - 1]
-		3.dp表初始化 第一行&第一列初始化为1
-		4.确定遍历顺序 从上往下 从左往右 
-		5.填充dp表
+	动规五部曲 
+		1.确定dp表及其下标的含义：从[0, 0]到[i, j]有多少种不同的路径 
+		2.确定dp方程：dp[i, j] = dp[i - 1, j] + dp[i, j - 1]
+		3.dp表初始化 
+		4.确定遍历顺序：从上往下 从左往右 
+		5.填充dp表 
 */
 var uniquePaths = function (m, n) {
 	// const dp = Array.from({ length: m }, () => []);
@@ -36,5 +41,15 @@ var uniquePaths = function (m, n) {
 	return dp[n - 1];
 };
 
-console.log(uniquePaths(3, 2)); // 3
-console.log(uniquePaths(7, 3)); // 28
+// 边界情况：只有一行
+console.log(uniquePaths(1, 5)); // 输出: 1，因为只有一种方式可以走
+// 边界情况：只有一列
+console.log(uniquePaths(5, 1)); // 输出: 1，因为只有一种方式可以走
+// 边界情况：只有一个格子
+console.log(uniquePaths(1, 1)); // 输出: 1，起点和终点重合，只有一种方式
+// 常规情况：小的网格
+console.log(uniquePaths(3, 2)); // 输出: 3
+// 常规情况：中等大小的网格
+console.log(uniquePaths(3, 7)); // 输出: 28
+// 常规情况：更大的网格
+console.log(uniquePaths(5, 5)); // 输出: 70

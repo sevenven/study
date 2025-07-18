@@ -18,12 +18,13 @@
 		5.填充dp表
 */
 var fib = function (n) {
-	// const MOD = 1000000007;
+	// const MOD = 1000000007; // 取模 防止数值溢出
 	// const dp = [0, 1];
 	// for (let i = 2; i <= n; i++) dp[i] = (dp[i - 1] + dp[i - 2]) % MOD;
 	// return dp[n];
+	// 状态压缩 空间复杂度O(1)
 	if (n < 2) return n;
-	const MOD = 1000000007; // 取模 防止数值溢出
+	const MOD = 1e9 + 7; // 取模 防止数值溢出
 	let dp0 = 0,
 		dp1 = 1;
 	for (let i = 2; i <= n; i++) [dp0, dp1] = [dp1, (dp0 + dp1) % MOD];
