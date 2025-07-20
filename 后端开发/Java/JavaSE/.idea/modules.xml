@@ -3,8 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/JavaSE.iml" filepath="$PROJECT_DIR$/JavaSE.iml" />
-      <module fileurl="file://$PROJECT_DIR$/advance/advance.iml" filepath="$PROJECT_DIR$/advance/advance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/advanced/advanced.iml" filepath="$PROJECT_DIR$/advanced/advanced.iml" />
       <module fileurl="file://$PROJECT_DIR$/basic/basic.iml" filepath="$PROJECT_DIR$/basic/basic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/oop/oop.iml" filepath="$PROJECT_DIR$/oop/oop.iml" />
     </modules>
   </component>
 </project>
