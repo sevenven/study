@@ -1,7 +1,9 @@
 package commonlyUsedClasses;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class _Array {
     public static void main(String[] args) {
@@ -644,6 +646,224 @@ public class _Array {
         int[][] deepC = {{1, 2}, {4, 3}};
         System.out.println("\ndeepA equals deepB: " + Arrays.deepEquals(deepA, deepB));
         System.out.println("deepA equals deepC: " + Arrays.deepEquals(deepA, deepC));
+
+        // ===========================================
+        // 13. 数组中的常见异常
+        // ===========================================
+        /*
+         * 数组常见异常：
+         *   - ArrayIndexOutOfBoundsException: 数组索引越界
+         *   - NullPointerException: 空指针异常（操作未初始化的数组）
+         *   - NegativeArraySizeException: 数组大小为负数
+         *   - ArrayStoreException: 类型不匹配异常
+         */
+        System.out.println("\n13. 数组中的常见异常");
+
+        // 1. ArrayIndexOutOfBoundsException 数组索引越界异常
+        try {
+            int[] arr = {1, 2, 3};
+            System.out.println(arr[3]); // 尝试访问索引3，但最大索引为2
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("捕获到ArrayIndexOutOfBoundsException: " + e.getMessage());
+        }
+
+        // 2. NullPointerException 空指针异常
+        try {
+            int[] nullArr = null;
+            System.out.println(nullArr.length); // 尝试访问null数组的长度
+        } catch (NullPointerException e) {
+            System.out.println("\n捕获到NullPointerException: " + e.getMessage());
+        }
+
+        // 3. NegativeArraySizeException 负数组大小异常
+        try {
+            int[] negativeSizeArr = new int[-5]; // 尝试创建大小为负数的数组
+        } catch (NegativeArraySizeException e) {
+            System.out.println("\n捕获到NegativeArraySizeException: " + e.getMessage());
+        }
+
+        // 4. ArrayStoreException 数组存储异常
+        try {
+            Object[] _objArr = new String[3];
+            _objArr[0] = 123; // 尝试将Integer存入String数组
+        } catch (ArrayStoreException e) {
+            System.out.println("\n捕获到ArrayStoreException: " + e.getMessage());
+        }
+
+        // ===========================================
+        // 14. 数组使用的最佳实践
+        // ===========================================
+        /*
+         * 数组最佳实践：
+         *   - 始终检查数组索引是否越界
+         *   - 使用增强for循环简化遍历
+         *   - 优先使用Arrays工具类
+         *   - 考虑使用集合类代替数组（当需要动态大小时）
+         *   - 大型数组考虑使用并行操作
+         *   - 防御性编程：对可能为null的数组进行检查
+         */
+        System.out.println("\n14. 数组使用的最佳实践");
+
+        // 1. 安全的数组访问
+        int[] safeArr = {1, 2, 3, 4, 5};
+        int indexToAccess = 5;
+        if (indexToAccess >= 0 && indexToAccess < safeArr.length) {
+            System.out.println("安全访问元素: " + safeArr[indexToAccess]);
+        } else {
+            System.out.println("索引 " + indexToAccess + " 越界");
+        }
+
+        // 2. 使用增强for循环
+        System.out.println("\n使用增强for循环遍历:");
+        for (int num : safeArr) {
+            System.out.print(num + " ");
+        }
+        System.out.println();
+
+        // 3. 优先使用Arrays工具类
+        int[] unsorted = {5, 3, 1, 4, 2};
+        System.out.println("\n排序前: " + Arrays.toString(unsorted));
+        Arrays.sort(unsorted); // 使用Arrays.sort()而不是手动实现
+        System.out.println("排序后: " + Arrays.toString(unsorted));
+
+        // 4. 大型数组使用并行操作
+        int[] bigArray = new int[1000000];
+        Arrays.parallelSetAll(bigArray, i -> i * 2);
+        System.out.println("\n大型数组前5个元素: " +
+                Arrays.toString(Arrays.copyOf(bigArray, 5)));
+
+        // 5. 防御性编程：检查null
+        int[] possibleNullArray = getMaybeNullArray();
+        if (possibleNullArray != null) {
+            System.out.println("\n数组长度: " + possibleNullArray.length);
+        } else {
+            System.out.println("\n数组为null");
+        }
+
+        // ===========================================
+        // 15. 数组与集合的选择
+        // ===========================================
+        /*
+         * 数组 vs 集合：
+         *   - 数组优点：
+         *     * 性能更高（内存连续，访问速度快）
+         *     * 基本类型支持更好
+         *     * 多维数组实现简单
+         *   - 集合优点：
+         *     * 动态大小
+         *     * 丰富的API支持
+         *     * 更好的类型安全（泛型）
+         *
+         * 选择建议：
+         *   - 固定大小、性能关键：使用数组
+         *   - 需要动态调整、复杂操作：使用集合
+         */
+        System.out.println("\n15. 数组与集合的选择");
+
+        // 数组示例（固定大小，性能敏感）
+        int[] highPerformanceArray = new int[1000];
+        for (int i = 0; i < highPerformanceArray.length; i++) {
+            highPerformanceArray[i] = i * i;
+        }
+
+        // 集合示例（动态大小，丰富操作）
+        List<Integer> flexibleList = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            flexibleList.add(i * i);
+        }
+        flexibleList.remove(0); // 动态调整大小
+        System.out.println("集合大小: " + flexibleList.size());
+
+        // ===========================================
+        // 16. 数组性能优化技巧
+        // ===========================================
+        /*
+         * 数组性能优化：
+         *   - 批量操作优于单元素操作
+         *   - 系统原生拷贝优于循环拷贝
+         *   - 避免频繁扩容
+         *   - 考虑缓存友好性（顺序访问）
+         *   - 大型数组使用并行处理
+         */
+        System.out.println("\n16. 数组性能优化技巧");
+
+        // 1. 批量操作 vs 单元素操作
+        int[] source = new int[10000];
+        int[] dest1 = new int[10000];
+        int[] dest2 = new int[10000];
+
+        // 方式1：单元素赋值（慢）
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < source.length; i++) {
+            dest1[i] = source[i];
+        }
+        long time1 = System.currentTimeMillis() - start;
+
+        // 方式2：系统批量拷贝（快）
+        start = System.currentTimeMillis();
+        System.arraycopy(source, 0, dest2, 0, source.length);
+        long time2 = System.currentTimeMillis() - start;
+
+        System.out.printf("单元素赋值耗时: %dms, 批量拷贝耗时: %dms\n", time1, time2);
+
+        // 2. 缓存友好性示例
+        int[][] matrix = new int[10000][10000];
+
+        // 不友好的访问方式（按列访问）
+        start = System.currentTimeMillis();
+        for (int col = 0; col < matrix[0].length; col++) {
+            for (int row = 0; row < matrix.length; row++) {
+                matrix[row][col] = row + col;
+            }
+        }
+        long badTime = System.currentTimeMillis() - start;
+
+        // 友好的访问方式（按行访问）
+        start = System.currentTimeMillis();
+        for (int row = 0; row < matrix.length; row++) {
+            for (int col = 0; col < matrix[row].length; col++) {
+                matrix[row][col] = row + col;
+            }
+        }
+        long goodTime = System.currentTimeMillis() - start;
+
+        System.out.printf("不友好访问耗时: %dms, 友好访问耗时: %dms\n", badTime, goodTime);
+
+        // ===========================================
+        // 17. 现代Java中的数组新特性
+        // ===========================================
+        /*
+         * Java新版本数组特性：
+         *   - Java 8: Stream API支持
+         *   - Java 9: 新增Arrays.compare()/mismatch()方法
+         *   - Java 11: var关键字简化数组声明
+         *   - Java 17: 增强的数组工具方法
+         */
+        System.out.println("\n17. 现代Java中的数组新特性");
+
+        // Java 8 Stream API
+        int[] numbers = {1, 2, 3, 4, 5};
+        System.out.println("Stream处理结果: " +
+                Arrays.stream(numbers)
+                        .filter(n -> n % 2 == 0)
+                        .map(n -> n * 2)
+                        .sum());
+
+        // Java 9+ 比较方法
+        int[] _arr1 = {1, 2, 3};
+        int[] _arr2 = {1, 2, 4};
+        System.out.println("\n数组比较结果: " + Arrays.compare(_arr1, _arr2));
+
+        // Java 10+ var关键字
+        var varArray = new int[]{1, 2, 3}; // 类型推断
+        System.out.println("var声明的数组: " + Arrays.toString(varArray));
+
+
+    }
+
+    // 辅助方法：模拟可能返回null的数组
+    private static int[] getMaybeNullArray() {
+        return Math.random() > 0.5 ? new int[]{1, 2, 3} : null;
     }
 
     // 辅助方法：打印数组
