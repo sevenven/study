@@ -72,7 +72,7 @@ public class Polymorphism {
 
 
 /**
- * 子类 - 锚类，继承自动物类
+ * 子类 - 猫类，继承自动物类
  */
 class Cat extends Animal {
     private int age;

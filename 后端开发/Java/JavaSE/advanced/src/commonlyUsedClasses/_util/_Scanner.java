@@ -1,4 +1,4 @@
-package commonlyUsedClasses;
+package commonlyUsedClasses._util;
 
 import java.util.Scanner;
 

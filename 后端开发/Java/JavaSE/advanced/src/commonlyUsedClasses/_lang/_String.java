@@ -1,4 +1,4 @@
-package commonlyUsedClasses;
+package commonlyUsedClasses._lang;
 
 public class _String {
     public static void main(String[] args) {
