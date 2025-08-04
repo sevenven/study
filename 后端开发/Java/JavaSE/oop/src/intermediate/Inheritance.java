@@ -14,6 +14,7 @@ public class Inheritance {
         Dog dog = new Dog("大黄", "金毛");
         dog.eat();      // 继承自基类的方法
         dog.sleep();    // 继承自基类的方法
+        dog.makeSound();    // 继承自基类的方法
         dog.bark();     // 子类特有的方法
     }
 }
@@ -72,9 +73,15 @@ class Dog extends Animal {
         System.out.println("Dog构造方法被调用");
     }
 
+    // 重写基类的方法
+    @Override
+    public void makeSound() {
+        System.out.println(getName() + "汪汪叫!");
+    }
+
     // 子类特有的方法
     public void bark() {
-        System.out.println(getName() + "汪汪叫!");
+        System.out.println(getName() + "发出嗷嗷声...");
     }
 
     // getter方法

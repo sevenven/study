@@ -4,9 +4,9 @@ package intermediate;
 /**
  * 多态核心概念：
  * 1. 多态的实现条件：
- * - 继承关系：存在父子类关系
- * - 方法重写：子类重写父类方法
- * - 向上转型：父类引用指向子类对象 (Animal a = new Dog())
+ * - 继承关系：基于继承关系
+ * - 方法重写：子类重写基类方法
+ * - 向上转型：基类引用指向子类对象 (Animal a = new Dog())
  * 2. 多态的表现形式：
  * Animal animal = new Dog();  // 向上转型
  * animal.makeSound();         // 调用的是Dog类的makeSound()
@@ -17,14 +17,14 @@ package intermediate;
  * - 向上转型：自动进行，安全 (Dog -> Animal)
  * - 向下转型：需要强制转换，应先使用instanceof检查 (Animal -> Dog)
  * 5. 多态的优点：
- * - 可替换性：子类对象可以替换父类对象
+ * - 可替换性：子类对象可以替换基类对象
  * - 可扩展性：易于添加新子类而不影响现有代码
- * - 接口性：父类提供统一接口，子类实现具体功能
+ * - 接口性：基类提供统一接口，子类实现具体功能
  * - 灵活性：提高代码的灵活性和可维护性
  * 6. 多态的应用场景：
- * - 方法参数多态：方法参数声明为父类类型，可接受任何子类对象
- * - 集合多态：使用父类类型集合存储不同子类对象
- * - 工厂模式：返回父类类型的对象，实际可能是各种子类实例
+ * - 方法参数多态：方法参数声明为基类类型，可接受任何子类对象
+ * - 集合多态：使用基类类型集合存储不同子类对象
+ * - 工厂模式：返回基类类型的对象，实际可能是各种子类实例
  * - 策略模式：通过多态实现不同的算法策略
  */
 public class Polymorphism {
@@ -32,7 +32,7 @@ public class Polymorphism {
         // 多态示例
         System.out.println("\n==== 多态示例 ====");
 
-        // 向上转型(Upcasting): 父类引用指向子类对象
+        // 向上转型(Upcasting): 基类引用指向子类对象
         Animal myDog = new Dog("小黑", "拉布拉多");
         Animal myCat = new Cat("小花", 3);
 
@@ -83,13 +83,11 @@ class Cat extends Animal {
         System.out.println("Cat构造方法被调用: " + name);
     }
 
-
-    // 重写父类makeSound方法(实现多态)
+    // 重写基类makeSound方法(实现多态)
     @Override
     public void makeSound() {
         System.out.println(getName() + "喵喵叫!");
     }
-
 
     // 子类特有方法
     public void purr() {

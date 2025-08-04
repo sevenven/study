@@ -1,4 +1,4 @@
-package advanced;
+package advanced._static;
 
 // 静态导入示例
 import static java.lang.Math.PI;
@@ -34,8 +34,6 @@ public class Static {
         new Employee("张三");
         new Employee("李四");
     }
-
-
 
     // 静态方法计算圆面积
     public static double circleArea(double r) {
@@ -96,9 +94,7 @@ class StringUtils {
     }
 
     public static String reverse(String str) {
-        if (isEmpty(str)) {
-            return str;
-        }
+        if (isEmpty(str)) return str;
         return new StringBuilder(str).reverse().toString();
     }
 }

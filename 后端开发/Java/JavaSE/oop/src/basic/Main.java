@@ -35,6 +35,7 @@ public class Main {
 
 /**
  * 定义一个类 MyClass--类定义存储在JVM方法区
+ * 说明Java类及类的成员：（重点）属性、方法、构造器；（属性）代码块、内部类
  * 属性：
  * -实例变量 instanceVar：用于存储实例级别的数据。
  * -静态变量 staticVar：用于存储类级别的数据，所有对象共享。
@@ -56,7 +57,7 @@ class MyClass {
     // 实例变量--存储在堆内存中
     private int instanceVar;
 
-    // 静态变量--存储在方法区中
+    // 静态变量--存储在方法区(jdk1.6及之前)|静态域中
     public static int staticVar = 100;
 
     // 初始化块--每次new对象时执行，编译后合并到构造器头部
