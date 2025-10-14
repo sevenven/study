@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>初识Vue</title>
+		<script type="text/javascript" src="./vue-3.4.27.global.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			:root {
+				--bl-n250-c: #e8eaed;
+				--bl-n900-c: #1f2329;
+				--bl-n600-c: #646a73;
+			}
+			/* 统计卡片样式 */
+			.stats-container {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 16px;
+				margin: 16px 0;
+				justify-content: center;
+			}
+			.stats-card {
+				flex: 1;
+				min-width: 120px;
+				background-color: #f4f5f7;
+				border-radius: 8px;
+				padding: 6px 16px;
+				text-align: center;
+				transition: transform 0.3s ease;
+			}
+			.stats-card:hover {
+				transform: translateY(-3px);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+			}
+			.stats-label {
+				font-size: 12px;
+				color: var(--bl-n600-c);
+			}
+			.stats-value {
+				font-size: 16px;
+				font-weight: bold;
+				color: var(--bl-n900-c);
+				margin-top: 2px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="stats-container">
+				<div class="stats-card">
+					<div class="stats-label">总人数(人)</div>
+					<div class="stats-value">{{ statistics.totalEmployees }}</div>
+				</div>
+				<div class="stats-card">
+					<div class="stats-label">计划未完成人数(人)</div>
+					<div class="stats-value">{{ statistics.unfinishedPlan }}</div>
+				</div>
+				<div class="stats-card">
+					<div class="stats-label">计划完成人数(人)</div>
+					<div class="stats-value">{{ statistics.finishedPlan }}</div>
+				</div>
+				<div class="stats-card">
+					<div class="stats-label">考核未完成人数(人)</div>
+					<div class="stats-value">{{ statistics.unfinishedAssessment }}</div>
+				</div>
+				<div class="stats-card">
+					<div class="stats-label">考核完成人数(人)</div>
+					<div class="stats-value">{{ statistics.finishedAssessment }}</div>
+				</div>
+				<div class="stats-card">
+					<div class="stats-label">称职处理人数(人)</div>
+					<div class="stats-value">{{ statistics.competentHandling }}</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						message: 'Hello Vue!',
+						// 统计数据 - 整理到一个对象中
+						statistics: {
+							totalEmployees: 120,
+							unfinishedPlan: 35,
+							finishedPlan: 85,
+							unfinishedAssessment: 28,
+							finishedAssessment: 92,
+							competentHandling: 15
+						}
+					};
+				},
+				methods: {}
+			}).mount('#app');
+
+			// 获取签名
+			function getSign(timestamp, bizparam) {
+				const secret = '85wqm31o7mnaeep6exhq57s6ibtkc3x72vauhaezjtdr6d2fcsdkxtwlxggjcy6y';
+				const text = secret + timestamp + JSON.stringify(bizparam);
+				const md5Result = CryptoJS.MD5(text).toString();
+				return md5Result;
+			}
+
+			export async function handleProcessRestart(payload) {
+				const bizparam = {
+					process_instance_id: pageData.dataSet.t_employee_6k6cdenn.process_instance_id,
+					manager_id: utils.getUserInfo().employee_id,
+					rollback_node_id: 'UserTask_1'
+				};
+				const timestamp = new Date().getTime();
+
+				const sign = getSign(timestamp, bizparam);
+				const tenant_id = utils.getUserInfo().tenant_id;
+				const param = {
+					app_id: 'r4c6sae4',
+					sign,
+					sign_type: 'md5',
+					timestamp,
+					tenant_id,
+					biz_params: JSON.stringify(bizparam)
+				};
+				try {
+					// 使用异步方式处理HTTP请求
+					const res = await http.post('/ego_api/api/v2/manager/flow/restart', param);
+
+					// 检查响应状态
+					if (res && res.code === '000000') {
+						utils.toast('流程重启成功！', 'success', 'message');
+						return true;
+					} else {
+						// 提供更具体的错误信息
+						const errorMsg = res?.message || '重启流程失败，请联系管理员！';
+						utils.toast(errorMsg, 'error', 'message');
+						return false;
+					}
+				} catch (error) {
+					// 捕获网络错误或其他异常
+					console.error('重启流程时发生异常:', error);
+					utils.toast('网络异常，请检查网络连接后重试！', 'error', 'message');
+					return false;
+				}
+			}
+		</script>
+	</body>
+</html>

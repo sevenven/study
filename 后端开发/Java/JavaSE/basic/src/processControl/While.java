@@ -3,10 +3,19 @@ package processControl;
 public class While {
     public static void main(String[] args) {
         System.out.println("===== Java While 循环详解与示例 =====");
+        basicWhileLoop(); // 基本 while 循环结构
+        whileVsFor(); // while 循环 vs for 循环
+        controlFlowWithBreakContinue(); // 使用 break 和 continue 控制循环
+        avoidInfiniteLoop(); // 避免无限循环
+        nestedWhileLoops(); // 嵌套 while 循环
+        doWhileLoop(); // do-while 循环
+        practicalExamples(); // 实际应用案例
+        commonErrorsAndDebuggingTips(); // 常见错误与调试技巧
+    }
 
-        // ===========================================
-        // 1. 基本 while 循环结构
-        // ===========================================
+    // 基本 while 循环结构
+    private static void basicWhileLoop() {
+        System.out.println("\n基本 while 循环结构");
         /*
          * while 循环语法：
          *   while (条件表达式) {
@@ -18,7 +27,6 @@ public class While {
          *   3. 再次判断条件表达式
          *   4. 直到条件为 false 时退出循环
          */
-        System.out.println("\n1. 基本 while 循环结构");
 
         int count = 1;
         System.out.println("从1数到5:");
@@ -26,17 +34,17 @@ public class While {
             System.out.println("计数: " + count);
             count++;  // 计数器递增（避免无限循环的关键）
         }
+    }
 
-        // ===========================================
-        // 2. while 循环 vs for 循环
-        // ===========================================
+    // while 循环 vs for 循环
+    private static void whileVsFor() {
+        System.out.println("\nwhile 循环 vs for 循环");
         /*
          * 何时使用 while 而不是 for：
          *   - 当迭代次数不确定时
          *   - 当循环条件不依赖于计数器时
          *   - 当需要更复杂的循环控制时
          */
-        System.out.println("\n2. while 循环 vs for 循环");
 
         // 使用 while 实现不确定次数的迭代
         int randomNum = (int)(Math.random() * 10) + 1; // 1-10的随机数
@@ -47,15 +55,15 @@ public class While {
             System.out.println("当前值: " + randomNum);
             randomNum /= 2;  // 每次除以2
         }
+    }
 
-        // ===========================================
-        // 3. 使用 break 和 continue 控制循环
-        // ===========================================
+    // 使用 break 和 continue 控制循环
+    private static void controlFlowWithBreakContinue() {
+        System.out.println("\n使用 break 和 continue");
         /*
          * break: 立即退出整个循环
          * continue: 跳过当前迭代，进入下一次循环
          */
-        System.out.println("\n3. 使用 break 和 continue");
 
         int num = 0;
         System.out.println("查找第一个能被3和5整除的数:");
@@ -72,10 +80,11 @@ public class While {
                 break;  // 找到后退出循环
             }
         }
+    }
 
-        // ===========================================
-        // 4. 避免无限循环
-        // ===========================================
+    // 避免无限循环
+    private static void avoidInfiniteLoop() {
+        System.out.println("\n避免无限循环");
         /*
          * 无限循环常见原因：
          *   - 忘记更新循环变量
@@ -86,7 +95,6 @@ public class While {
          *   - 确保循环条件最终会变为 false
          *   - 使用调试工具检查循环行为
          */
-        System.out.println("\n4. 避免无限循环");
 
         // 安全计数器防止无限循环
         int safeCounter = 0;
@@ -103,17 +111,17 @@ public class While {
                 break;
             }
         }
+    }
 
-        // ===========================================
-        // 5. 嵌套 while 循环
-        // ===========================================
+    // 嵌套 while 循环
+    private static void nestedWhileLoops() {
+        System.out.println("\n嵌套 while 循环");
         /*
          * 嵌套循环应用场景：
          *   - 处理多维数据结构
          *   - 生成组合数据
          *   - 复杂迭代逻辑
          */
-        System.out.println("\n5. 嵌套 while 循环");
 
         System.out.println("乘法表:");
         int i = 1;
@@ -126,10 +134,11 @@ public class While {
             System.out.println();  // 换行
             i++;
         }
+    }
 
-        // ===========================================
-        // 6. do-while 循环
-        // ===========================================
+    // do-while 循环
+    private static void doWhileLoop() {
+        System.out.println("\ndo-while 循环");
         /*
          * do-while 语法：
          *   do {
@@ -140,7 +149,6 @@ public class While {
          *   - 循环体至少执行一次
          *   - 条件判断在循环体之后
          */
-        System.out.println("\n6. do-while 循环");
 
         int userInput;
         int attempts = 0;
@@ -159,11 +167,11 @@ public class While {
         } else {
             System.out.println("未能在5次内输入3");
         }
+    }
 
-        // ===========================================
-        // 7. 实际应用案例
-        // ===========================================
-        System.out.println("\n7. 实际应用案例");
+    // 实际应用案例
+    private static void practicalExamples() {
+        System.out.println("\n实际应用案例");
 
         // 案例1: 数字反转
         int original = 12345;
@@ -210,11 +218,11 @@ public class While {
             }
             number++;
         }
+    }
 
-        // ===========================================
-        // 8. 常见错误与调试技巧
-        // ===========================================
-        System.out.println("\n\n8. 常见错误与调试技巧");
+    // 常见错误与调试技巧
+    private static void commonErrorsAndDebuggingTips() {
+        System.out.println("\n\n常见错误与调试技巧");
 
         // 错误1: 忘记更新循环变量
         /*

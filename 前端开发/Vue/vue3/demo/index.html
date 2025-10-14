@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>初识Vue</title>
+		<script type="text/javascript" src="./vue-3.4.27.global.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			:root {
+				--bl-n250-c: #e8eaed;
+				--bl-n900-c: #1f2329;
+				--bl-n600-c: #646a73;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="app-box">
+				<h2>{{ message }}</h2>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						message: 'Hello Vue!'
+					};
+				},
+				methods: {}
+			}).mount('#app');
+		</script>
+		<script>
+			// 常量配置
+			const APP_CONFIG = {
+				APP_ID: 'r4c6sae4',
+				SIGN_TYPE: 'md5',
+				SECRET: '85wqm31o7mnaeep6exhq57s6ibtkc3x72vauhaezjtdr6d2fcsdkxtwlxggjcy6y'
+			};
+
+			function generateSignature(timestamp, bizParam) {
+				const { SECRET } = APP_CONFIG;
+				const text = SECRET + timestamp + JSON.stringify(bizParam);
+				return CryptoJS.MD5(text).toString();
+			}
+
+			function buildRequestParams(bizParam) {
+				const timestamp = Date.now();
+				const { APP_ID, SIGN_TYPE } = APP_CONFIG;
+
+				return {
+					app_id: APP_ID,
+					sign: generateSignature(timestamp, bizParam),
+					sign_type: SIGN_TYPE,
+					timestamp,
+					tenant_id: bizParam.tenant_id,
+					biz_params: JSON.stringify(bizParam)
+				};
+			}
+
+			export async function selectEmpByGroupCode() {
+				try {
+					const res = await http.post(
+						'/ego_base_info/api/group/selectEmpByGroupCode',
+						buildRequestParams({
+							tenant_id: utils.getUserInfo().tenant_id,
+							group_code: 'dwgly'
+						})
+					);
+					console.log('res~~~:', res.data);
+					return res.data;
+				} catch (error) {
+					console.error('异常:', error);
+					utils.toast('网络异常，请检查网络连接后重试！', 'error', 'message');
+					return false;
+				}
+			}
+		</script>
+	</body>
+</html>

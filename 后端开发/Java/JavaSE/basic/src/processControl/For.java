@@ -4,9 +4,43 @@ public class For {
     public static void main(String[] args) {
         System.out.println("===== Java For 循环详解与示例 =====");
 
-        // ===========================================
-        // 1. 基本 for 循环结构
-        // ===========================================
+        // 基本 for 循环结构
+        basicForLoop();
+
+        // 增强 for 循环（for-each）
+        enhancedForLoop();
+
+        // 嵌套 for 循环
+        nestedForLoop();
+
+        // 循环控制语句：break 和 continue
+        loopControlStatements();
+
+        // 带标签的循环控制
+        labeledLoopControl();
+
+        // 特殊形式：无限循环
+        infiniteLoop();
+
+        // 多个循环变量
+        multipleLoopVariables();
+
+        // 空循环体
+        emptyLoopBody();
+
+        // for 循环与数组操作
+        forLoopWithArrays();
+
+        // for 循环与集合操作
+        forLoopWithCollections();
+
+        // 性能优化与最佳实践
+        performanceOptimization();
+    }
+
+    // 基本 for 循环结构
+    private static void basicForLoop() {
+        System.out.println("\n基本 for 循环结构");
         /*
          * for 循环语法：
          *   for (初始化; 条件; 迭代) {
@@ -20,16 +54,16 @@ public class For {
          *   4. 执行迭代语句
          *   5. 重复步骤2-4，直到条件为 false
          */
-        System.out.println("\n1. 基本 for 循环结构");
 
         System.out.println("打印数字 1-5:");
         for (int i = 1; i <= 5; i++) {
             System.out.print(i + " ");
         }
+    }
 
-        // ===========================================
-        // 2. 增强 for 循环（for-each）
-        // ===========================================
+    // 增强 for 循环（for-each）
+    private static void enhancedForLoop() {
+        System.out.println("\n\n增强 for 循环（for-each）");
         /*
          * 增强 for 循环语法：
          *   for (元素类型 变量名 : 集合或数组) {
@@ -41,24 +75,23 @@ public class For {
          *   - 不需要索引变量
          *   - 不能修改集合/数组大小
          */
-        System.out.println("\n\n2. 增强 for 循环（for-each）");
 
         int[] numbers = {10, 20, 30, 40, 50};
         System.out.println("遍历数组:");
         for (int num : numbers) {
             System.out.print(num + " ");
         }
+    }
 
-        // ===========================================
-        // 3. 嵌套 for 循环
-        // ===========================================
+    // 嵌套 for 循环
+    private static void nestedForLoop() {
+        System.out.println("\n\n嵌套 for 循环");
         /*
          * 嵌套循环应用场景：
          *   - 处理多维数据结构
          *   - 生成组合数据
          *   - 矩阵运算
          */
-        System.out.println("\n\n3. 嵌套 for 循环");
 
         System.out.println("打印九九乘法表:");
         for (int i = 1; i <= 9; i++) {
@@ -67,15 +100,15 @@ public class For {
             }
             System.out.println();
         }
+    }
 
-        // ===========================================
-        // 4. 循环控制语句：break 和 continue
-        // ===========================================
+    // 循环控制语句：break 和 continue
+    private static void loopControlStatements() {
+        System.out.println("\n循环控制语句：break 和 continue");
         /*
          * break: 立即退出当前循环
          * continue: 跳过当前迭代，进入下一次循环
          */
-        System.out.println("\n4. 循环控制语句：break 和 continue");
 
         System.out.println("查找第一个能被3和5整除的数:");
         for (int i = 1; i <= 100; i++) {
@@ -89,10 +122,11 @@ public class For {
                 break;
             }
         }
+    }
 
-        // ===========================================
-        // 5. 带标签的循环控制
-        // ===========================================
+    // 带标签的循环控制
+    private static void labeledLoopControl() {
+        System.out.println("\n带标签的循环控制");
         /*
          * 标签语法：
          *   标签名: for (...) {
@@ -103,7 +137,6 @@ public class For {
          *   - 在嵌套循环中控制外层循环
          *   - 需要从多层循环中跳出时
          */
-        System.out.println("\n5. 带标签的循环控制");
 
         outerLoop: // 外层循环标签
         for (int i = 1; i <= 3; i++) {
@@ -118,10 +151,11 @@ public class For {
                 }
             }
         }
+    }
 
-        // ===========================================
-        // 6. 特殊形式：无限循环
-        // ===========================================
+    // 特殊形式：无限循环
+    private static void infiniteLoop() {
+        System.out.println("\n特殊形式：无限循环");
         /*
          * 无限循环形式：
          *   for (;;) {
@@ -133,7 +167,6 @@ public class For {
          *   - 需要外部条件退出的循环
          *   - 配合 break 控制退出
          */
-        System.out.println("\n6. 特殊形式：无限循环");
 
         System.out.println("模拟倒计时:");
         int count = 5;
@@ -152,10 +185,11 @@ public class For {
             }
         }
         System.out.println("发射！");
+    }
 
-        // ===========================================
-        // 7. 多个循环变量
-        // ===========================================
+    // 多个循环变量
+    private static void multipleLoopVariables() {
+        System.out.println("\n多个循环变量");
         /*
          * 语法：
          *   for (初始化1, 初始化2; 条件; 迭代1, 迭代2) {
@@ -166,7 +200,6 @@ public class For {
          *   - 同时控制多个相关变量
          *   - 遍历多个相关序列
          */
-        System.out.println("\n7. 多个循环变量");
 
         System.out.println("斐波那契数列前10项:");
         for (int a = 0, b = 1, i = 0; i < 10; i++) {
@@ -175,10 +208,11 @@ public class For {
             a = b;
             b = next;
         }
+    }
 
-        // ===========================================
-        // 8. 空循环体
-        // ===========================================
+    // 空循环体
+    private static void emptyLoopBody() {
+        System.out.println("\n\n空循环体");
         /*
          * 使用场景：
          *   - 简单计数
@@ -186,16 +220,16 @@ public class For {
          *
          * 注意：避免创建性能问题
          */
-        System.out.println("\n\n8. 空循环体");
 
         // 计算1-100的和
         int sum = 0;
-        for (int i = 1; i <= 100; sum += i++); // 空循环体
+        for (int i = 1; i <= 100; sum += i++);
         System.out.println("1-100的和: " + sum);
+    }
 
-        // ===========================================
-        // 9. for 循环与数组操作
-        // ===========================================
+    // for 循环与数组操作
+    private static void forLoopWithArrays() {
+        System.out.println("\nfor 循环与数组操作");
         /*
          * 常见操作：
          *   - 遍历数组
@@ -203,7 +237,6 @@ public class For {
          *   - 查找元素
          *   - 数组排序（如冒泡排序）
          */
-        System.out.println("\n9. for 循环与数组操作");
 
         // 数组填充
         int[] squares = new int[10];
@@ -234,17 +267,17 @@ public class For {
 
         System.out.println("冒泡排序后:");
         printArray(arr);
+    }
 
-        // ===========================================
-        // 10. for 循环与集合操作
-        // ===========================================
+    // for 循环与集合操作
+    private static void forLoopWithCollections() {
+        System.out.println("\nfor 循环与集合操作");
         /*
          * 集合遍历方式：
          *   - 传统 for 循环（需要索引）
          *   - 增强 for 循环（推荐）
          *   - 迭代器（Iterator）
          */
-        System.out.println("\n10. for 循环与集合操作");
 
         java.util.List<String> fruits = new java.util.ArrayList<>();
         fruits.add("Apple");
@@ -260,11 +293,16 @@ public class For {
         for (int i = 0; i < fruits.size(); i++) {
             System.out.println(fruits.get(i));
         }
+    }
 
-        // ===========================================
-        // 11. 性能优化与最佳实践
-        // ===========================================
-        System.out.println("\n11. 性能优化与最佳实践");
+    // 性能优化与最佳实践
+    private static void performanceOptimization() {
+        System.out.println("\n性能优化与最佳实践");
+        /*
+         * 实践1: 将循环不变代码移到循环外
+         * 实践2: 避免在循环条件中调用方法
+         * 实践3: 使用并行流处理大数据集
+         */
 
         // 实践1: 将循环不变代码移到循环外
         String[] names = {"Alice", "Bob", "Charlie", "David"};
@@ -300,8 +338,8 @@ public class For {
         // 实践3: 使用并行流处理大数据集
         System.out.println("\n使用并行流处理:");
         java.util.Arrays.stream(names)
-                .parallel()
-                .forEach(name -> System.out.println("并行处理: " + name));
+          .parallel()
+          .forEach(name -> System.out.println("并行处理: " + name));
     }
 
     // 辅助方法：打印数组

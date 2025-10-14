@@ -4,9 +4,34 @@ public class SwitchCase {
     public static void main(String[] args) {
         System.out.println("===== Java Switch 语句详解与示例 =====");
 
-        // ===========================================
-        // 1. 基本 switch 语句
-        // ===========================================
+        // 基本 switch 语句
+        basicSwitchStatement();
+
+        // 穿透现象 (fall-through)
+        fallThroughExample();
+
+        // switch 与字符串
+        switchWithString();
+
+        // switch 与枚举
+        switchWithEnum();
+
+        // Java 12+ switch 表达式
+        java12SwitchExpression();
+
+        // Java 14+ 模式匹配（预览特性）
+        patternMatchingPreview();
+
+        // Java 17+ 增强模式匹配
+        enhancedPatternMatching();
+
+        // 最佳实践与常见错误
+        bestPracticesAndCommonErrors();
+    }
+
+    // 基本 switch 语句
+    private static void basicSwitchStatement() {
+        System.out.println("\n基本 switch 语句");
         /*
          * 传统 switch 语法：
          *   switch (表达式) {
@@ -25,7 +50,6 @@ public class SwitchCase {
          *   - case 值必须是常量表达式
          *   - 需要 break 防止穿透
          */
-        System.out.println("\n1. 基本 switch 语句");
 
         int dayOfWeek = 3;
         System.out.print("星期" + dayOfWeek + ": ");
@@ -55,10 +79,11 @@ public class SwitchCase {
             default:
                 System.out.println("无效的星期");
         }
+    }
 
-        // ===========================================
-        // 2. 穿透现象 (fall-through)
-        // ===========================================
+    // 穿透现象 (fall-through)
+    private static void fallThroughExample() {
+        System.out.println("\n穿透现象 (fall-through)");
         /*
          * 穿透现象：
          *   - 当省略 break 时，程序会继续执行下一个 case
@@ -66,7 +91,6 @@ public class SwitchCase {
          *
          * 注意：大多数情况下需要避免意外穿透
          */
-        System.out.println("\n2. 穿透现象 (fall-through)");
 
         int month = 2;
         int year = 2023;
@@ -92,16 +116,16 @@ public class SwitchCase {
                 days = -1; // 无效月份
         }
         System.out.println(days + "天");
+    }
 
-        // ===========================================
-        // 3. switch 与字符串
-        // ===========================================
+    // switch 与字符串
+    private static void switchWithString() {
+        System.out.println("\nswitch 与字符串");
         /*
          * Java 7+ 支持字符串 switch
          *   - 比较字符串内容（区分大小写）
          *   - 底层使用 equals() 和 hashCode()
          */
-        System.out.println("\n3. switch 与字符串");
 
         String color = "RED";
         System.out.print("颜色 " + color + " 的RGB值: ");
@@ -119,17 +143,17 @@ public class SwitchCase {
             default:
                 System.out.println("未知颜色");
         }
+    }
 
-        // ===========================================
-        // 4. switch 与枚举
-        // ===========================================
+    // switch 与枚举
+    private static void switchWithEnum() {
+        System.out.println("\nswitch 与枚举");
         /*
          * 枚举 switch：
          *   - 类型安全
          *   - 不需要指定枚举前缀
          *   - 覆盖所有枚举值（或使用 default）
          */
-        System.out.println("\n4. switch 与枚举");
 
         Direction dir = Direction.EAST;
         System.out.print("方向 " + dir + ": ");
@@ -150,10 +174,11 @@ public class SwitchCase {
             default:
                 System.out.println("无效方向");
         }
+    }
 
-        // ===========================================
-        // 5. Java 12+ 新特性：switch 表达式
-        // ===========================================
+    // Java 12+ switch 表达式
+    private static void java12SwitchExpression() {
+        System.out.println("\nJava 12+ switch 表达式");
         /*
          * 新特性：
          *   - 箭头标签 (->)：替代 break，避免穿透
@@ -161,7 +186,6 @@ public class SwitchCase {
          *   - 返回值：switch 可作为表达式返回结果
          *   - yield 关键字：在代码块中返回值
          */
-        System.out.println("\n5. Java 12+ switch 表达式");
 
         // 箭头标签和多值 case
         int day = 6;
@@ -186,10 +210,11 @@ public class SwitchCase {
             default -> "未知";
         };
         System.out.println(num + " 是: " + numberType);
+    }
 
-        // ===========================================
-        // 6. Java 14+ 模式匹配（预览特性）
-        // ===========================================
+    // Java 14+ 模式匹配（预览特性）
+    private static void patternMatchingPreview() {
+        System.out.println("\nJava 14+ 模式匹配（预览特性）");
         /*
          * 模式匹配：
          *   - 允许在 case 中使用类型模式
@@ -197,7 +222,6 @@ public class SwitchCase {
          *
          * 注意：需要启用预览特性（--enable-preview）
          */
-        System.out.println("\n6. Java 14+ 模式匹配（预览特性）");
 
         Object obj = "Hello Pattern Matching";
         // 传统方式
@@ -222,17 +246,17 @@ public class SwitchCase {
         }
         */
         System.out.println("模式匹配需要Java 17+并启用预览特性");
+    }
 
-        // ===========================================
-        // 7. Java 17+ 增强：模式匹配正式特性
-        // ===========================================
+    // Java 17+ 增强模式匹配
+    private static void enhancedPatternMatching() {
+        System.out.println("\nJava 17+ 增强模式匹配");
         /*
          * Java 17 正式特性：
          *   - 模式匹配成为正式特性
          *   - 支持 null 检查
          *   - 支持守卫条件（when）
          */
-        System.out.println("\n7. Java 17+ 增强模式匹配");
 
         // 实际Java 17代码示例（注释中展示）
         /*
@@ -248,11 +272,11 @@ public class SwitchCase {
         System.out.println(result);
         */
         System.out.println("Java 17模式匹配示例: 正整数: 42");
+    }
 
-        // ===========================================
-        // 8. 最佳实践与常见错误
-        // ===========================================
-        System.out.println("\n8. 最佳实践与常见错误");
+    // 最佳实践与常见错误
+    private static void bestPracticesAndCommonErrors() {
+        System.out.println("\n最佳实践与常见错误");
 
         // 错误1: 忘记 break
         int x = 1;
@@ -284,6 +308,7 @@ public class SwitchCase {
 
         // 最佳实践1: 使用新式 switch 表达式
         System.out.println("\n最佳实践: 使用 switch 表达式");
+        int month = 5;
         String season = switch (month) {
             case 12, 1, 2 -> "冬季";
             case 3, 4, 5 -> "春季";
@@ -313,3 +338,6 @@ public class SwitchCase {
         NORTH, SOUTH, EAST, WEST
     }
 }
+
+
+

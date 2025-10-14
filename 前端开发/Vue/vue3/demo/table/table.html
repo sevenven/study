@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>初识Vue</title>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.27/vue.global.min.js"></script>
+		<script type="text/javascript" src="TableComponent.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			:root {
+				--bl-n250-c: #e8eaed;
+				--bl-n900-c: #1f2329;
+				--bl-n600-c: #646a73;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="demo">
+			<table-component ref="tableRef" :columns="columns" :datas="datas" :show-index="true" :show-selection="true" :row-key="'uid'" @select-row="handleSelectRow" @add-row="handleAddRow" @delete-row="handleDeleteRow">
+				<!-- 使用默认的slot命名规则：column-列key -->
+				<template #column-zNQBo8zN1q="{ row, index }">
+					<div style="text-align: center">{{ aa[row.zNQBo8zN1q] }}</div>
+				</template>
+				<!-- 使用自定义slot名称 -->
+				<template #custom-score="{ row }">
+					<div style="text-align: center"><input type="number" v-model="row.jWJAfscd0H" min="0" max="100" style="width: 60px" /></div>
+				</template>
+			</table-component>
+			<div style="height: 1000px"></div>
+			<!-- 修改为可点击的校验按钮 -->
+			<button @click="validateTable" style="margin-top: 10px; padding: 5px 15px; background-color: #1890ff; color: white; border: none; border-radius: 3px; cursor: pointer">校验</button>
+		</div>
+		<script type="text/javascript">
+			// 使用 Vue 3 的 API 创建应用，但不直接解构ref等变量
+			const app = Vue.createApp({
+				setup() {
+					// 直接使用 Vue.ref 定义响应式数据
+					const columns = Vue.ref([
+						{
+							title: '指标类型',
+							key: 'zNQBo8zN1q',
+							width: '100px',
+							required: true
+						},
+						{
+							title: '考核指标',
+							key: 'QY8p3WJOyB'
+						},
+						{
+							title: '所占分值',
+							key: 'H9JDP5ax8M',
+							width: '100px'
+						},
+						{
+							title: '完成标准',
+							key: 'n3rCRnOkkb'
+						},
+						{
+							title: '计分规则',
+							key: 'ojZD1HtUU1'
+						},
+						{
+							title: '自评评分',
+							key: 'vRCRn6Nnic',
+							width: '100px',
+							visible: false
+						},
+						{
+							title: '直接主管评分',
+							key: 'jWJAfscd0H',
+							width: '120px',
+							required: true,
+							slotName: 'custom-score'
+						},
+						{
+							title: '数据来源',
+							key: 'inTDRBexEL',
+							width: '150px'
+						}
+					]);
+
+					const datas = Vue.ref([
+						{
+							zNQBo8zN1q: 'performance_indicators',
+							QY8p3WJOyB: '绩效考核',
+							H9JDP5ax8M: 20,
+							n3rCRnOkkb: '组织开展员工2季度考核及3季度绩效计划，审核把关各部门指标设置和相关考核工作合理性，确保考核覆盖率100%。无因质效问题影响工资发放或被通报批评(15分)。2.完成员工绩效制度解读培训、中层绩效管理实操培训(10分)。3.形成集团本部部门组织效能评价工作思路(10分)。',
+							ojZD1HtUU1: '组织开展员工2季度考核及3季度绩效计划，审核把关各部门指标设置和相关考核工作合理性，确保考核覆盖率100%。无因质效问题影响工资发放或被通报批评(15分)。2.完成员工绩效制度解读培训、中层绩效管理实操培训(10分)。3.形成集团本部部门组织效能评价工作思路(10分)。',
+							vRCRn6Nnic: 10,
+							jWJAfscd0H: 10,
+							inTDRBexEL: '财务管理部门',
+							uid: 'b6f28b55d4b2416a9175e5f38a11c934'
+						},
+						{
+							zNQBo8zN1q: 'key_tasks',
+							QY8p3WJOyB: '绩效考核绩效考核绩效考核绩效考核绩效考核绩效考核',
+							H9JDP5ax8M: 20,
+							n3rCRnOkkb: '组织开展员工2季度考核及3季度绩效计划，审核把关各部门指标设置和相关考核工作合理性，确保考核覆盖率100%。无因质效问题影响工资发放或被通报批评(15分)。2.完成员工绩效制度解读培训、中层绩效管理实操培训(10分)。3.形成集团本部部门组织效能评价工作思路(10分)。',
+							ojZD1HtUU1: '组织开展员工2季度考核及3季度绩效计划，审核把关各部门指标设置和相关考核工作合理性，确保考核覆盖率100%。无因质效问题影响工资发放或被通报批评(15分)。2.完成员工绩效制度解读培训、中层绩效管理实操培训(10分)。3.形成集团本部部门组织效能评价工作思路(10分)。',
+							vRCRn6Nnic: 20,
+							jWJAfscd0H: '',
+							inTDRBexEL: '项目',
+							uid: 'a0d01fd24e9846469b6547f58aa6624d'
+						}
+					]);
+
+					const aa = Vue.ref({});
+					const selectedRows = Vue.ref([]);
+
+					// 添加这行：定义 tableRef
+					const tableRef = Vue.ref(null);
+
+					// 处理行选择事件
+					const handleSelectRow = rows => {
+						console.log('选中的行:', rows);
+						selectedRows.value = rows;
+					};
+
+					// 处理添加行事件
+					const handleAddRow = index => {
+						// 生成唯一ID
+						const generateUniqueId = function () {
+							return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+								var r = (Math.random() * 16) | 0,
+									v = c == 'x' ? r : (r & 0x3) | 0x8;
+								return v.toString(16);
+							});
+						};
+
+						// 创建新行数据
+						const newRow = {
+							uid: generateUniqueId(),
+							zNQBo8zN1q: 'key_tasks',
+							QY8p3WJOyB: '新考核指标',
+							H9JDP5ax8M: 0,
+							n3rCRnOkkb: '请输入完成标准',
+							ojZD1HtUU1: '请输入计分规则',
+							vRCRn6Nnic: 0,
+							jWJAfscd0H: 0,
+							inTDRBexEL: '请输入数据来源'
+						};
+						console.log('添加行:', newRow);
+						if (index >= 0) {
+							// 在指定索引位置插入新行
+							datas.value.splice(index, 0, newRow);
+						} else {
+							// 添加到数据末尾
+							datas.value.push(newRow);
+						}
+					};
+
+					// 处理删除行事件
+					const handleDeleteRow = rows => {
+						console.log('删除行:', rows);
+						// 获取选中行的唯一标识
+						const selectedUids = rows.map(row => row.uid);
+						// 从数据中过滤掉选中的行
+						datas.value = datas.value.filter(row => !selectedUids.includes(row.uid));
+					};
+
+					// 添加这行：实现 validateTable 方法
+					const validateTable = () => {
+						if (tableRef.value && tableRef.value.validate) {
+							const isValid = tableRef.value.validate();
+							if (isValid) {
+								alert('表格数据验证通过！');
+							}
+						}
+					};
+
+					// 生命周期钩子
+					Vue.onMounted(() => {
+						setTimeout(() => {
+							aa.value = {
+								performance_indicators: '11111',
+								key_tasks: '22222'
+							};
+						}, 100);
+					});
+
+					// 返回需要在模板中使用的数据和方法
+					return {
+						columns,
+						datas,
+						aa,
+						selectedRows,
+						tableRef, // 这行没问题，但是需要先定义
+						handleSelectRow,
+						handleAddRow,
+						handleDeleteRow,
+						validateTable // 这行没问题，但是需要先实现
+					};
+				}
+			});
+
+			// 注册组件
+			app.component('table-component', TableComponent);
+
+			// 挂载应用
+			app.mount('#demo');
+		</script>
+		<script>
+			{
+				slotName: pageStatus === 'submit' || pageStatus === 'draft' || (processParam.node_id === 'UserTask_1' && processParam.type === 'TODO') ? 'bpg8GZHFEj' : '';
+			}
+		</script>
+	</body>
+</html>

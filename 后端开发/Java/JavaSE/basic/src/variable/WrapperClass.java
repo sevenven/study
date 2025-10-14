@@ -47,36 +47,73 @@ package variable;
 public class WrapperClass {
 
     /**
-     * 演示基本类型与包装类的转换
+     * 主方法，演示基本类型与包装类的转换
      *
      * @param args 命令行参数
      */
     public static void main(String[] args) {
-        // 1. 手动转换（Java 5之前的方式）
+        // 手动转换（Java 5之前的方式）
+        manualConversion();
+
+        // 自动装箱与拆箱（Java 5+）
+        autoBoxingUnboxing();
+
+        // 包装类实用方法
+        utilityMethods();
+
+        // 特殊值处理演示
+        specialValuesHandling();
+
+        // 缓存机制演示
+        cachingMechanism();
+    }
+
+    // 手动转换（Java 5之前的方式）
+    private static void manualConversion() {
         int primitiveInt = 100;
         Integer wrapperInt = Integer.valueOf(primitiveInt); // 手动装箱
         int unboxedInt = wrapperInt.intValue();            // 手动拆箱
 
-        // 2. 自动装箱与拆箱（Java 5+）
+        System.out.println("手动装箱: " + wrapperInt);
+        System.out.println("手动拆箱: " + unboxedInt);
+    }
+
+    // 自动装箱与拆箱（Java 5+）
+    private static void autoBoxingUnboxing() {
         Integer autoBoxed = 200;      // 自动装箱
         int autoUnboxed = autoBoxed;  // 自动拆箱
 
-        // 3. 包装类实用方法
+        System.out.println("自动装箱: " + autoBoxed);
+        System.out.println("自动拆箱: " + autoUnboxed);
+    }
+
+    // 包装类实用方法
+    private static void utilityMethods() {
         String numberStr = "123";
         int parsedInt = Integer.parseInt(numberStr);  // 字符串转int
         String binaryStr = Integer.toBinaryString(10); // 转二进制字符串
 
-        // 4. 特殊值处理演示
+        System.out.println("字符串转int: " + parsedInt);
+        System.out.println("转二进制字符串: " + binaryStr);
+    }
+
+    // 特殊值处理演示
+    private static void specialValuesHandling() {
         try {
             Integer nullValue = null;
             int riskyUnbox = nullValue; // 抛出NullPointerException
         } catch (NullPointerException e) {
             System.out.println("空指针异常: 不能对null值拆箱");
         }
+    }
 
-        // 5. 缓存机制演示
+    // 缓存机制演示
+    private static void cachingMechanism() {
         Integer a = 100, b = 100;  // 使用缓存对象
         Integer c = 200, d = 200;  // 新建对象
+
+        System.out.println("a == b: " + (a == b)); // true
+        System.out.println("c == d: " + (c == d)); // false
     }
 
     /**
@@ -95,3 +132,6 @@ public class WrapperClass {
         // 包装类性能测试...
     }
 }
+
+
+

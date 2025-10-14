@@ -4,7 +4,20 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("===== Java 运算符详解与示例 =====");
 
-        // 1. 算术运算符
+        demonstrateArithmeticOperators();    // 1. 算术运算符
+        demonstrateRelationalOperators();    // 2. 关系运算符
+        demonstrateLogicalOperators();       // 3. 逻辑运算符
+        demonstrateBitwiseOperators();       // 4. 位运算符
+        demonstrateAssignmentOperators();    // 5. 赋值运算符
+        demonstrateTernaryOperator();        // 6. 三元运算符
+        demonstrateInstanceofOperator();     // 7. instanceof 运算符
+        demonstrateOperatorPrecedence();     // 8. 运算符优先级
+        demonstrateSpecialOperators();       // 9. 特殊运算符
+        demonstrateOperatorTraps();          // 10. 运算符陷阱与注意事项
+    }
+
+    // 1. 算术运算符 (+ - * / % ++ --)
+    private static void demonstrateArithmeticOperators() {
         System.out.println("\n1. 算术运算符 (+ - * / % ++ --)");
         int a = 10, b = 3;
         System.out.println(a + " + " + b + " = " + (a + b));   // 加法
@@ -28,8 +41,10 @@ public class Main {
         System.out.println("x-- = " + x--); // 后置自减
         System.out.println("现在 x = " + x);
         System.out.println("--x = " + --x); // 前置自减
+    }
 
-        // 2. 关系运算符
+    // 2. 关系运算符 (== != > < >= <=)
+    private static void demonstrateRelationalOperators() {
         System.out.println("\n\n2. 关系运算符 (== != > < >= <=)");
         int num1 = 10, num2 = 20;
         System.out.println(num1 + " == " + num2 + " : " + (num1 == num2)); // 相等
@@ -38,8 +53,10 @@ public class Main {
         System.out.println(num1 + " < " + num2 + "  : " + (num1 < num2));  // 小于
         System.out.println(num1 + " >= " + num2 + " : " + (num1 >= num2)); // 大于等于
         System.out.println(num1 + " <= " + num2 + " : " + (num1 <= num2)); // 小于等于
+    }
 
-        // 3. 逻辑运算符
+    // 3. 逻辑运算符 (&& || !)
+    private static void demonstrateLogicalOperators() {
         System.out.println("\n\n3. 逻辑运算符 (&& || !)");
         boolean p = true, q = false;
         System.out.println(p + " && " + q + " = " + (p && q)); // 逻辑与
@@ -56,34 +73,38 @@ public class Main {
         // 第一个条件为true，第二个条件不会执行
         result = (i < 10) || (++i > 5);
         System.out.println("|| 短路后 i = " + i); // i 仍为5
+    }
 
-        // 4. 位运算符
+    // 4. 位运算符 (& | ^ ~ << >> >>>)
+    private static void demonstrateBitwiseOperators() {
         System.out.println("\n\n4. 位运算符 (& | ^ ~ << >> >>>)");
         int m = 0b1100; // 12
         int n = 0b1010; // 10
 
         System.out.println("按位与 &  : " + Integer.toBinaryString(m) +
-                " & " + Integer.toBinaryString(n) + " = " +
-                Integer.toBinaryString(m & n));
+          " & " + Integer.toBinaryString(n) + " = " +
+          Integer.toBinaryString(m & n));
 
         System.out.println("按位或 |  : " + Integer.toBinaryString(m) +
-                " | " + Integer.toBinaryString(n) + " = " +
-                Integer.toBinaryString(m | n));
+          " | " + Integer.toBinaryString(n) + " = " +
+          Integer.toBinaryString(m | n));
 
         System.out.println("按位异或 ^ : " + Integer.toBinaryString(m) +
-                " ^ " + Integer.toBinaryString(n) + " = " +
-                Integer.toBinaryString(m ^ n));
+          " ^ " + Integer.toBinaryString(n) + " = " +
+          Integer.toBinaryString(m ^ n));
 
         System.out.println("按位取反 ~ : ~" + Integer.toBinaryString(m) +
-                " = " + Integer.toBinaryString(~m));
+          " = " + Integer.toBinaryString(~m));
 
         System.out.println("左移 <<  : " + m + " << 2 = " + (m << 2) +
-                " (二进制: " + Integer.toBinaryString(m << 2) + ")");
+          " (二进制: " + Integer.toBinaryString(m << 2) + ")");
 
         System.out.println("右移 >>  : " + m + " >> 2 = " + (m >> 2) +
-                " (二进制: " + Integer.toBinaryString(m >> 2) + ")");
+          " (二进制: " + Integer.toBinaryString(m >> 2) + ")");
+    }
 
-        // 5. 赋值运算符
+    // 5. 赋值运算符 (= += -= *= /= %= &= |= ^= <<= >>= >>>=)
+    private static void demonstrateAssignmentOperators() {
         System.out.println("\n\n5. 赋值运算符 (= += -= *= /= %= &= |= ^= <<= >>= >>>=)");
         int value = 10;
         System.out.println("初始值: " + value);
@@ -107,8 +128,10 @@ public class Main {
         int bits = 0b1010;
         bits &= 0b1100; // bits = bits & 0b1100
         System.out.println("&= 操作后: " + Integer.toBinaryString(bits));
+    }
 
-        // 6. 三元运算符
+    // 6. 三元运算符 (条件 ? 表达式1 : 表达式2)
+    private static void demonstrateTernaryOperator() {
         System.out.println("\n\n6. 三元运算符 (条件 ? 表达式1 : 表达式2)");
         int score = 85;
         String resultStr = (score >= 60) ? "及格" : "不及格";
@@ -116,12 +139,14 @@ public class Main {
 
         // 嵌套三元运算符
         String grade = (score >= 90) ? "优秀" :
-                (score >= 80) ? "良好" :
-                        (score >= 70) ? "中等" :
-                                (score >= 60) ? "及格" : "不及格";
+          (score >= 80) ? "良好" :
+            (score >= 70) ? "中等" :
+              (score >= 60) ? "及格" : "不及格";
         System.out.println("等级评定: " + grade);
+    }
 
-        // 7. instanceof 运算符
+    // 7. instanceof 运算符
+    private static void demonstrateInstanceofOperator() {
         System.out.println("\n\n7. instanceof 运算符");
         String text = "Hello";
         Integer number = 42;
@@ -133,8 +158,10 @@ public class Main {
         // null 检查
         String nullStr = null;
         System.out.println("nullStr 是 String 类型? " + (nullStr instanceof String)); // false
+    }
 
-        // 8. 运算符优先级
+    // 8. 运算符优先级
+    private static void demonstrateOperatorPrecedence() {
         System.out.println("\n\n8. 运算符优先级");
         int calc = 5 + 3 * 2 - 4 / 2; // 等价于 5 + (3*2) - (4/2)
         System.out.println("5 + 3 * 2 - 4 / 2 = " + calc); // 5 + 6 - 2 = 9
@@ -145,8 +172,10 @@ public class Main {
         // 使用括号改变优先级
         int calc2 = (5 + 3) * (2 - 4) / 2;
         System.out.println("(5 + 3) * (2 - 4) / 2 = " + calc2); // 8 * (-2) / 2 = -8
+    }
 
-        // 9. 特殊运算符
+    // 9. 特殊运算符
+    private static void demonstrateSpecialOperators() {
         System.out.println("\n\n9. 特殊运算符");
 
         // 字符串连接运算符 +
@@ -164,8 +193,10 @@ public class Main {
         for (int j = 0, k = 10; j < k; j++, k--) {
             System.out.println("j = " + j + ", k = " + k);
         }
+    }
 
-        // 10. 运算符陷阱与注意事项
+    // 10. 运算符陷阱与注意事项
+    private static void demonstrateOperatorTraps() {
         System.out.println("\n\n10. 运算符陷阱与注意事项");
 
         // 整数除法陷阱
@@ -181,7 +212,7 @@ public class Main {
 
         // 使用BigDecimal解决精度问题
         System.out.println("使用BigDecimal: 0.1 + 0.2 = " +
-                (new java.math.BigDecimal("0.1").add(new java.math.BigDecimal("0.2"))));
+          (new java.math.BigDecimal("0.1").add(new java.math.BigDecimal("0.2"))));
 
         // 自增运算符在表达式中的行为
         int count = 0;

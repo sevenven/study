@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>批量下载PDF</title>
+		<script type="text/javascript" src="../vue-3.4.27.global.min.js"></script>
+		<script src="./data.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+		<style>
+			:root {
+				--bl-brand-c: #224585;
+				--bl-danger-c: #ff6459;
+			}
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			#app {
+				max-width: 1200px;
+				margin: 0 auto;
+			}
+			.loading-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(255, 255, 255, 0.95);
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				z-index: 9999;
+			}
+			.spinner {
+				width: 50px;
+				height: 50px;
+				border: 5px solid #f3f3f3;
+				border-top: 5px solid var(--bl-brand-c);
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+				margin-bottom: 20px;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			.progress-container {
+				width: 360px;
+				height: 16px;
+				background: #f8f9fa;
+				border-radius: 8px;
+				overflow: hidden;
+				margin: 15px 0;
+				border: 1px solid #e9ecef;
+			}
+			.progress-bar {
+				height: 100%;
+				background: linear-gradient(135deg, var(--bl-brand-c) 0%, #3a5bbf 100%);
+				border-radius: 8px;
+				transition: width 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+				color: white;
+				font-size: 11px;
+				font-weight: 500;
+				text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+			}
+			.status-text {
+				margin-top: 10px;
+				font-size: 16px;
+				color: #333;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<h2 style="margin-bottom: 15px"><button class="download-btn" @click="initDownload" :disabled="isDownloading">批量下载PDF</button>&emsp;打印示例：</h2>
+			<template v-for="(item, index) in arr" :key="index">
+				<div v-if="index === 1" :key="index" class="print-section" style="max-width: 1200px; width: 100%; overflow: hidden; font-size: 12px; line-height: 14px; margin-bottom: 20px">
+					<div style="width: 100%; text-align: center; border: 1px solid #000; padding: 6px; font-size: 14px">{{ item.period.substring(0, 4) }}年绩效考核表</div>
+					<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%">
+						<!-- 被考核人 -->
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 280px; min-width: 280px; flex: 0 0 280px">
+							<span class="key" style="width: 130px; min-width: 130px; border: 1px solid #000; border-top: none; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 被考核人 </span>
+							<span class="value" style="width: calc(100% - 130px); border: 1px solid #000; border-top: none; border-left: none; display: flex; align-items: center; padding: 6px; flex: 1; height: 100%"> {{ item.appraised_person }} </span>
+						</div>
+						<!-- 考核周期 -->
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: calc(100% - 280px); flex: 0 0 calc(100% - 280px)">
+							<span class="key" style="min-width: 100px; border: 1px solid #000; border-top: none; border-left: none; display: flex; justify-content: center; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 考核周期 </span>
+							<span class="value" style="flex: 1; border: 1px solid #000; border-top: none; border-left: none; display: flex; align-items: center; justify-content: center; padding: 6px; height: 100%"> {{ item.period }} </span>
+						</div>
+					</div>
+					<!-- 子表 -->
+					<div class="sub-table-content" style="position: relative; left: 40px">
+						<div class="sub-table-row sub-table-header" style="display: flex; width: 100%">
+							<div class="sub-table-cell" style="width: 240px; min-width: 240px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">考核指标</div>
+							<div class="sub-table-cell" style="width: 40px; min-width: 40px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">所占分值</div>
+							<div style="width: calc(100% - 400px); display: flex">
+								<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">完成标准</div>
+								<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">计分规则</div>
+								<div class="sub-table-cell" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">数据来源</div>
+								<div class="sub-table-cell" style="width: 40px; min-width: 40px; position: relative; left: calc(-100% - 400px); border: 1px solid #000; border-top: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">序号</div>
+							</div>
+						</div>
+						<div class="evaluation-content-wrapper" style="display: flex; width: 100%">
+							<div class="evaluation-categories-container">
+								<div class="category-wrapper" style="display: flex; width: calc(100%)" v-for="(category, key) in item.evaluationCategories" :key="key">
+									<template v-if="key === 'mainItems' || key === 'subItems'">
+										<div class="category-title" style="width: 90px; min-width: 90px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0 6px">{{ getCategoryTitle(key) }}</div>
+										<div class="category-container" style="width: calc(100% - 60px)">
+											<div class="sub-category-wrapper" style="display: flex; width: 100%" v-for="(subCategory, subKey) in category" :key="subKey">
+												<div class="sub-category-title" style="width: 60px; min-width: 60px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; display: flex; align-items: center; justify-content: start; padding: 0 6px">{{ getSubCategoryTitle(subKey) }}</div>
+												<div class="sub-category-container" style="width: calc(100% - 60px)">
+													<div
+														class="sub-table-row"
+														:style="{
+																display: 'flex',
+																minHeight: (Object.keys(category).length === 1 && subCategory.length === 1) ? '100%' : 'auto'
+															}"
+														v-for="(subC, index) in subCategory"
+														:key="key + '-' + subKey + '-' + item.id"
+													>
+														<div class="sub-table-cell" style="width: 90px; min-width: 90px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.project }}</div>
+														<div class="sub-table-cell" style="width: 40px; min-width: 40px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">{{ subC.weight }}</div>
+														<div style="width: calc(100% - 250px); display: flex">
+															<div class="sub-table-cell standard-column-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.standard }}</div>
+															<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.scoringRule }}</div>
+															<div class="sub-table-cell" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.dataSource }}</div>
+															<div class="sub-table-cell" style="width: 40px; min-width: 40px; position: relative; left: calc(-100% - 400px); border: 1px solid #000; border-top: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">
+																{{ getEvaluationItemNumber(item, subKey, index) }}
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</template>
+									<!-- 否决项 -->
+									<template v-else-if="key === 'vetoItems'">
+										<div class="category-title" style="width: 280px; min-width: 280px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; display: flex; align-items: center; justify-content: start; padding: 0 6px">{{ getCategoryTitle(key) }}</div>
+										<div class="category-container" style="width: calc(100% - 400px)">
+											<div class="sub-table-row" style="display: flex" v-for="(subC, index) in category" :key="key + '-' + item.id">
+												<div class="sub-table-cell standard-column-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.pSHIzDOty4 }}</div>
+												<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.Qg2Sj2mqrR }}</div>
+												<div class="sub-table-cell" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.GCn2k97ynT }}</div>
+												<div class="sub-table-cell" style="width: 40px; min-width: 40px; position: relative; left: calc(-100% - 400px); border: 1px solid #000; border-top: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">
+													{{ getVetoItemNumber(item, index) }}
+												</div>
+											</div>
+										</div>
+									</template>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- 合计行 -->
+					<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%">
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 100%; flex: 0 0 calc(100%)">
+							<span class="key" style="width: calc(100% - 80px); min-width: 100px; border: 1px solid #000; border-top: none; display: flex; align-items: center; padding: 6px; height: 100%"> 合计 </span>
+							<span class="value" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; display: flex; align-items: center; padding: 6px; flex-shrink: 0; flex: 1; height: 100%"> </span>
+						</div>
+					</div>
+					<!-- 签字行 -->
+					<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%; border: 1px solid #000; border-top: none">
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.333%; flex: 0 0 calc(33.333%)">
+							<span class="key" style="min-width: 100px; height: 100%; display: flex; align-items: center; padding: 6px"> 员工本人签字 </span>
+							<span class="value" style="flex: 1; height: 100%; display: flex; align-items: center; padding: 6px">
+								<img v-if="item?.signature?.employee" class="signature-image" alt="员工本人签名" :src="item.signature.employee.signature" style="max-width: 80%; max-height: 40px" />
+							</span>
+						</div>
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.333%; flex: 0 0 calc(33.333%)">
+							<span class="key" style="min-width: 100px; height: 100%; display: flex; align-items: center; padding: 6px"> 考核人签字 </span>
+							<span class="value" style="flex: 1; height: 100%; display: flex; align-items: center; padding: 6px">
+								<img v-if="item?.signature?.departmentApprover" class="signature-image" alt="部门负责人签名" :src="item.signature.departmentApprover.signature" style="max-width: 80%; max-height: 40px" />
+							</span>
+						</div>
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.333%; flex: 0 0 calc(33.333%)">
+							<span class="key" style="min-width: 100px; height: 100%; display: flex; align-items: center; padding: 6px"> 审批人签字 </span>
+							<span class="value" style="flex: 1; height: 100%; display: flex; align-items: center; padding: 6px">
+								<img v-if="item?.signature?.divisionApprover" class="signature-image" alt="分管领导签名" :src="item.signature.divisionApprover.signature" style="max-width: 80%; max-height: 40px" />
+							</span>
+						</div>
+					</div>
+				</div>
+			</template>
+			<!-- 下载中遮罩层 -->
+			<div v-if="isDownloading" class="loading-overlay">
+				<div class="spinner"></div>
+				<div class="status-text">{{ statusMessage }}</div>
+				<div class="progress-container">
+					<div class="progress-bar" :style="{ width: progress + '%' }">{{ Math.round(progress) }}%</div>
+				</div>
+				<button class="download-btn" @click="cancelDownload" style="margin-top: 20px">取消下载</button>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data: function () {
+					return {
+						arr: [],
+						batchSize: 10,
+						isDownloading: false,
+						cancelRequested: false,
+						progress: 0,
+						statusMessage: ''
+					};
+				},
+				methods: {
+					// 获取数据
+					async fetchData() {
+						this.statusMessage = '正在获取数据...';
+						this.arr = window.arr || [];
+						// 为数组中的每一项添加evaluationCategories字段
+						this.arr.forEach(item => {
+							item.evaluationCategories = this.transformEvaluationData(item);
+						});
+
+						// 模拟网络延迟或大数据处理（可选）
+						// await new Promise(resolve => setTimeout(resolve, 1500));
+						this.statusMessage = `成功获取 ${this.arr.length} 条数据，准备下载...`;
+					},
+					getCategoryTitle(key) {
+						if (key === 'mainItems') return '主考核项（满分100分）';
+						if (key === 'subItems') return '辅助考核项（加减分项）';
+						if (key === 'vetoItems') return '一票否决';
+						return key;
+					},
+					getSubCategoryTitle(key) {
+						if (key === 'bonusItems') return '考核加分';
+						if (key === 'penaltyItems') return '考核减分';
+						if (key === 'importItems') return '重点任务指标';
+						if (key === 'businessItems') return '业绩指标（不低于35分）';
+						return key;
+					},
+					// 获取各类别项目数量
+					getCategoryItemCounts(item) {
+						try {
+							// 使用传入的item参数，而不是this.evaluationCategories
+							return {
+								kpiCount: item.evaluationCategories?.mainItems?.importItems?.length || 0,
+								buisCount: item.evaluationCategories?.mainItems?.businessItems?.length || 0,
+								bonusCount: item.evaluationCategories?.subItems?.bonusItems?.length || 0,
+								penaltyCount: item.evaluationCategories?.subItems?.penaltyItems?.length || 0
+							};
+						} catch (error) {
+							console.error('获取项目数量时发生错误:', error);
+							return { kpiCount: 0, buisCount: 0, bonusCount: 0, penaltyCount: 0 };
+						}
+					},
+					// 计算一票否决项的序号
+					getVetoItemNumber(item, index) {
+						try {
+							const { kpiCount, buisCount, bonusCount, penaltyCount } = this.getCategoryItemCounts(item);
+							return index + 1 + kpiCount + buisCount + bonusCount + penaltyCount;
+						} catch (error) {
+							console.error('计算一票否决项序号时发生错误:', error);
+							return index + 1; // 提供一个默认值作为后备
+						}
+					},
+					// 计算考核项的序号
+					getEvaluationItemNumber(item, subKey, index) {
+						try {
+							const { kpiCount, buisCount, bonusCount } = this.getCategoryItemCounts(item);
+							// 根据不同的子类别计算序号
+							switch (subKey) {
+								case 'importItems':
+									return index + 1;
+								case 'businessItems':
+									return index + 1 + kpiCount;
+								case 'bonusItems':
+									return index + 1 + kpiCount + buisCount;
+								case 'penaltyItems':
+									return index + 1 + kpiCount + buisCount + bonusCount;
+								default:
+									console.warn(`未知的子类别: ${subKey}`);
+									return index + 1;
+							}
+						} catch (error) {
+							console.error('计算考核项序号时发生错误:', error);
+							return index + 1; // 提供一个默认值作为后备
+						}
+					},
+					// 转换评估数据格式的方法
+					transformEvaluationData(item) {
+						const result = {
+							mainItems: {},
+							subItems: {
+								bonusItems: [],
+								penaltyItems: []
+							},
+							vetoItems: []
+						};
+
+						// 转换主要项目数据 - 参考 transformToKeyPerformanceIndicators 方法
+						if (item.performanceMainItems && Array.isArray(item.performanceMainItems) && item.performanceMainItems.length > 0) {
+							item.performanceMainItems.forEach((mainItem, index) => {
+								// 创建转换后的项目对象
+								const transformedItem = {
+									id: mainItem.uid || index + 1, // 使用 uid 作为 id，如果没有则使用索引+1
+									project: mainItem.mian_item_name,
+									weight: mainItem.score,
+									standard: mainItem.standard,
+									scoringRule: mainItem.rule,
+									dataSource: mainItem.source
+								};
+
+								// 根据 mian_item_type 的值决定放入哪个数组
+								if (mainItem.mian_item_type === 'key_tasks') {
+									if (!result.mainItems.importItems) result.mainItems.importItems = [];
+									result.mainItems.importItems.push(transformedItem);
+								} else if (mainItem.mian_item_type === 'performance_indicators') {
+									if (!result.mainItems.businessItems) result.mainItems.businessItems = [];
+									result.mainItems.businessItems.push(transformedItem);
+								}
+							});
+						}
+
+						if (item.performanceSupportItems && Array.isArray(item.performanceSupportItems)) {
+							item.performanceSupportItems.forEach((supportItem, index) => {
+								// 创建转换后的项目对象
+								const transformedItem = {
+									id: supportItem.uid || index + 1,
+									project: supportItem.item_name,
+									weight: '',
+									standard: supportItem.standard,
+									scoringRule: supportItem.rule,
+									dataSource: supportItem.source,
+									supervisorScore: supportItem.manager_score
+								};
+
+								// 根据 item_type 的值决定放入哪个数组
+								if (supportItem.item_type === 'add_score') {
+									// if (!result.subItems.bonusItems) result.subItems.bonusItems = [];
+									result.subItems.bonusItems.push(transformedItem);
+								} else if (supportItem.item_type === 'minus_score') {
+									// if (!result.subItems.penaltyItems) result.subItems.penaltyItems = [];
+									result.subItems.penaltyItems.push(transformedItem);
+								}
+							});
+						}
+
+						// 转换否决项目数据
+						if (item.performanceVetoItems && Array.isArray(item.performanceVetoItems) && item.performanceVetoItems.length > 0) {
+							item.performanceVetoItems.forEach(vetoItem => {
+								result.vetoItems.push({
+									SrYtMC0pNt: vetoItem.item_type,
+									UummUIIVlh: vetoItem.item_name,
+									pSHIzDOty4: vetoItem.standard,
+									Qg2Sj2mqrR: vetoItem.rule,
+									GCn2k97ynT: vetoItem.source,
+									uid: vetoItem.uid
+								});
+							});
+						}
+
+						return result;
+					},
+					// 初始化下载：先生成数据，再下载
+					async initDownload() {
+						this.isDownloading = true;
+						this.cancelRequested = false;
+						this.progress = 0;
+						this.statusMessage = '准备中...';
+
+						try {
+							// 第一步：获取数据
+							await this.fetchData();
+							// 检查是否有数据需要下载
+							if (this.arr.length === 0) {
+								this.statusMessage = '没有可下载的数据';
+								setTimeout(() => {
+									this.isDownloading = false;
+								}, 1500);
+								return;
+							}
+							// 第二步：开始下载所有PDF
+							await this.downloadAllPDFs(this.arr);
+						} catch (error) {
+							console.error('下载过程中出错:', error);
+							this.statusMessage = '下载失败: ' + error.message;
+							setTimeout(() => {
+								this.isDownloading = false;
+							}, 1500);
+						}
+					},
+					// 下载所有PDF（分批处理）
+					async downloadAllPDFs(items) {
+						const zip = new JSZip();
+						const total = items.length;
+
+						for (let batchStart = 0; batchStart < total; batchStart += this.batchSize) {
+							if (this.cancelRequested) break;
+
+							const batchEnd = Math.min(batchStart + this.batchSize, total);
+							this.statusMessage = `正在生成PDF：第 ${batchStart + 1}-${batchEnd} 条，共 ${total} 条`;
+
+							// 处理当前批次
+							for (let i = batchStart; i < batchEnd; i++) {
+								if (this.cancelRequested) break;
+
+								this.progress = (i / total) * 100;
+
+								try {
+									const item = items[i];
+									const tempElement = this.createTempElement(item);
+									document.body.appendChild(tempElement);
+
+									// 生成PDF Blob
+									const pdfBlob = await this.generatePDF(tempElement);
+									const fileName = `${item.appraised_person}_${item.period.split(' ')[0]}.pdf`;
+									zip.file(fileName, pdfBlob);
+
+									// 清理临时元素
+									document.body.removeChild(tempElement);
+
+									// 小延迟避免UI阻塞
+									await new Promise(resolve => setTimeout(resolve, 50));
+								} catch (error) {
+									console.error(`生成第 ${i + 1} 个PDF失败:`, error);
+								}
+							}
+
+							// 每批后暂停一下，提升响应性
+							await new Promise(resolve => setTimeout(resolve, 100));
+						}
+
+						if (this.cancelRequested) return;
+
+						// 生成ZIP文件
+						this.statusMessage = '正在打包ZIP文件...';
+						const zipBlob = await zip.generateAsync({
+							type: 'blob',
+							compression: 'DEFLATE',
+							compressionOptions: { level: 6 }
+						});
+
+						this.statusMessage = '正在下载ZIP...';
+						saveAs(zipBlob, '绩效考核表.zip');
+
+						this.progress = 100;
+						this.statusMessage = '全部下载完成！';
+
+						setTimeout(() => {
+							this.isDownloading = false;
+						}, 1500);
+					},
+					// 创建临时DOM用于生成PDF
+					createTempElement(item) {
+						const tempDiv = document.createElement('div');
+						tempDiv.style.position = 'absolute';
+						tempDiv.style.left = '-9999px';
+						tempDiv.style.top = '0';
+						tempDiv.style.width = '1200px';
+						tempDiv.style.padding = '20px';
+						tempDiv.style.background = 'white';
+
+						// 定义模板字符串
+						const template = `
+							<div class="print-section" style="width: 100%; overflow: hidden; font-size: 12px; line-height: 14px">
+								<div style="width: 100%; text-align: center; border: 1px solid #000; padding: 6px; font-size: 14px">{{ item.period.substring(0, 4) }}年绩效考核表</div>
+								<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%">
+									<!-- 被考核人 -->
+									<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 280px; min-width: 280px; flex: 0 0 280px">
+										<span class="key" style="width: 130px; min-width: 130px; border: 1px solid #000; border-top: none; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 被考核人 </span>
+										<span class="value" style="width: calc(100% - 130px); border: 1px solid #000; border-top: none; border-left: none; display: flex; align-items: center; padding: 6px; flex: 1; height: 100%"> {{ item.appraised_person }} </span>
+									</div>
+									<!-- 考核周期 -->
+									<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: calc(100% - 280px); flex: 0 0 calc(100% - 280px)">
+										<span class="key" style="min-width: 100px; border: 1px solid #000; border-top: none; border-left: none; display: flex; justify-content: center; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 考核周期 </span>
+										<span class="value" style="flex: 1; border: 1px solid #000; border-top: none; border-left: none; display: flex; align-items: center; justify-content: center; padding: 6px; height: 100%"> {{ item.period }} </span>
+									</div>
+								</div>
+								<!-- 子表 -->
+								<div class="sub-table-content" style="position: relative; left: 40px">
+									<div class="sub-table-row sub-table-header" style="display: flex; width: 100%">
+										<div class="sub-table-cell" style="width: 240px; min-width: 240px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">考核指标</div>
+										<div class="sub-table-cell" style="width: 40px; min-width: 40px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">所占分值</div>
+										<div style="width: calc(100% - 400px); display: flex">
+											<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">完成标准</div>
+											<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">计分规则</div>
+											<div class="sub-table-cell" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">数据来源</div>
+											<div class="sub-table-cell" style="width: 40px; min-width: 40px; position: relative; left: calc(-100% - 400px); border: 1px solid #000; border-top: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">序号</div>
+										</div>
+									</div>
+									<div class="evaluation-content-wrapper" style="display: flex; width: 100%">
+										<div class="evaluation-categories-container">
+											<div class="category-wrapper" style="display: flex; width: calc(100%)" v-for="(category, key) in item.evaluationCategories" :key="key">
+												<template v-if="key === 'mainItems' || key === 'subItems'">
+													<div class="category-title" style="width: 90px; min-width: 90px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0 6px">{{ getCategoryTitle(key) }}</div>
+													<div class="category-container" style="width: calc(100% - 60px)">
+														<div class="sub-category-wrapper" style="display: flex; width: 100%" v-for="(subCategory, subKey) in category" :key="subKey">
+															<div class="sub-category-title" style="width: 60px; min-width: 60px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; display: flex; align-items: center; justify-content: start; padding: 0 6px">{{ getSubCategoryTitle(subKey) }}</div>
+															<div class="sub-category-container" style="width: calc(100% - 60px)">
+																<div
+																	class="sub-table-row"
+																	:style="{
+																			display: 'flex',
+																			minHeight: (Object.keys(category).length === 1 && subCategory.length === 1) ? '100%' : 'auto'
+																		}"
+																	v-for="(subC, index) in subCategory"
+																	:key="key + '-' + subKey + '-' + item.id"
+																>
+																	<div class="sub-table-cell" style="width: 90px; min-width: 90px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.project }}</div>
+																	<div class="sub-table-cell" style="width: 40px; min-width: 40px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">{{ subC.weight }}</div>
+																	<div style="width: calc(100% - 250px); display: flex">
+																		<div class="sub-table-cell standard-column-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.standard }}</div>
+																		<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.scoringRule }}</div>
+																		<div class="sub-table-cell" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.dataSource }}</div>
+																		<div class="sub-table-cell" style="width: 40px; min-width: 40px; position: relative; left: calc(-100% - 400px); border: 1px solid #000; border-top: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">
+																			{{ getEvaluationItemNumber(item, subKey, index) }}
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</template>
+												<!-- 否决项 -->
+												<template v-else-if="key === 'vetoItems'">
+													<div class="category-title" style="width: 280px; min-width: 280px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; display: flex; align-items: center; justify-content: start; padding: 0 6px">{{ getCategoryTitle(key) }}</div>
+													<div class="category-container" style="width: calc(100% - 400px)">
+														<div class="sub-table-row" style="display: flex" v-for="(subC, index) in category" :key="key + '-' + item.id">
+															<div class="sub-table-cell standard-column-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.pSHIzDOty4 }}</div>
+															<div class="sub-table-cell" style="width: 50%; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.Qg2Sj2mqrR }}</div>
+															<div class="sub-table-cell" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: start">{{ subC.GCn2k97ynT }}</div>
+															<div class="sub-table-cell" style="width: 40px; min-width: 40px; position: relative; left: calc(-100% - 400px); border: 1px solid #000; border-top: none; flex-shrink: 0; padding: 6px; display: flex; align-items: center; justify-content: center">
+																{{ getVetoItemNumber(item, index) }}
+															</div>
+														</div>
+													</div>
+												</template>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- 合计行 -->
+								<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%">
+									<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 100%; flex: 0 0 calc(100%)">
+										<span class="key" style="width: calc(100% - 80px); min-width: 100px; border: 1px solid #000; border-top: none; display: flex; align-items: center; padding: 6px; height: 100%"> 合计 </span>
+										<span class="value" style="width: 80px; min-width: 80px; border: 1px solid #000; border-top: none; border-left: none; display: flex; align-items: center; padding: 6px; flex-shrink: 0; flex: 1; height: 100%"> </span>
+									</div>
+								</div>
+								<!-- 签字行 -->
+								<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%; border: 1px solid #000; border-top: none">
+									<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.333%; flex: 0 0 calc(33.333%)">
+										<span class="key" style="min-width: 100px; height: 100%; display: flex; align-items: center; padding: 6px"> 员工本人签字 </span>
+										<span class="value" style="flex: 1; height: 100%; display: flex; align-items: center; padding: 6px">
+											<img v-if="item?.signature?.employee" class="signature-image" alt="员工本人签名" :src="item.signature.employee.signature" style="max-width: 80%; max-height: 40px" />
+										</span>
+									</div>
+									<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.333%; flex: 0 0 calc(33.333%)">
+										<span class="key" style="min-width: 100px; height: 100%; display: flex; align-items: center; padding: 6px"> 考核人签字 </span>
+										<span class="value" style="flex: 1; height: 100%; display: flex; align-items: center; padding: 6px">
+											<img v-if="item?.signature?.departmentApprover" class="signature-image" alt="部门负责人签名" :src="item.signature.departmentApprover.signature" style="max-width: 80%; max-height: 40px" />
+										</span>
+									</div>
+									<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.333%; flex: 0 0 calc(33.333%)">
+										<span class="key" style="min-width: 100px; height: 100%; display: flex; align-items: center; padding: 6px"> 审批人签字 </span>
+										<span class="value" style="flex: 1; height: 100%; display: flex; align-items: center; padding: 6px">
+											<img v-if="item?.signature?.divisionApprover" class="signature-image" alt="分管领导签名" :src="item.signature.divisionApprover.signature" style="max-width: 80%; max-height: 40px" />
+										</span>
+									</div>
+								</div>
+							</div>
+						`;
+						try {
+							// 编译模板
+							const compiled = Vue.compile(template);
+							// 创建渲染函数组件
+							const component = {
+								props: ['item', 'getCategoryTitle', 'getSubCategoryTitle', 'getCategoryItemCounts', 'getVetoItemNumber', 'getEvaluationItemNumber'],
+								render: compiled
+							};
+							// 创建应用实例
+							const app = Vue.createApp(component, {
+								item,
+								getCategoryTitle: this.getCategoryTitle.bind(this),
+								getSubCategoryTitle: this.getSubCategoryTitle.bind(this),
+								getCategoryItemCounts: this.getCategoryItemCounts.bind(this),
+								getVetoItemNumber: this.getVetoItemNumber.bind(this),
+								getEvaluationItemNumber: this.getEvaluationItemNumber.bind(this)
+							});
+
+							// 创建容器并挂载
+							const container = document.createElement('div');
+							const vm = app.mount(container);
+							// 将渲染后的内容复制到临时元素
+							tempDiv.appendChild(container);
+						} catch (error) {
+							console.error('模板编译错误:', error);
+						}
+						return tempDiv;
+					},
+					// async generatePDF(element) {
+					// 	return new Promise(async (resolve, reject) => {
+					// 		try {
+					// 			const canvas = await html2canvas(element, {
+					// 				scale: 2,
+					// 				useCORS: true,
+					// 				logging: false,
+					// 				backgroundColor: '#ffffff'
+					// 			});
+
+					// 			const imgWidthPx = canvas.width;
+					// 			const imgHeightPx = canvas.height;
+
+					// 			const pdf = new jspdf.jsPDF({
+					// 				orientation: 'landscape', // 横向
+					// 				unit: 'mm',
+					// 				format: 'a4'
+					// 			});
+
+					// 			const pdfWidth = pdf.internal.pageSize.getWidth(); // 297mm
+					// 			const pdfHeight = pdf.internal.pageSize.getHeight(); // 210mm
+
+					// 			// 浏览器默认 DPI 是 96
+					// 			const dpi = 96;
+					// 			const pxToMm = 25.4 / dpi;
+					// 			const imgWidthMm = imgWidthPx * pxToMm;
+					// 			const imgHeightMm = imgHeightPx * pxToMm;
+
+					// 			// 按宽度铺满横向页面
+					// 			const scale = pdfWidth / imgWidthMm;
+					// 			const scaledWidth = imgWidthMm * scale;
+					// 			const scaledHeight = imgHeightMm * scale;
+					// 			const imgX = (pdfWidth - scaledWidth) / 2;
+
+					// 			// ====== 分页逻辑开始 ======
+					// 			const totalPages = Math.ceil(scaledHeight / pdfHeight);
+
+					// 			for (let page = 0; page < totalPages; page++) {
+					// 				if (page > 0) {
+					// 					pdf.addPage();
+					// 				}
+
+					// 				const startY = page * pdfHeight;
+					// 				const clipHeightMm = Math.min(pdfHeight, scaledHeight - startY);
+					// 				const clipHeightRatio = clipHeightMm / scaledHeight;
+
+					// 				// 计算源图像裁剪区域（px）
+					// 				const sourceY = (startY / scaledHeight) * imgHeightMm * (dpi / 25.4);
+					// 				const sourceHeight = clipHeightRatio * imgHeightPx;
+
+					// 				// 创建临时 canvas 裁剪
+					// 				const tempCanvas = document.createElement('canvas');
+					// 				tempCanvas.width = imgWidthPx;
+					// 				tempCanvas.height = sourceHeight;
+					// 				const ctx = tempCanvas.getContext('2d');
+					// 				ctx.drawImage(canvas, 0, sourceY, imgWidthPx, sourceHeight, 0, 0, imgWidthPx, sourceHeight);
+
+					// 				const pageImgData = tempCanvas.toDataURL('image/jpeg', 0.9);
+					// 				pdf.addImage(pageImgData, 'JPEG', imgX, 0, scaledWidth, clipHeightMm);
+					// 			}
+
+					// 			resolve(pdf.output('blob'));
+					// 		} catch (error) {
+					// 			reject(error);
+					// 		}
+					// 	});
+					// },
+					async generatePDF(element) {
+						return new Promise(async (resolve, reject) => {
+							try {
+								const canvas = await html2canvas(element, {
+									scale: 2,
+									useCORS: true,
+									logging: false,
+									backgroundColor: '#ffffff'
+								});
+
+								const imgWidthPx = canvas.width;
+								const imgHeightPx = canvas.height;
+
+								const pdf = new jspdf.jsPDF({
+									orientation: 'landscape', // 横向
+									unit: 'mm',
+									format: 'a4'
+								});
+
+								const pdfWidth = pdf.internal.pageSize.getWidth(); // 297mm
+								const pdfHeight = pdf.internal.pageSize.getHeight(); // 210mm
+
+								// 浏览器默认 DPI 是 96
+								const dpi = 96;
+								const pxToMm = 25.4 / dpi;
+								const imgWidthMm = imgWidthPx * pxToMm;
+								const imgHeightMm = imgHeightPx * pxToMm;
+
+								// 按宽度铺满横向页面
+								const scale = pdfWidth / imgWidthMm;
+								const scaledWidth = imgWidthMm * scale;
+								const scaledHeight = imgHeightMm * scale;
+								const imgX = (pdfWidth - scaledWidth) / 2;
+
+								// ====== 分页逻辑开始 ======
+								const totalPages = Math.ceil(scaledHeight / pdfHeight);
+
+								for (let page = 0; page < totalPages; page++) {
+									if (page > 0) {
+										pdf.addPage();
+									}
+
+									const startY = page * pdfHeight;
+									const clipHeightMm = Math.min(pdfHeight, scaledHeight - startY);
+									const clipHeightRatio = clipHeightMm / scaledHeight;
+
+									// 计算源图像裁剪区域（px）
+									const sourceY = (startY / scaledHeight) * imgHeightMm * (dpi / 25.4);
+									const sourceHeight = clipHeightRatio * imgHeightPx;
+
+									// 创建临时 canvas 裁剪
+									const tempCanvas = document.createElement('canvas');
+									tempCanvas.width = imgWidthPx;
+									tempCanvas.height = sourceHeight;
+									const ctx = tempCanvas.getContext('2d');
+									ctx.drawImage(canvas, 0, sourceY, imgWidthPx, sourceHeight, 0, 0, imgWidthPx, sourceHeight);
+
+									const pageImgData = tempCanvas.toDataURL('image/jpeg', 0.9);
+									pdf.addImage(pageImgData, 'JPEG', imgX, 0, scaledWidth, clipHeightMm);
+								}
+
+								resolve(pdf.output('blob'));
+							} catch (error) {
+								reject(error);
+							}
+						});
+					},
+					async generatePDF(element) {
+						return new Promise((resolve, reject) => {
+							html2canvas(element, {
+								scale: 2,
+								useCORS: true,
+								logging: false,
+								backgroundColor: '#ffffff'
+							})
+								.then(canvas => {
+									const imgData = canvas.toDataURL('image/jpeg', 0.9);
+									const pdf = new jspdf.jsPDF({
+										orientation: 'portrait',
+										unit: 'mm',
+										format: 'a4'
+									});
+									const pdfWidth = pdf.internal.pageSize.getWidth();
+									const pdfHeight = pdf.internal.pageSize.getHeight();
+									const imgWidth = canvas.width;
+									const imgHeight = canvas.height;
+									const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+									const imgX = (pdfWidth - imgWidth * ratio) / 2;
+									pdf.addImage(imgData, 'JPEG', imgX, 0, imgWidth * ratio, imgHeight * ratio);
+									resolve(pdf.output('blob'));
+								})
+								.catch(reject);
+						});
+					},
+					// 取消下载
+					cancelDownload() {
+						this.cancelRequested = true;
+						let countdown = 3;
+						this.statusMessage = `取消下载：${countdown}s`;
+
+						const timer = setInterval(() => {
+							countdown--;
+							if (countdown > 0) {
+								this.statusMessage = `取消下载：${countdown}s`;
+							} else {
+								clearInterval(timer);
+								this.isDownloading = false;
+							}
+						}, 1000);
+					}
+				}
+			}).mount('#app');
+		</script>
+		<script>
+			// 获取签名
+			function getSign(timestamp, bizparam) {
+				const secret = '85wqm31o7mnaeep6exhq57s6ibtkc3x72vauhaezjtdr6d2fcsdkxtwlxggjcy6y';
+				const text = secret + timestamp + JSON.stringify(bizparam);
+				const md5Result = CryptoJS.MD5(text).toString();
+				return md5Result;
+			}
+
+			export async function handleProcessRestart(payload) {
+				const host = window.location.host;
+				const url = '/ego_api/api/v2/manager/flow/restart';
+				const bizparam = {
+					processinstance_id: processParam.process_instance_id,
+					assignee_id: utils.getUserInfo().employee_id
+				};
+				const timestamp = new Date().getTime();
+
+				const sign = getSign(timestamp, bizparam);
+				const tenant_id = utils.getUserInfo().tenant_id;
+				const param = {
+					app_id: 'r4c6sae4',
+					sign: sign,
+					sign_type: 'md5',
+					timestamp: timestamp,
+					tenant_id: tenant_id,
+					biz_params: JSON.stringify(bizparam)
+				};
+				try {
+					// 使用异步方式处理HTTP请求
+					const res = await http.post(url, param);
+
+					// 检查响应状态
+					if (res && res.code === 200) {
+						utils.toast('流程重启成功！', 'success');
+						return true;
+					} else {
+						// 提供更具体的错误信息
+						const errorMsg = res?.message || '重启流程失败，请联系管理员！';
+						utils.toast(errorMsg, 'error');
+						return false;
+					}
+				} catch (error) {
+					// 捕获网络错误或其他异常
+					console.error('重启流程时发生异常:', error);
+					utils.toast('网络异常，请检查网络连接后重试！', 'error');
+					return false;
+				}
+			}
+		</script>
+	</body>
+</html>
