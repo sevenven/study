@@ -58,18 +58,52 @@ if (organizationLedgers && organizationLedgers.size() > 0) {
 }
 
 // 根据组织类型动态更新当前上报台账信息
+def currentTimestamp = new Date().getTime()
 def updateParams = [uid: ledgerResult.uid]
 // 根据组织类型动态添加不同参数
 switch (partyOrganizationInfo.parent_org_category_code) {
   case "party_committee":
     updateParams.is_reported_to_committee = "1"
-    updateParams.report_to_committee_time = new Date().getTime()
+    updateParams.report_to_committee_time = currentTimestamp
     break
   case "party_branch":
     updateParams.is_reported_to_branch = "1"
-    updateParams.report_to_branch_time = new Date().getTime()
+    updateParams.report_to_branch_time = currentTimestamp
     break
   default:
     logger.warn("未知的组织类型")
 }
 callService("app_mgt503l5m8", "t_organization_ledgers_rblschqz_update", updateParams)
+
+// 如果当前组织类型是党总支，则查找并更新相关台账信息
+if (partyOrganizationInfo.org_category_code == "party_branch") {
+  // 查找 parent_id等于 ledgerResult.party_organizations_id 且ledger_date等于ledgerResult.ledger_date 的台账
+  def relatedLedgers = callService("app_mgt503l5m8", "t_organization_ledgers_rblschqz_selectMore", JsonOutput.toJson([
+    "page_index": 1,
+    "page_size": 1000,
+    "query_criteria": [
+      [
+        "column_name_list": null,
+        "column_name": "parent_id",
+        "value": [ledgerResult.party_organizations_id],
+        "query_type": 0
+      ],
+      [
+        "column_name_list": null,
+        "column_name": "ledger_date",
+        "value": [ledgerResult.ledger_date],
+        "query_type": 0
+      ]
+    ]]))
+  
+  logger.info("找到相关台账记录数量: " + (relatedLedgers ? relatedLedgers.size() : 0))
+  
+  // 循环更新台账信息
+  if (relatedLedgers && relatedLedgers.size() > 0) {
+    relatedLedgers.each { ledger ->
+      // 调用服务更新台账信息
+      callService("app_mgt503l5m8", "t_organization_ledgers_rblschqz_update", [uid: ledger.uid, is_reported_to_committee: "1", report_to_committee_time: currentTimestamp])
+    }
+  }
+}
+  
