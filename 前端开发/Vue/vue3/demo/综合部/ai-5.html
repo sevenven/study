@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>项目议案编辑器</title>
+		<script type="text/javascript" src="../vue-3.4.27.global.min.js"></script>
+		<!-- 引入 js -->
+		<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+		<!-- 引入 css -->
+		<link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet" />
+		<!-- 引入文件保存库 -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			:root {
+				--bl-n250-c: #e8eaed;
+				--bl-n900-c: #1f2329;
+				--bl-n600-c: #646a73;
+			}
+			body {
+				font-family: Arial, sans-serif;
+				padding: 20px;
+				margin: 0;
+			}
+			/* 表格容器 */
+			.table-container {
+				overflow-x: visible;
+				width: 100%;
+			}
+			/* 媒体查询，适配手机屏幕 */
+			@media (max-width: 768px) {
+				body {
+					padding: 10px;
+				}
+				.table-container {
+					overflow-x: hidden;
+					max-width: 95vw;
+					margin: 0 auto;
+				}
+				table {
+					width: 95vw !important;
+					font-size: 12px;
+				}
+				th,
+				td {
+					padding: 4px !important;
+					font-size: 12px;
+				}
+				/* 调整单选框组在小屏幕上的布局 */
+				.radio-group {
+					justify-content: space-around !important;
+					flex-wrap: wrap !important;
+				}
+				.radio-option {
+					flex: 1;
+					min-width: 40px;
+					margin: 2px !important;
+					padding: 2px !important;
+				}
+				/* 调整单选框和标签在小屏幕上的样式 */
+				.radio-option input,
+				.radio-option label {
+					font-size: 11px;
+				}
+				/* 提交按钮适配 */
+				.submit-button {
+					width: 100%;
+					max-width: 200px;
+				}
+			}
+			/* 平板及以上设备的样式 */
+			@media (min-width: 769px) {
+				.table-container {
+					max-width: 1800px;
+					margin: 0 auto;
+				}
+			}
+			.app-box {
+				max-width: 2400px;
+				margin: 0 auto;
+				padding: 20px;
+				border: 1px solid var(--bl-n250-c);
+				border-radius: 8px;
+				background-color: transparent;
+			}
+
+			/* 左右布局样式 */
+			.main-layout {
+				display: flex;
+				gap: 20px;
+				width: 100%;
+			}
+
+			.left-panel {
+				flex: 1;
+				min-width: 0;
+			}
+
+			.right-panel {
+				flex: 1;
+				min-width: 0;
+			}
+
+			/* 输入框区域样式 */
+			.input-panel {
+				background: #f8f9fa;
+				border: 1px solid #e9ecef;
+				border-radius: 6px;
+				padding: 20px;
+				margin-bottom: 20px;
+				max-height: 600px;
+				overflow-y: auto;
+			}
+
+			.input-group {
+				margin-bottom: 15px;
+			}
+
+			.input-group label {
+				display: block;
+				margin-bottom: 5px;
+				font-weight: bold;
+				color: #333;
+				font-size: 14px;
+			}
+
+			.input-group input,
+			.input-group textarea {
+				width: 100%;
+				padding: 8px 12px;
+				border: 1px solid #dcdfe6;
+				border-radius: 4px;
+				font-size: 14px;
+				transition: border-color 0.3s;
+			}
+
+			.input-group input:focus,
+			.input-group textarea:focus {
+				outline: none;
+				border-color: #1890ff;
+				box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+			}
+
+			.input-group textarea {
+				min-height: 80px;
+				resize: vertical;
+			}
+
+			.form-buttons {
+				display: flex;
+				gap: 10px;
+				margin-top: 20px;
+			}
+
+			/* 预览区域样式 */
+			.preview-area {
+				height: 600px;
+				overflow-y: auto;
+				padding: 15px;
+				background-color: #fff;
+				border: 1px solid #dcdfe6;
+				border-radius: 4px;
+			}
+
+			.preview-content {
+				min-height: 550px;
+				max-height: calc(100% - 30px);
+				overflow-y: auto;
+				padding: 15px;
+				background-color: #fff;
+				border: 1px solid #dcdfe6;
+				border-radius: 4px;
+				width: 100%;
+				display: block;
+			}
+
+			/* 预览模态框中的预览区域样式 */
+			.preview-modal-body .preview-area {
+				height: 70vh;
+				max-height: 800px;
+				overflow-y: auto;
+				padding: 15px;
+				background-color: #fff;
+				border: 1px solid #dcdfe6;
+				border-radius: 4px;
+			}
+
+			.preview-modal-body .preview-content {
+				min-height: calc(70vh - 50px);
+				max-height: calc(70vh - 50px);
+				overflow-y: auto;
+				width: 100%;
+				display: block;
+			}
+
+			/* 响应式布局 - 在小屏幕上恢复垂直排列 */
+			@media (max-width: 768px) {
+				.main-layout {
+					flex-direction: column;
+				}
+			}
+			button {
+				background-color: #1890ff;
+				color: white;
+				border: none;
+				padding: 10px 15px;
+				margin: 10px 5px;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 14px;
+				transition: all 0.3s;
+			}
+			button:hover {
+				background-color: #40a9ff;
+				transform: translateY(-1px);
+				box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+			}
+			button.secondary {
+				background-color: #52c41a;
+			}
+			button.secondary:hover {
+				background-color: #73d13d;
+			}
+			button.danger {
+				background-color: #ff4d4f;
+			}
+			button.danger:hover {
+				background-color: #ff7875;
+			}
+			button.warning {
+				background-color: #faad14;
+			}
+			button.warning:hover {
+				background-color: #ffc53d;
+			}
+			button.template {
+				background-color: #722ed1;
+			}
+			button.template:hover {
+				background-color: #9254de;
+			}
+			button.preview {
+				background-color: #13c2c2;
+			}
+			button.preview:hover {
+				background-color: #36cfc9;
+			}
+			button.info {
+				background-color: #1890ff;
+			}
+			button.info:hover {
+				background-color: #40a9ff;
+			}
+
+			/* 手机端适配 */
+			@media screen and (max-width: 768px) {
+				body {
+					padding: 10px;
+				}
+				.app-box {
+					padding: 10px;
+				}
+				.table-container {
+					overflow-x: auto;
+					-webkit-overflow-scrolling: touch;
+					margin: 10px 0;
+				}
+				table {
+					min-width: 600px;
+				}
+				th,
+				td {
+					font-size: 14px !important;
+					padding: 6px !important;
+				}
+				.rating-options {
+					flex-wrap: wrap;
+					gap: 10px;
+				}
+				.rating-option {
+					margin: 5px !important;
+					flex: 0 0 calc(50% - 10px);
+				}
+				.button-group {
+					display: flex;
+					flex-wrap: wrap;
+					gap: 5px;
+				}
+				.button-group button {
+					flex: 1;
+					min-width: 120px;
+					margin: 2px;
+					padding: 8px 12px;
+					font-size: 12px;
+				}
+			}
+			.example {
+				text-align: center;
+				background: rgba(0, 0, 0, 0.05);
+				border-radius: 4px;
+				margin-bottom: 20px;
+				padding: 30px 50px;
+				margin: 20px 0;
+			}
+			.demo-dropdown-wrap :deep(.ant-dropdown-button) {
+				margin-right: 8px;
+				margin-bottom: 8px;
+			}
+			.container {
+				max-width: 1000px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+			/* 编辑器css */
+			.editor-area {
+				border: 1px solid #dcdfe6;
+				border-radius: 4px;
+				margin-bottom: 20px;
+			}
+			.toolbar-container {
+				border-bottom: 1px solid #dcdfe6;
+				background: #f5f7fa;
+			}
+			.editor-container {
+				min-height: 400px;
+				padding: 12px;
+			}
+			.button-group {
+				margin: 15px 0;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+			.button-group button {
+				margin: 0;
+			}
+			.preview-area {
+				border: 1px solid #e4e7ed;
+				border-radius: 4px;
+				padding: 15px;
+				margin-top: 20px;
+				overflow-y: auto;
+				max-height: 400px;
+			}
+			.preview-content {
+				min-height: 100px;
+				max-height: 400px;
+				overflow-y: auto;
+				border: 1px solid #f0f0f0;
+				padding: 15px;
+				width: 100%;
+				display: block;
+				margin-top: 10px;
+				background: white;
+				line-height: 1.6;
+			}
+			.stats-panel {
+				background: #f8f9fa;
+				border: 1px solid #e9ecef;
+				border-radius: 6px;
+				padding: 15px;
+				margin: 15px 0;
+			}
+			.stats-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+				gap: 15px;
+				margin-top: 10px;
+			}
+			.stat-item {
+				text-align: center;
+				padding: 10px;
+				background: white;
+				border-radius: 4px;
+				border: 1px solid #e9ecef;
+			}
+			.stat-value {
+				font-size: 24px;
+				font-weight: bold;
+				color: #1890ff;
+			}
+			.stat-label {
+				font-size: 12px;
+				color: #6c757d;
+				margin-top: 5px;
+			}
+			.status-indicator {
+				display: inline-block;
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				margin-right: 8px;
+			}
+			.status-saving {
+				background-color: #faad14;
+				animation: pulse 1.5s infinite;
+			}
+			.status-saved {
+				background-color: #52c41a;
+			}
+			@keyframes pulse {
+				0% {
+					opacity: 1;
+				}
+				50% {
+					opacity: 0.5;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			.file-input {
+				display: none;
+			}
+			.notification {
+				position: fixed;
+				top: 20px;
+				right: 20px;
+				padding: 15px 20px;
+				background: #52c41a;
+				color: white;
+				border-radius: 6px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+				z-index: 1000;
+				transform: translateX(100%);
+				transition: transform 0.3s ease;
+			}
+			.notification.show {
+				transform: translateX(0);
+			}
+			.notification.error {
+				background: #ff4d4f;
+			}
+
+			/* 模板选择区域 */
+			.template-panel {
+				background: #f0f8ff;
+				border: 1px solid #91d5ff;
+				border-radius: 6px;
+				padding: 15px;
+				margin: 15px 0;
+			}
+			.template-buttons {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				margin-top: 10px;
+			}
+			.template-info {
+				background: #e6f7ff;
+				border: 1px solid #91d5ff;
+				border-radius: 4px;
+				padding: 10px;
+				margin-top: 10px;
+				font-size: 14px;
+				color: #0050b3;
+			}
+
+			/* 预览模态框样式 */
+			.preview-modal {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 2000;
+			}
+			.preview-modal-content {
+				background: white;
+				border-radius: 8px;
+				width: 90%;
+				height: auto;
+				max-height: 90vh;
+				max-width: 1200px;
+				display: flex;
+				flex-direction: column;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+			}
+
+			/* 确保模态框本身不会产生滚动条 */
+			.preview-modal {
+				overflow: visible !important;
+			}
+			.preview-modal-header {
+				padding: 20px;
+				border-bottom: 1px solid #e8e8e8;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.preview-modal-body {
+				flex: 1;
+				padding: 20px;
+				overflow-y: visible;
+				display: flex;
+				flex-direction: column;
+			}
+			.preview-modal-footer {
+				padding: 15px 20px;
+				border-top: 1px solid #e8e8e8;
+				display: flex;
+				justify-content: flex-end;
+				gap: 10px;
+			}
+			.close-button {
+				background: none;
+				border: none;
+				font-size: 24px;
+				cursor: pointer;
+				color: #999;
+				padding: 0;
+				margin: 0;
+			}
+			.close-button:hover {
+				color: #666;
+			}
+
+			/* 模板HTML模态框样式 */
+			.template-html-modal {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 2000;
+			}
+			.template-html-modal-content {
+				background: white;
+				border-radius: 8px;
+				width: 95%;
+				height: 90%;
+				max-width: 1200px;
+				display: flex;
+				flex-direction: column;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+			}
+			.template-html-modal-header {
+				padding: 20px;
+				border-bottom: 1px solid #e8e8e8;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.template-html-modal-body {
+				flex: 1;
+				padding: 20px;
+				overflow-y: auto;
+				display: flex;
+				flex-direction: column;
+			}
+			.template-html-modal-footer {
+				padding: 15px 20px;
+				border-top: 1px solid #e8e8e8;
+				display: flex;
+				justify-content: flex-end;
+				gap: 10px;
+			}
+			.template-html-content {
+				flex: 1;
+				border: 1px solid #e8e8e8;
+				border-radius: 4px;
+				padding: 15px;
+				font-family: 'Courier New', monospace;
+				font-size: 12px;
+				line-height: 1.4;
+				background: #f8f9fa;
+				white-space: pre-wrap;
+				word-break: break-all;
+				overflow-x: auto;
+			}
+			.copy-button {
+				background-color: #1890ff;
+				color: white;
+				border: none;
+				padding: 8px 16px;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 14px;
+			}
+			.copy-button:hover {
+				background-color: #40a9ff;
+			}
+			.copy-button.success {
+				background-color: #52c41a;
+			}
+			.html-format-options {
+				margin-bottom: 15px;
+				padding: 10px;
+				background: #f0f8ff;
+				border-radius: 4px;
+			}
+			.format-option {
+				display: flex;
+				align-items: center;
+				margin-bottom: 8px;
+			}
+			.format-option input {
+				margin-right: 8px;
+			}
+			.format-option label {
+				font-size: 14px;
+				color: #333;
+			}
+			/* 控制编辑器内段落间距 */
+			#editor-container .w-e-text p {
+				margin: 0 0 8px 0 !important;
+				line-height: 1.5 !important;
+			}
+
+			/* 特殊段落的样式 */
+			#editor-container .w-e-text p[style*='text-align: center'] {
+				margin: 0 0 15px 0 !important;
+			}
+
+			#editor-container .w-e-text p[style*='text-indent: 2em'] {
+				margin: 0 0 10px 0 !important;
+			}
+
+			/* 确保模板样式生效 */
+			#editor-container .w-e-text .proposal-template p {
+				margin: 0 0 8px 0 !important;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<!-- 通知组件 -->
+			<div class="notification" :class="{ show: showNotification, error: notificationType === 'error' }">{{ notificationMessage }}</div>
+
+			<!-- 预览模态框 -->
+			<div class="preview-modal" v-if="showPreviewModal">
+				<div class="preview-modal-content">
+					<div class="preview-modal-header">
+						<h3>文档预览</h3>
+						<button class="close-button" @click="closePreviewModal">&times;</button>
+					</div>
+					<div class="preview-modal-body">
+						<!-- 预览区域 -->
+						<div class="preview-area" v-html="htmlContent || '暂无内容'"></div>
+
+						<!-- 编辑器状态区域 -->
+						<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px">
+							<strong>编辑器状态:</strong>
+							<span :style="{ color: editorDisabled ? '#f56c6c' : '#67c41a' }"> {{ editorDisabled ? '已禁用' : '运行中' }} </span>
+							<span style="margin-left: 20px"> 字数: {{ textContent.length }} </span>
+							<span style="margin-left: 20px"> 字符数: {{ charCount }} </span>
+							<span style="margin-left: 20px"> 段落数: {{ paragraphCount }} </span>
+						</div>
+					</div>
+					<div class="preview-modal-footer">
+						<button @click="exportToWord" class="secondary">导出Word</button>
+						<button @click="printContent" class="secondary">打印</button>
+						<button @click="closePreviewModal" class="primary">关闭</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- 模板HTML模态框 -->
+			<div class="template-html-modal" v-if="showTemplateHtmlModal">
+				<div class="template-html-modal-content">
+					<div class="template-html-modal-header">
+						<h3>编辑后的模板HTML（包含完整格式）</h3>
+						<button class="close-button" @click="closeTemplateHtmlModal">&times;</button>
+					</div>
+					<div class="template-html-modal-body">
+						<div class="html-format-options">
+							<strong>HTML格式选项：</strong>
+							<div class="format-option">
+								<input type="checkbox" id="formatHtml" v-model="formatHtml" />
+								<label for="formatHtml">格式化HTML代码（更易读）</label>
+							</div>
+							<div class="format-option">
+								<input type="checkbox" id="includeStyles" v-model="includeStyles" checked disabled />
+								<label for="includeStyles">包含内联样式（字体、颜色、间距等）</label>
+							</div>
+							<div class="format-option">
+								<input type="checkbox" id="preserveVariables" v-model="preserveVariables" />
+								<label for="preserveVariables">保留变量占位符（如 {{dept_name}}）</label>
+							</div>
+						</div>
+						<div style="margin-bottom: 15px"><strong>说明：</strong> 这是当前编辑器内容的完整HTML代码，包含所有格式样式（字体、颜色、大小、间距、段落等）。您可以复制此代码用于替换旧的模板。</div>
+						<div class="template-html-content">{{ formattedTemplateHtml }}</div>
+					</div>
+					<div class="template-html-modal-footer">
+						<button @click="copyTemplateHtml" class="copy-button" :class="{ success: copySuccess }">{{ copySuccess ? '已复制!' : '复制到剪贴板' }}</button>
+						<button @click="downloadTemplateHtml" class="secondary">下载HTML文件</button>
+						<button @click="closeTemplateHtmlModal" class="primary">关闭</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="app-box">
+				<div style="width: 100%; background-color: transparent">
+					<div class="table-container">
+						<!-- 模板选择区域 -->
+						<div class="template-panel">
+							<h3>📝 项目议案模板</h3>
+							<div class="template-buttons">
+								<button @click="loadProposalTemplate" class="template">加载项目议案模板</button>
+								<button @click="getTemplateHtml" class="secondary">获取编辑后模板HTML</button>
+								<button @click="inspectEditorContent" class="warning">查看编辑器内容(调试)</button>
+								<button @click="testParser" class="info">测试解析器</button>
+							</div>
+							<div class="template-info"><strong>当前模板:</strong> {{ currentTemplate }} | <strong>提示:</strong> 加载模板后，在编辑器中修改格式和内容，然后点击"获取编辑后模板HTML"获取包含完整样式的HTML代码。</div>
+						</div>
+
+						<!-- 统计面板 -->
+						<div class="stats-panel">
+							<h3>文档统计</h3>
+							<div class="stats-grid">
+								<div class="stat-item">
+									<div class="stat-value">{{ charCount }}</div>
+									<div class="stat-label">字符数</div>
+								</div>
+								<div class="stat-item">
+									<div class="stat-value">{{ wordCount }}</div>
+									<div class="stat-label">单词数</div>
+								</div>
+								<div class="stat-item">
+									<div class="stat-value">{{ paragraphCount }}</div>
+									<div class="stat-label">段落数</div>
+								</div>
+								<div class="stat-item">
+									<div class="stat-value">{{ readingTime }}</div>
+									<div class="stat-label">阅读时间(分钟)</div>
+								</div>
+							</div>
+							<div style="margin-top: 10px; font-size: 14px; color: #6c757d">
+								<span class="status-indicator" :class="autoSaveStatus ? 'status-saved' : 'status-saving'"></span>
+								{{ autoSaveStatus ? '已保存' : '保存中...' }}
+								<span style="margin-left: 20px">最后保存: {{ lastSavedTime }}</span>
+							</div>
+						</div>
+
+						<!-- 编辑器区域 -->
+						<div class="main-layout">
+							<!-- 右侧编辑器区域 -->
+							<div class="right-panel">
+								<div class="editor-area">
+									<div class="toolbar-container" id="toolbar-container"></div>
+									<div class="editor-container" id="editor-container"></div>
+								</div>
+
+								<div class="button-group">
+									<button @click="showPreview" class="preview">预览文档</button>
+									<button @click="clearContent" class="danger">清空内容</button>
+									<button @click="toggleDisabled" class="warning">{{ editorDisabled ? '启用编辑器' : '禁用编辑器' }}</button>
+									<button @click="exportToWord" class="secondary">导出Word</button>
+									<button @click="exportToText" class="secondary">导出文本</button>
+									<button @click="printContent" class="secondary">打印</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- 隐藏的文件输入 -->
+						<input type="file" id="fileInput" class="file-input" accept=".txt,.md,.html" @change="handleFileUpload" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			document.addEventListener('DOMContentLoaded', function () {
+				// 定义模板 - 只保留项目议案模板
+				const templates = {
+					proposal: `
+<p>
+	<h2 style="text-align: center;">技术研发部关于提请审议智慧城市大数据平台建设项目采购项目</h2>
+	<h2 style="text-align: center;">项目承建立项的议案</h2>
+	<p style="text-align: center;">
+	<span style="font-family: 仿宋;">（适用于承接建设的，且利润率低于15%的信息化建设项目、</span>
+	</p>
+	<p style="text-align: center;">
+	<span style="font-family: 仿宋;">或项目金额高于100万元的生态服务类项目或联合体审批</span>）</p>
+	<p>
+	<span style="font-family: 仿宋;">公司办公会：</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">按照项目立项审批需要，现将相关情况请示如下。</span>
+	</p>
+	<p style="text-indent: 32pt; text-align: justify;">
+	<span style="font-family: 仿宋;">一、选聘项目名称</span>
+	</p>
+	<p style="text-indent: 32pt; text-align: justify;">
+	<span style="font-family: 仿宋;">智慧城市大数据平台建设项目采购项目（项目名称应与采购文件一致）</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 黑体;">一、选聘项目基本情况</span>
+	<span style="font-family: 仿宋;"> </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（一）项目背景 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">随着城市数字化转型的深入推进，现有信息系统已无法满足城市管理和服务的需求。本项目旨在构建统一的智慧城市大数据平台，提升城市治理能力和公共服务水平。项目前期已完成市场调研和技术可行性分析，具备实施条件。包括但不限于：项目意义、跟踪情况等 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（二）项目简介</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">1. 项目名称。 智慧城市大数据平台建设项目 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">2. 业主简介。 成都市城市管理局，是负责城市管理和公共服务的政府职能部门，主要承担城市规划、建设、管理和服务等职责。业主单位名称、组织属性 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（三）项目建设内容</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">1. 建设城市数据中台，整合各部门数据资源；2. 开发智慧城管、智慧交通、智慧环保等应用系统；3. 建设统一的数据可视化展示平台；4. 建立数据安全保障体系；5. 提供数据接口服务。</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 黑体;">二、项目回报分析</span>
+	<span style="font-family: 仿宋;"> </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（一）项目价值分析。 1. 社会效益。 1. 提升城市治理现代化水平；2. 改善公共服务体验；3. 促进数据资源共享利用；4. 增强城市应急响应能力；5. 推动数字经济发展。 2. 经济效益（收益测算）。 1. 预计每年可节约行政成本约500万元；2. 通过数据增值服务可创造年收入约200万元；3. 提升城市营商环境，吸引投资；4. 促进相关产业发展。 经前评估，项目总成本1500万元，经财务管理部复核的项目收益率12.5% </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（二）资金使用计划。 第一年投入800万元用于硬件设备和基础平台建设；第二年投入400万元用于应用系统开发；第三年投入300万元用于系统运维和升级。 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（三）项目可行性（必要性）。 1. 技术可行性：采用成熟的大数据技术架构；2. 经济可行性：投资回报率符合公司要求；3. 操作可行性：具备相应的技术团队和实施经验；4. 时间可行性：3年建设周期安排合理。 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（四）项目风险及控制措施。 1. 技术风险：采用成熟技术方案，建立技术备份机制；2. 市场风险：与政府部门签订长期服务协议；3. 管理风险：建立专门项目管理团队，制定详细实施计划；4. 财务风险：严格控制预算，建立资金监管机制。 （五）研究结论。 本项目技术方案先进，经济效益可观，社会效益显著，风险可控，建议批准立项。</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 黑体;">四、审批情况及审批依据 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（一）前期审批情况。 （前续事项（预立项）审批情况、下属公司审批情况等）已完成内部技术评审和预算审核，获得技术委员会初步通过。 </span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">（二）审批依据。 根据《成都数据集团股东会、董事会、党委会、总经理办公会决策事项清单（2025年8月8日版）》规定，信息化建设类项目（承接建设项目）利润率低于 15%的（或生态服务类项目（承接建设项目）金额高于 100 万元的，或联合体审批），由公司办公会审批。</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">综上，建议同意智慧城市大数据平台建设项目项目承建立项。 现提交公司办公会审批。</span>
+	</p>
+	<p style="text-indent: 2em;">
+	<span style="font-family: 仿宋;">附件： 承接建设项目前评表 建设方案 专家评审意见（若有） 招标文件（若有）</span>
+	</p>
+	<p style="text-align: right;">
+	<span style="font-family: 仿宋;">技术研发部部 {{current_date}}</span>
+	</p>
+</p>
+`
+				};
+
+				// 默认值配置
+				const defaultValues = {
+					dept_name: '技术研发部',
+					project_name: '智慧城市大数据平台建设项目',
+					meeting_reason: '项目立项审批需要',
+					project_background: '随着城市数字化转型的深入推进，现有信息系统已无法满足城市管理和服务的需求。本项目旨在构建统一的智慧城市大数据平台，提升城市治理能力和公共服务水平。项目前期已完成市场调研和技术可行性分析，具备实施条件。',
+					client_intro: '成都市城市管理局，是负责城市管理和公共服务的政府职能部门，主要承担城市规划、建设、管理和服务等职责。',
+					project_content: '1. 建设城市数据中台，整合各部门数据资源；2. 开发智慧城管、智慧交通、智慧环保等应用系统；3. 建设统一的数据可视化展示平台；4. 建立数据安全保障体系；5. 提供数据接口服务。',
+					social_benefits: '1. 提升城市治理现代化水平；2. 改善公共服务体验；3. 促进数据资源共享利用；4. 增强城市应急响应能力；5. 推动数字经济发展。',
+					economic_benefits: '1. 预计每年可节约行政成本约500万元；2. 通过数据增值服务可创造年收入约200万元；3. 提升城市营商环境，吸引投资；4. 促进相关产业发展。',
+					total_cost: '1500',
+					profit_rate: '12.5%',
+					fund_usage_plan: '第一年投入800万元用于硬件设备和基础平台建设；第二年投入400万元用于应用系统开发；第三年投入300万元用于系统运维和升级。',
+					project_feasibility: '1. 技术可行性：采用成熟的大数据技术架构；2. 经济可行性：投资回报率符合公司要求；3. 操作可行性：具备相应的技术团队和实施经验；4. 时间可行性：3年建设周期安排合理。',
+					risk_control: '1. 技术风险：采用成熟技术方案，建立技术备份机制；2. 市场风险：与政府部门签订长期服务协议；3. 管理风险：建立专门项目管理团队，制定详细实施计划；4. 财务风险：严格控制预算，建立资金监管机制。',
+					research_conclusion: '本项目技术方案先进，经济效益可观，社会效益显著，风险可控，建议批准立项。',
+					previous_approval: '已完成内部技术评审和预算审核，获得技术委员会初步通过。'
+				};
+
+				const app = Vue.createApp({
+					data() {
+						return {
+							htmlContent: '',
+							textContent: '',
+							editorDisabled: false,
+							editor: null,
+							autoSaveTimer: null,
+							autoSaveStatus: true,
+							lastSavedTime: '从未保存',
+							showNotification: false,
+							notificationMessage: '',
+							notificationType: 'success',
+							currentTemplate: '无',
+							showPreviewModal: false,
+							// 新增：模板HTML相关数据
+							showTemplateHtmlModal: false,
+							templateHtmlContent: '',
+							copySuccess: false,
+							// HTML格式选项
+							formatHtml: true,
+							includeStyles: true,
+							preserveVariables: true,
+							// 表单数据 - 设置默认值
+							formData: {
+								dept_name: '技术研发部',
+								project_name: '智慧城市大数据平台建设项目',
+								meeting_reason: '项目立项审批需要',
+								project_background: '随着城市数字化转型的深入推进，现有信息系统已无法满足城市管理和服务的需求。本项目旨在构建统一的智慧城市大数据平台，提升城市治理能力和公共服务水平。项目前期已完成市场调研和技术可行性分析，具备实施条件。',
+								client_intro: '成都市城市管理局，是负责城市管理和公共服务的政府职能部门，主要承担城市规划、建设、管理和服务等职责。',
+								project_content: '1. 建设城市数据中台，整合各部门数据资源；2. 开发智慧城管、智慧交通、智慧环保等应用系统；3. 建设统一的数据可视化展示平台；4. 建立数据安全保障体系；5. 提供数据接口服务。',
+								social_benefits: '1. 提升城市治理现代化水平；2. 改善公共服务体验；3. 促进数据资源共享利用；4. 增强城市应急响应能力；5. 推动数字经济发展。',
+								economic_benefits: '1. 预计每年可节约行政成本约500万元；2. 通过数据增值服务可创造年收入约200万元；3. 提升城市营商环境，吸引投资；4. 促进相关产业发展。',
+								total_cost: '1500',
+								profit_rate: '12.5%',
+								fund_usage_plan: '第一年投入800万元用于硬件设备和基础平台建设；第二年投入400万元用于应用系统开发；第三年投入300万元用于系统运维和升级。',
+								project_feasibility: '1. 技术可行性：采用成熟的大数据技术架构；2. 经济可行性：投资回报率符合公司要求；3. 操作可行性：具备相应的技术团队和实施经验；4. 时间可行性：3年建设周期安排合理。',
+								risk_control: '1. 技术风险：采用成熟技术方案，建立技术备份机制；2. 市场风险：与政府部门签订长期服务协议；3. 管理风险：建立专门项目管理团队，制定详细实施计划；4. 财务风险：严格控制预算，建立资金监管机制。',
+								research_conclusion: '本项目技术方案先进，经济效益可观，社会效益显著，风险可控，建议批准立项。',
+								previous_approval: '已完成内部技术评审和预算审核，获得技术委员会初步通过。'
+							}
+						};
+					},
+					computed: {
+						// 字符数统计
+						charCount() {
+							return this.textContent.length;
+						},
+						// 单词数统计（简单的空格分割）
+						wordCount() {
+							return this.textContent.trim() ? this.textContent.trim().split(/\s+/).length : 0;
+						},
+						// 段落数统计
+						paragraphCount() {
+							return this.textContent.trim() ? this.textContent.split(/\n\s*\n/).length : 0;
+						},
+						// 阅读时间估算（按200字/分钟）
+						readingTime() {
+							const words = this.wordCount;
+							const minutes = Math.ceil(words / 200);
+							return minutes || 1;
+						},
+						// 格式化后的模板HTML
+						formattedTemplateHtml() {
+							let html = this.templateHtmlContent;
+
+							// 如果不保留变量，则移除变量占位符
+							if (!this.preserveVariables) {
+								for (const key in this.formData) {
+									const placeholder = `{{${key}}}`;
+									html = html.replace(new RegExp(placeholder, 'g'), '');
+								}
+							}
+
+							// 如果需要格式化HTML
+							if (this.formatHtml) {
+								html = this.formatHTML(html);
+							}
+
+							return html;
+						}
+					},
+					mounted() {
+						this.initEditor();
+						this.loadAutoSaveContent();
+					},
+					beforeUnmount() {
+						this.destroyEditor();
+						if (this.autoSaveTimer) {
+							clearTimeout(this.autoSaveTimer);
+						}
+					},
+					methods: {
+						// 格式化HTML代码
+						formatHTML(html) {
+							// 简单的HTML格式化
+							let formatted = html;
+							// 在标签后添加换行
+							formatted = formatted.replace(/(>)(<)(\/*)/g, '$1\r\n$2$3');
+							// 缩进处理
+							let pad = 0;
+							formatted = formatted
+								.split('\r\n')
+								.map(line => {
+									let indent = 0;
+									if (line.match(/.+<\/\w[^>]*>$/)) {
+										indent = 0;
+									} else if (line.match(/^<\/\w/)) {
+										if (pad !== 0) {
+											pad -= 1;
+										}
+									} else if (line.match(/^<\w[^>]*[^\/]>.*$/)) {
+										indent = 1;
+									} else {
+										indent = 0;
+									}
+
+									let padding = '';
+									for (let i = 0; i < pad; i++) {
+										padding += '  ';
+									}
+
+									pad += indent;
+
+									return padding + line;
+								})
+								.join('\r\n');
+
+							return formatted;
+						},
+
+						// 填充默认值
+						fillDefaultValues() {
+							for (const [key, value] of Object.entries(defaultValues)) {
+								this.formData[key] = value;
+							}
+							this.showNotificationMessage('已填充默认值');
+						},
+
+						// 应用变量到编辑器
+						applyVariables() {
+							if (this.editor) {
+								let content = this.editor.getHtml();
+
+								// 替换所有变量
+								for (const [key, value] of Object.entries(this.formData)) {
+									const placeholder = `{{${key}}}`;
+									content = content.replace(new RegExp(placeholder, 'g'), value || '');
+								}
+
+								// 设置替换后的内容
+								this.editor.setHtml(content);
+								this.showNotificationMessage('变量已成功应用到编辑器');
+							}
+						},
+
+						// 清空表单
+						clearForm() {
+							for (const key in this.formData) {
+								this.formData[key] = '';
+							}
+							this.showNotificationMessage('表单已清空');
+						},
+
+						// 显示预览模态框
+						showPreview() {
+							if (this.editor) {
+								// 获取最新的编辑器内容
+								this.htmlContent = this.editor.getHtml();
+								this.textContent = this.editor.getText();
+								this.showPreviewModal = true;
+							}
+						},
+
+						// 关闭预览模态框
+						closePreviewModal() {
+							this.showPreviewModal = false;
+						},
+
+						// 处理 HTML 内容，减少自动格式化
+						processTemplateHtml(html) {
+							// 这里可以根据需要添加特定的处理逻辑
+							return html;
+						},
+						// 查看编辑器实际内容（用于调试）
+						inspectEditorContent() {
+							if (this.editor) {
+								const html = this.editor.getHtml();
+								console.log('编辑器实际HTML内容:', html);
+
+								// 在控制台显示格式化后的HTML
+								const formattedHtml = html.replace(/</g, '\n<').replace(/>/g, '>\n');
+								console.log('格式化后的HTML:\n', formattedHtml);
+
+								this.showNotificationMessage('已在控制台显示编辑器内容');
+							}
+						},
+
+						// 加载项目议案模板
+						loadProposalTemplate() {
+							if (this.editor) {
+								try {
+									console.log('开始加载模板，使用自定义解析器...');
+
+									// 先清空编辑器
+									this.editor.clear();
+
+									// 延迟设置内容，确保编辑器完全清空
+									setTimeout(() => {
+										// 设置模板内容
+										this.editor.setHtml(templates.proposal);
+
+										this.currentTemplate = '项目议案模板';
+										this.showNotificationMessage('项目议案模板加载成功（使用自定义解析）');
+
+										// 获取并显示实际内容用于调试
+										setTimeout(() => {
+											const html = this.editor.getHtml();
+											const text = this.editor.getText();
+											console.log('加载后的HTML内容:', html);
+											console.log('加载后的文本内容:', text);
+
+											// 更新显示的内容
+											this.htmlContent = html;
+											this.textContent = text;
+										}, 300);
+									}, 100);
+								} catch (error) {
+									console.error('加载模板失败:', error);
+									this.showNotificationMessage('模板加载失败: ' + error.message, 'error');
+								}
+							} else {
+								this.showNotificationMessage('编辑器未初始化', 'error');
+							}
+						},
+						// 测试解析器功能
+						testParser() {
+							if (this.editor) {
+								// 测试简单内容
+								const testHtml = `
+									<p style="text-align: center; font-family: 仿宋;">测试段落</p>
+									<span style="font-family: 黑体;">测试文本</span>
+									<h2 style="text-align: center;">测试标题</h2>
+								`;
+
+								this.editor.setHtml(testHtml);
+
+								setTimeout(() => {
+									const html = this.editor.getHtml();
+									console.log('测试解析器 - 结果HTML:', html);
+									this.showNotificationMessage('解析器测试完成，查看控制台');
+								}, 200);
+							}
+						},
+
+						// 获取编辑后的模板HTML（包含完整格式）
+						getTemplateHtml() {
+							if (this.editor) {
+								// 直接获取编辑器的HTML内容，这会包含所有内联样式和格式
+								const html = this.editor.getHtml();
+								this.templateHtmlContent = html;
+								this.showTemplateHtmlModal = true;
+								this.copySuccess = false;
+								this.showNotificationMessage('已获取包含完整格式的模板HTML');
+							} else {
+								this.showNotificationMessage('编辑器未初始化', 'error');
+							}
+						},
+
+						// 关闭模板HTML模态框
+						closeTemplateHtmlModal() {
+							this.showTemplateHtmlModal = false;
+							this.copySuccess = false;
+						},
+
+						// 复制模板HTML到剪贴板
+						copyTemplateHtml() {
+							if (this.formattedTemplateHtml) {
+								navigator.clipboard
+									.writeText(this.formattedTemplateHtml)
+									.then(() => {
+										this.copySuccess = true;
+										setTimeout(() => {
+											this.copySuccess = false;
+										}, 2000);
+									})
+									.catch(err => {
+										console.error('复制失败:', err);
+										// 降级方案
+										const textArea = document.createElement('textarea');
+										textArea.value = this.formattedTemplateHtml;
+										document.body.appendChild(textArea);
+										textArea.select();
+										try {
+											document.execCommand('copy');
+											this.copySuccess = true;
+											setTimeout(() => {
+												this.copySuccess = false;
+											}, 2000);
+										} catch (err) {
+											console.error('降级复制也失败了:', err);
+											this.showNotificationMessage('复制失败', 'error');
+										}
+										document.body.removeChild(textArea);
+									});
+							}
+						},
+
+						// 下载模板HTML文件
+						downloadTemplateHtml() {
+							if (this.formattedTemplateHtml) {
+								const blob = new Blob([this.formattedTemplateHtml], {
+									type: 'text/html;charset=utf-8'
+								});
+								const filename = `template_${new Date().toISOString().split('T')[0]}.html`;
+								saveAs(blob, filename);
+								this.showNotificationMessage('HTML文件下载成功');
+							}
+						},
+
+						// 显示通知
+						showNotificationMessage(message, type = 'success') {
+							this.notificationMessage = message;
+							this.notificationType = type;
+							this.showNotification = true;
+							setTimeout(() => {
+								this.showNotification = false;
+							}, 3000);
+						},
+
+						// 初始化编辑器
+						initEditor() {
+							if (typeof window.wangEditor === 'undefined') {
+								console.error('WangEditor 未正确加载');
+								return;
+							}
+
+							try {
+								const editorConfig = {
+									placeholder: '点击"加载项目议案模板"开始编辑...',
+									// 关键：修复 parseElemHtml 配置
+									parseElemHtml: (elem, children, editor) => {
+										const tagName = elem.tagName.toLowerCase();
+										const $elem = elem;
+										const style = $elem.getAttribute('style') || '';
+
+										console.log(`解析标签: ${tagName}`, {
+											style: style,
+											textContent: $elem.textContent?.substring(0, 50)
+										});
+
+										// 处理段落标签 - 保持原有结构和样式
+										if (tagName === 'p') {
+											return {
+												type: 'paragraph',
+												children: children,
+												style: style // 保留样式
+											};
+										}
+
+										// 处理 span 标签 - 保持字体和样式
+										if (tagName === 'span') {
+											return {
+												type: 'text',
+												text: $elem.textContent || '',
+												style: style
+											};
+										}
+
+										// 处理标题
+										if (tagName === 'h1' || tagName === 'h2') {
+											return {
+												type: 'header',
+												level: parseInt(tagName.replace('h', '')),
+												children: children,
+												style: style
+											};
+										}
+
+										// 处理换行
+										if (tagName === 'br') {
+											return {
+												type: 'paragraph',
+												children: [{ type: 'text', text: '\n' }]
+											};
+										}
+
+										// 默认让编辑器处理
+										return null;
+									},
+									MENU_CONF: {
+										uploadImage: {
+											server: '/api/upload',
+											fieldName: 'file',
+											maxFileSize: 2 * 1024 * 1024
+										},
+										// 配置字号
+										fontSize: {
+											fontSizeList: [
+												// 默认字号
+												'12px',
+												'14px',
+												'16px',
+												'18px',
+												'20px',
+												'24px',
+												'28px',
+												'32px',
+												'36px',
+												'48px',
+												// Word常用字号
+												{ name: '初号', value: '42pt' },
+												{ name: '小初', value: '36pt' },
+												{ name: '一号', value: '26pt' },
+												{ name: '小一', value: '24pt' },
+												{ name: '二号', value: '22pt' },
+												{ name: '小二', value: '18pt' },
+												{ name: '三号', value: '16pt' },
+												{ name: '小三', value: '15pt' },
+												{ name: '四号', value: '14pt' },
+												{ name: '小四', value: '12pt' },
+												{ name: '五号', value: '10.5pt' },
+												{ name: '小五', value: '9pt' },
+												{ name: '六号', value: '7.5pt' },
+												{ name: '小六', value: '6.5pt' },
+												{ name: '七号', value: '5.5pt' },
+												{ name: '八号', value: '5pt' }
+											]
+										}
+									},
+									onCreated: () => {
+										console.log('编辑器创建完成');
+									},
+									onChange: editor => {
+										// 移除实时更新预览内容的逻辑
+										// 只触发自动保存
+										this.triggerAutoSave();
+									},
+									onFocus: () => {
+										console.log('编辑器获得焦点');
+									},
+									onBlur: () => {
+										console.log('编辑器失去焦点');
+									},
+									onMaxLength: editor => {
+										this.showNotificationMessage('内容长度超出限制', 'error');
+									}
+								};
+
+								this.editor = window.wangEditor.createEditor({
+									selector: '#editor-container',
+									config: editorConfig,
+									mode: 'default'
+								});
+								console.log('编辑器实例:', this.editor);
+								const toolbarConfig = {
+									excludeKeys: ['group-video', 'emotion']
+								};
+
+								window.wangEditor.createToolbar({
+									editor: this.editor,
+									selector: '#toolbar-container',
+									config: toolbarConfig,
+									mode: 'default'
+								});
+							} catch (error) {
+								console.error('编辑器初始化失败:', error);
+							}
+						},
+
+						// 触发自动保存
+						triggerAutoSave() {
+							this.autoSaveStatus = false;
+
+							if (this.autoSaveTimer) {
+								clearTimeout(this.autoSaveTimer);
+							}
+
+							this.autoSaveTimer = setTimeout(() => {
+								if (this.editor) {
+									// 保存时获取最新内容
+									const html = this.editor.getHtml();
+									const text = this.editor.getText();
+									this.saveToLocalStorage(html, text);
+								}
+								this.autoSaveStatus = true;
+								this.lastSavedTime = new Date().toLocaleTimeString();
+							}, 2000);
+						},
+
+						// 保存到本地存储
+						saveToLocalStorage(html, text) {
+							try {
+								const contentToSave = {
+									html: html,
+									text: text,
+									timestamp: new Date().getTime()
+								};
+								localStorage.setItem('editorAutoSave', JSON.stringify(contentToSave));
+							} catch (error) {
+								console.error('保存到本地存储失败:', error);
+							}
+						},
+
+						// 加载自动保存的内容
+						loadAutoSaveContent() {
+							try {
+								const saved = localStorage.getItem('editorAutoSave');
+								if (saved) {
+									const content = JSON.parse(saved);
+									// 如果是今天保存的内容，则加载
+									const savedDate = new Date(content.timestamp);
+									const today = new Date();
+									if (savedDate.toDateString() === today.toDateString() && this.editor) {
+										this.editor.setHtml(content.html);
+										this.showNotificationMessage('已恢复自动保存的内容');
+									}
+								}
+							} catch (error) {
+								console.error('加载自动保存内容失败:', error);
+							}
+						},
+
+						// 导出为Word文档
+						exportToWord() {
+							if (!this.htmlContent) {
+								this.showNotificationMessage('没有内容可导出', 'error');
+								return;
+							}
+
+							try {
+								// 创建Word文档的HTML结构
+								const header = `
+								<html xmlns:o="urn:schemas-microsoft-com:office:office" 
+									  xmlns:w="urn:schemas-microsoft-com:office:word" 
+									  xmlns="http://www.w3.org/TR/REC-html40">
+								<head>
+									<meta charset="utf-8">
+									<title>导出文档</title>
+									<style>
+										body { font-family: "Microsoft YaHei", sans-serif; line-height: 1.6; }
+										table { border-collapse: collapse; width: 100%; }
+										th, td { border: 1px solid #ddd; padding: 8px; }
+										img { max-width: 100%; height: auto; }
+									</style>
+								</head>
+								<body>
+							`;
+								const footer = `</body></html>`;
+								const sourceHTML = header + this.htmlContent + footer;
+
+								const blob = new Blob([sourceHTML], {
+									type: 'application/msword'
+								});
+
+								const filename = `document_${new Date().toISOString().split('T')[0]}.doc`;
+								saveAs(blob, filename);
+								this.showNotificationMessage('Word文档导出成功');
+							} catch (error) {
+								console.error('导出Word失败:', error);
+								this.showNotificationMessage('导出失败', 'error');
+							}
+						},
+
+						// 导出为文本文件
+						exportToText() {
+							if (!this.textContent) {
+								this.showNotificationMessage('没有内容可导出', 'error');
+								return;
+							}
+
+							try {
+								const blob = new Blob([this.textContent], {
+									type: 'text/plain;charset=utf-8'
+								});
+								const filename = `text_${new Date().toISOString().split('T')[0]}.txt`;
+								saveAs(blob, filename);
+								this.showNotificationMessage('文本文件导出成功');
+							} catch (error) {
+								console.error('导出文本失败:', error);
+								this.showNotificationMessage('导出失败', 'error');
+							}
+						},
+
+						// 导入文件
+						importFromFile() {
+							document.getElementById('fileInput').click();
+						},
+
+						// 处理文件上传
+						handleFileUpload(event) {
+							const file = event.target.files[0];
+							if (!file) return;
+
+							const reader = new FileReader();
+							reader.onload = e => {
+								try {
+									const content = e.target.result;
+									if (file.name.endsWith('.html')) {
+										this.editor.setHtml(content);
+									} else {
+										this.editor.setHtml(`<p>${content.replace(/\n/g, '<br>')}</p>`);
+									}
+									this.currentTemplate = '导入文件';
+									this.showNotificationMessage('文件导入成功');
+								} catch (error) {
+									console.error('文件导入失败:', error);
+									this.showNotificationMessage('文件导入失败', 'error');
+								}
+							};
+							reader.readAsText(file);
+							event.target.value = '';
+						},
+
+						// 打印内容
+						printContent() {
+							if (!this.htmlContent) {
+								this.showNotificationMessage('没有内容可打印', 'error');
+								return;
+							}
+
+							const printWindow = window.open('', '_blank');
+							printWindow.document.write(`
+							<html>
+								<head>
+									<title>打印文档</title>
+									<style>
+										body { font-family: "Microsoft YaHei", sans-serif; line-height: 1.6; padding: 20px; }
+										img { max-width: 100%; height: auto; }
+										table { border-collapse: collapse; width: 100%; }
+										th, td { border: 1px solid #ddd; padding: 8px; }
+										@media print {
+											body { padding: 0; }
+										}
+									</style>
+								</head>
+								<body>
+									${this.htmlContent}
+								</body>
+							</html>
+						`);
+							printWindow.document.close();
+							printWindow.focus();
+							setTimeout(() => {
+								printWindow.print();
+								printWindow.close();
+							}, 500);
+						},
+
+						// 销毁编辑器
+						destroyEditor() {
+							if (this.editor) {
+								this.editor.destroy();
+								this.editor = null;
+							}
+						},
+
+						// 获取HTML内容
+						getHtml() {
+							if (this.editor) {
+								const html = this.editor.getHtml();
+								this.htmlContent = html;
+								this.showNotificationMessage('HTML内容已更新');
+							}
+						},
+
+						// 获取文本内容
+						getText() {
+							if (this.editor) {
+								const text = this.editor.getText();
+								this.textContent = text;
+								this.showNotificationMessage('文本内容已更新');
+							}
+						},
+
+						// 设置示例内容
+						setContent() {
+							if (this.editor) {
+								const content = `
+								<h1>欢迎使用项目议案编辑器</h1>
+								<p>这是一个专门用于创建项目议案的编辑器。</p>
+								<ul>
+									<li>在左侧填写项目信息</li>
+									<li>点击"应用变量"将信息填充到模板</li>
+									<li>预览和导出最终文档</li>
+								</ul>
+							`;
+								this.editor.setHtml(content);
+								this.currentTemplate = '示例内容';
+								this.showNotificationMessage('示例内容已加载');
+							}
+						},
+
+						// 清空内容
+						clearContent() {
+							if (this.editor) {
+								this.editor.clear();
+								this.htmlContent = '';
+								this.textContent = '';
+								this.currentTemplate = '无';
+								this.showNotificationMessage('内容已清空');
+							}
+						},
+
+						// 切换编辑器禁用状态
+						toggleDisabled() {
+							if (this.editor) {
+								if (this.editorDisabled) {
+									this.editor.enable();
+									this.editorDisabled = false;
+									this.showNotificationMessage('编辑器已启用');
+								} else {
+									this.editor.disable();
+									this.editorDisabled = true;
+									this.showNotificationMessage('编辑器已禁用');
+								}
+							}
+						},
+
+						// 插入文本
+						insertText() {
+							if (this.editor) {
+								const selection = this.editor.getSelection();
+								if (selection) {
+									this.editor.insertText('【插入的文本】');
+									this.showNotificationMessage('文本已插入');
+								} else {
+									this.showNotificationMessage('请先选择插入位置', 'error');
+								}
+							}
+						}
+					}
+				});
+
+				app.mount('#app');
+			});
+		</script>
+	</body>
+</html>

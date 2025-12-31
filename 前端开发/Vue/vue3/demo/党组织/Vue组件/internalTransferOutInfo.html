@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>内部转出信息</title>
+		<script type="text/javascript" src="../../vue-3.4.27.global.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			.internal-transfer-out-info-container {
+				display: flex;
+				width: 100%;
+			}
+			.internal-transfer-out-info-col1,
+			.internal-transfer-out-info-col2,
+			.internal-transfer-out-info-col3 {
+				border: 1px solid #f00;
+			}
+			.internal-transfer-out-info-col1 {
+				flex: 1;
+				/* padding: 10px; */
+			}
+			.internal-transfer-out-info-col2,
+			.internal-transfer-out-info-col3 {
+				width: 50px;
+				/* padding: 10px; */
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="internal-transfer-out-info-container">
+				<div class="internal-transfer-out-info-col1">11</div>
+				<div class="internal-transfer-out-info-col2">22</div>
+				<div class="internal-transfer-out-info-col3">33</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						content: '党员转出信息内容',
+						action1: '编辑',
+						action2: '删除'
+					};
+				},
+				methods: {
+					// 这里可以添加需要的方法
+				}
+			}).mount('#app');
+		</script>
+		<script>
+			await utils.querySvc({
+				"app_id": "app_mgt503l5m8",
+				"svc_code": "t_party_organizations_sa03199q",
+				"save_datas": {
+							"uid": ctx.getState('b295go5rfhudd9p')
+				}
+			});
+		</script>
+	</body>
+</html>

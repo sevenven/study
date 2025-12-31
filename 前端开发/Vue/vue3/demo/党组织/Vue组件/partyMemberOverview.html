@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>党组织信息统计</title>
+		<script type="text/javascript" src="../../vue-3.4.27.global.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			.party-member-container {
+				width: 100%;
+				padding: 10px;
+			}
+
+			.party-member-header {
+				text-align: left;
+				margin-bottom: 10px;
+			}
+
+			.party-member-title {
+				font-size: 18px;
+				font-weight: bold;
+				color: #1a1a1a;
+			}
+
+			.party-member-stats-grid {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 10px;
+			}
+
+			.party-member-stats-card {
+				background-color: #f4f5f7;
+				border-radius: 6px;
+				padding: 10px 10px 8px 10px;
+				text-align: center;
+			}
+
+			.party-member-stats-value {
+				font-size: 20px;
+				font-weight: bold;
+				color: #333;
+				margin-top: 5px;
+			}
+
+			.party-member-stats-label {
+				font-size: 14px;
+				color: #555;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="party-member-container">
+				<div class="party-member-header">
+					<h1 class="party-member-title">{{ partyName }}</h1>
+				</div>
+				<div class="party-member-stats-grid">
+					<div class="party-member-stats-card">
+						<div class="party-member-stats-label">在组党员人数</div>
+						<div class="party-member-stats-value">{{ memberStats.currentMembers }}</div>
+					</div>
+					<div class="party-member-stats-card">
+						<div class="party-member-stats-label">在组正式党员</div>
+						<div class="party-member-stats-value">{{ memberStats.officialMembers }}</div>
+					</div>
+					<div class="party-member-stats-card">
+						<div class="party-member-stats-label">在组预备党员</div>
+						<div class="party-member-stats-value">{{ memberStats.probationaryMembers }}</div>
+					</div>
+					<div class="party-member-stats-card">
+						<div class="party-member-stats-label">历史党员人数</div>
+						<div class="party-member-stats-value">{{ memberStats.historicalMembers }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						partyName: '中国共产党示例支部委员会',
+						memberStats: {
+							currentMembers: 128,
+							officialMembers: 112,
+							probationaryMembers: 16,
+							historicalMembers: 235
+						}
+					};
+				},
+				mounted: function () {
+					this.getPartyMemberOverview();
+				},
+				methods: {
+					async getPartyMemberOverview() {
+						const { dataSet: { t_party_organizations_a7f6yk9k: po } = {} } = utils.getPageData();
+
+						// 创建参数对象
+						let save_datas = {};
+
+						// 根据组织类型设置对应的ID参数
+						if (po.org_category_code === 'party_cell') {
+							params.cellId = po.uid;
+						} else if (po.org_category_code === 'party_branch') {
+							params.branchId = po.uid;
+						} else if (po.org_category_code === 'party_committee') {
+							params.committeeId = po.uid;
+						}
+
+						// 发送请求，传入正确的参数
+						var { data: { data: { memberStats } = {} } = {} } = await utils.querySvc({
+							app_id: 'app_mgt503l5m8',
+							svc_code: 'party_member_overview_ibln54y0',
+							save_datas
+						});
+
+						this.memberStats = memberStats;
+					}
+				}
+			}).mount('#app');
+		</script>
+		<script>
+			async function getParentsPartyOrganizationInfo(party_organizations_id, ledger_date) {
+				const { data: { value } = {} } = await utils.querySvc({
+					app_id: 'app_mgt503l5m8',
+					svc_code: 't_organization_ledgers_rblschqz_selectMore',
+					save_datas: {
+						party_organizations_id,
+						ledger_date
+					},
+					query: {
+						page_index: 1,
+						page_size: 10,
+						query_criteria: [
+							{
+								column_name: 'parent_id',
+								query_type: 0,
+								value: [mainData.uid]
+							},
+							{
+								column_name: 'is_reported_to_committee',
+								query_type: 0,
+								value: ['1']
+							}
+						]
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

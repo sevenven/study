@@ -5,7 +5,6 @@ def femaleEmployees = []
 if (employeeListData && employeeListData instanceof List) {
 	femaleEmployees = employeeListData.findAll { employee -> employee?.gender == "female" }
 }
-
 logger.info("女雇员列表: " + femaleEmployees);
 
-return femaleEmployees
+return [ femaleEmployees: femaleEmployees ]

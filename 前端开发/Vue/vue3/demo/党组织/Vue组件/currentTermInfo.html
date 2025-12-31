@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>当前届信息展示</title>
+		<script type="text/javascript" src="../../vue-3.4.27.global.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			.cur-term-info-card {
+				width: 100%;
+				border: 1px solid #e0e0e0;
+				border-radius: 4px;
+				padding: 15px;
+				background-color: #f4f5f7;
+				font-family: Arial, sans-serif;
+			}
+			.cur-term-info-row {
+				display: flex;
+				width: 100%;
+				margin-bottom: 10px;
+			}
+			.cur-term-info-row:last-child {
+				margin-bottom: 0;
+			}
+			.cur-term-info-col {
+				flex: 1;
+				display: flex;
+				align-items: center;
+				min-width: 0;
+			}
+			.cur-term-info-label {
+				color: #666666;
+				font-size: 14px;
+			}
+			.cur-term-info-value {
+				color: #333333;
+				font-size: 14px;
+				flex: 1;
+				text-align: left;
+				margin-left: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="cur-term-info-card">
+				<div class="cur-term-info-row">
+					<div class="cur-term-info-col">
+						<div class="cur-term-info-label">完成（换届）选举年月：</div>
+						<div class="cur-term-info-value">{{ electionYearMonth }}</div>
+					</div>
+					<div class="cur-term-info-col">
+						<div class="cur-term-info-label">现届（次）是否延期换届：</div>
+						<div class="cur-term-info-value">{{ isExtended }}</div>
+					</div>
+					<div class="cur-term-info-col">
+						<div class="cur-term-info-label">下次应换届年月：</div>
+						<div class="cur-term-info-value">{{ nextElectionDate }}</div>
+					</div>
+					<div class="cur-term-info-col"></div>
+				</div>
+				<div class="cur-term-info-row">
+					<div class="cur-term-info-col">
+						<div class="cur-term-info-label">届期：</div>
+						<div class="cur-term-info-value">{{ termPeriod }}</div>
+					</div>
+					<div class="cur-term-info-col">
+						<div class="cur-term-info-label">委员（书记）配备数：</div>
+						<div class="cur-term-info-value">{{ committeeMembersCount }}</div>
+					</div>
+					<div class="cur-term-info-col">
+						<div class="cur-term-info-label">委员（书记）职数：</div>
+						<div class="cur-term-info-value">{{ committeePositionsCount }}</div>
+					</div>
+					<div class="cur-term-info-col"></div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						electionYearMonth: '2022-12',
+						isExtended: '否',
+						nextElectionDate: '2027-12-31',
+						termPeriod: '5年',
+						committeeMembersCount: '5',
+						committeePositionsCount: '5'
+					};
+				},
+				methods: {
+					// 这里可以添加需要的方法
+				}
+			}).mount('#app');
+		</script>
+		<script>
+			function calculateTermPeriod(startDateTimestamp, endDateTimestamp) {
+				const startDate = new Date(startDateTimestamp);
+				const endDate = new Date(endDateTimestamp);
+				const formatToYearMonth = date => {
+					const year = date.getFullYear();
+					const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() 返回 0-11
+					return `${year}-${month}`;
+				};
+
+				const startFormatted = formatToYearMonth(startDate);
+				const endFormatted = formatToYearMonth(endDate);
+
+				return `${startFormatted}~${endFormatted}`;
+			}
+
+			// 完成（换届）选举年月change回调
+			export function onLastElectionDateChange(payload) {
+				const lastElectionDate = payload.value;
+				const orgEstablishedDate = orgValue.org_established_date; // 确保 orgValue 可访问
+
+				if (!lastElectionDate) {
+					ctx.setState('PxYTNwfofL', null);
+					// 如果开始日期被清空，届期也应该清空
+					// ctx.setState('YOUR_TERM_PERIOD_STATE_KEY', null); // TODO: 替换为实际的状态键
+					return;
+				}
+
+				if (lastElectionDate <= orgEstablishedDate) {
+					utils.toast('换届年月不能早于党组织成立日期', 'warning', 'message');
+					ctx.setState('FvVd7bdzVc', null); // 假设 FvVd7bdzVc 是存储换届日期输入的状态？
+					ctx.setState('PxYTNwfofL', null); // 清空计算出的下次换届日期
+					// ctx.setState('YOUR_TERM_PERIOD_STATE_KEY', null); // TODO: 清空届期状态
+					return;
+				}
+
+				// 日期有效，执行计算并更新状态
+				const nextElectionDate = calculateNextElectionDate(lastElectionDate, ctx.getState('PIqE4rnv0f'));
+				ctx.setState('PxYTNwfofL', nextElectionDate);
+
+				// --- 新增：计算并设置届期 ---
+				// TODO: 你需要提供一个状态键来存储这个届期字符串
+				const termPeriodString = calculateTermPeriod(lastElectionDate, nextElectionDate);
+				// ctx.setState('YOUR_TERM_PERIOD_STATE_KEY', termPeriodString); // <-- 替换 'YOUR_TERM_PERIOD_STATE_KEY' 为实际键名
+				console.log('计算出的届期:', termPeriodString); // 临时输出查看结果
+			}
+		</script>
+	</body>
+</html>

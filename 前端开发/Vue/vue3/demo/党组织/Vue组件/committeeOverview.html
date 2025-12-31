@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>党组织信息统计</title>
+		<link rel="stylesheet" href="https://unpkg.com/swiper@11/swiper-bundle.min.css" />
+		<script type="text/javascript" src="../../vue-3.4.27.global.min.js"></script>
+		<script type="text/javascript" src="https://unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script>
+		<script src="https://unpkg.com/swiper@11/swiper-bundle.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			html body {
+				padding: 10px;
+				background: #f5f5f5;
+			}
+
+			/* 整体容器 */
+			.committee-overview-container {
+				width: 100%;
+				height: calc(100vh - 20px);
+				display: flex;
+				flex-direction: column;
+				overflow-x: hidden;
+			}
+
+			/* 换选届提醒布局 */
+			.election-reminder-layout {
+				height: 100px;
+				padding: 0 20px;
+				margin-bottom: 10px;
+				background-color: #ffffff;
+				border-radius: 6px;
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+			}
+
+			/* 左侧上下结构 */
+			.election-reminder-left {
+				width: 200px;
+				height: 100%;
+				display: flex;
+				flex-shrink: 0;
+				flex-direction: column;
+				padding: 18px 0;
+			}
+
+			/* 左侧上部 */
+			.election-reminder-top {
+				flex: 1;
+				font-size: 16px;
+				font-weight: bold;
+			}
+
+			/* 左侧下部 */
+			.election-reminder-bottom {
+				flex: 1;
+			}
+
+			/* 右侧 */
+			.election-reminder-right {
+				width: calc(100% - 200px);
+				height: 100%;
+			}
+
+			.swiper-container {
+				padding: 18px 0 18px 0;
+				position: relative;
+				width: 100%;
+				height: 100%;
+				overflow-x: hidden;
+				font-size: 14px;
+			}
+
+			.swiper-slide {
+				display: flex;
+				gap: 10px;
+			}
+
+			.organization-card {
+				position: relative;
+				width: 25%;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				background-color: #f8f9fa;
+				border-radius: 4px;
+				padding: 0 16px;
+			}
+
+			.organization-card-is-placeholder {
+				visibility: hidden;
+			}
+
+			.card-badge {
+				position: absolute;
+				top: 12px;
+				right: 16px;
+				font-size: 10px;
+				padding: 2px 6px;
+				border-radius: 3px;
+				z-index: 1;
+			}
+
+			.days-expired {
+				background-color: #e53935; /* 更深的红色 - 最醒目 */
+				color: white;
+			}
+
+			.days-urgent {
+				background-color: #f57c00; /* 橙色 - 中等醒目 */
+				color: white;
+			}
+
+			.days-warning {
+				background-color: #ffb74d; /* 浅橙色 - 较不醒目 */
+				color: white;
+			}
+
+			.days-normal {
+				background-color: #52c41a;
+				color: white;
+			}
+
+			.swiper-horizontal > .swiper-pagination-bullets,
+			.swiper-pagination-bullets.swiper-pagination-horizontal,
+			.swiper-pagination-custom,
+			.swiper-pagination-fraction {
+				bottom: 0 !important;
+			}
+
+			/* Swiper分页指示器样式 */
+			.swiper-pagination-bullet-active {
+				background-color: #5a9dcc;
+			}
+
+			/* 下部区域 */
+			.committee-overview-content {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				border-radius: 6px;
+			}
+
+			/* 下部标题区域 */
+			.committee-overview-content-title {
+				height: 50px;
+				line-height: 50px;
+				font-size: 16px; /* 字体减小 */
+				font-weight: bold;
+				padding-left: 20px;
+				background-color: #ffffff;
+				border-bottom: 1px solid #e6e6e6;
+			}
+
+			/* 内容主体区域 - 左右结构 */
+			.committee-overview-content-main {
+				flex: 1;
+				display: flex;
+				gap: 10px;
+			}
+
+			/* 左侧区域 */
+			.committee-overview-left-panel {
+				width: 30%;
+				background-color: #ffffff;
+				border-radius: 0 0 4px 4px;
+				padding: 25px 10px 10px 10px;
+				display: flex;
+				flex-direction: column;
+				border-right: 1px solid #e0e0e0;
+				box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+			}
+
+			/* 统计区域样式 */
+			.committee-overview-stats-section {
+				display: flex;
+				gap: 15px;
+				margin-bottom: 15px;
+			}
+
+			/* 总数统计容器 */
+			.total-stats-container {
+				flex: 1;
+				background-color: #f4f5f7;
+				padding: 10px;
+				border-radius: 4px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			/* 分类统计容器 */
+			.category-stats-container {
+				flex: 2;
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 10px;
+			}
+
+			/* 统计项 */
+			.stat-item {
+				background-color: #f4f5f7;
+				padding: 8px;
+				border-radius: 4px;
+				text-align: center;
+				font-size: 14px;
+			}
+
+			/* 标签样式 */
+			.stat-label {
+				margin-right: 20px;
+			}
+
+			/* 树图容器样式 */
+			.committee-overview-tree-section {
+				flex: 1;
+				min-height: 0;
+				padding-top: 20px;
+			}
+
+			#treeChart {
+				width: 100%;
+				height: 100%;
+				min-height: 300px;
+			}
+
+			/* 右侧区域 */
+			.committee-overview-right-panel {
+				flex: 1;
+				background-color: #ffffff;
+				border-radius: 0 0 4px 4px;
+				padding: 10px;
+				border-left: 1px solid #e0e0e0;
+				box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+				display: flex;
+				flex-direction: column; /* 设置为垂直flex布局 */
+			}
+
+			/* 右侧面板上部分 */
+			.right-panel-top {
+				display: flex;
+				gap: 15px;
+				padding-bottom: 20px;
+			}
+
+			/* 党员信息容器 - 左右结构 */
+			.member-total {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				background-color: #f4f5f7; /* 浅蓝色背景 */
+				padding: 10px 15px;
+				border-radius: 4px;
+				margin-bottom: 10px;
+				font-size: 14px;
+			}
+
+			/* 党员标签 */
+			.member-label {
+				color: #333;
+			}
+
+			/* 右侧面板下部分 - 修改为占满剩余空间 */
+			.right-panel-bottom {
+				background-color: #f8f9fa;
+				border-radius: 4px;
+				padding: 15px;
+				flex: 1; /* 占满剩余空间 */
+				display: flex;
+				flex-direction: column;
+				min-height: 0; /* 确保内容过多时可以正确收缩 */
+			}
+
+			/* 底部内容区域 */
+			.bottom-content {
+				flex: 1; /* 内容区域也占满剩余空间 */
+				overflow-y: auto; /* 当内容超出时显示滚动条 */
+			}
+
+			/* 右侧区域列 */
+			.right-panel-column {
+				flex: 1;
+				background-color: transparent; /* 移除背景颜色 */
+				border-radius: 4px;
+				padding: 15px;
+				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* 添加阴影效果 */
+			}
+
+			/* 列标题 */
+			.column-header {
+				margin-bottom: 10px;
+				padding-bottom: 5px;
+			}
+
+			/* 列内容区域 */
+			.column-content {
+				min-height: 120px;
+			}
+
+			.right-panel-bottom {
+				background-color: transparent; /* 移除背景颜色 */
+				border-radius: 4px;
+				padding: 15px;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				min-height: 0; /* 确保内容过多时可以正确收缩 */
+				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* 添加阴影效果 */
+			}
+
+			/* 底部区域标题 */
+			.bottom-header {
+				margin-bottom: 10px;
+				padding-bottom: 5px;
+			}
+
+			.bottom-header h4 {
+				font-size: 14px;
+				font-weight: bold;
+				color: #333;
+				margin: 0;
+			}
+
+			/* 底部内容区域 */
+			.bottom-content {
+				flex: 1;
+				min-height: 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<!-- 整体容器 -->
+			<div class="committee-overview-container">
+				<!-- 党组织换选届提醒区域 -->
+				<div class="election-reminder-layout">
+					<!-- 左侧 - 上下结构 -->
+					<div class="election-reminder-left">
+						<div class="election-reminder-top">应换届组织提醒</div>
+						<div class="election-reminder-bottom">
+							<span class="icon low-code icondingshirenwuliebiao"></span>
+						</div>
+					</div>
+					<!-- 右侧 -->
+					<div class="election-reminder-right">
+						<!-- Swiper容器 -->
+						<div class="swiper-container">
+							<div class="swiper-wrapper">
+								<template v-if="paginatedOrganizations.length > 0">
+									<div v-for="(page, pageIndex) in paginatedOrganizations" :key="pageIndex" class="swiper-slide">
+										<div v-for="org in page" :key="org.uid" class="organization-card" :class="org.isPlaceholder ? 'organization-card-is-placeholder' : '' ">
+											<div class="card-header">{{ org.org_full_name }}</div>
+											<div class="card-info">
+												<div>应换届年月：{{ formatDate(org.next_election_date) }}</div>
+											</div>
+											<div class="card-badge" :class="getDaysRemainingClass(org.days_remaining)">{{ org.days_remaining >= 0 ? `剩余${org.days_remaining}天` : '已超时' }}</div>
+										</div>
+									</div>
+								</template>
+								<template v-else>
+									<div>暂无数据</div>
+								</template>
+							</div>
+							<!-- Swiper分页指示器 -->
+							<div class="swiper-pagination"></div>
+						</div>
+					</div>
+				</div>
+				<div class="committee-overview-content">
+					<div class="committee-overview-content-title">截止：{{formatDateToYearMonth(committeeLedger.ledger_date)}}</div>
+					<div class="committee-overview-content-main">
+						<div class="committee-overview-left-panel">
+							<div class="committee-overview-stats-section">
+								<div class="total-stats-container">
+									<div class="stat-item" style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+										<span class="stat-label" style="margin-right: 0px">党组织数量:</span>
+										<span class="stat-value" style="margin-top: 12px">{{nodeCounts.total}}个</span>
+									</div>
+								</div>
+								<div class="category-stats-container">
+									<div class="stat-item">
+										<span class="stat-label">党&emsp;委:</span>
+										<span class="stat-value">{{nodeCounts.committee}}个</span>
+									</div>
+									<div class="stat-item">
+										<span class="stat-label">党总支:</span>
+										<span class="stat-value">{{nodeCounts.branch}}个</span>
+									</div>
+									<div class="stat-item">
+										<span class="stat-label">党支部:</span>
+										<span class="stat-value">{{nodeCounts.cell}}个</span>
+									</div>
+								</div>
+							</div>
+							<div class="committee-overview-tree-section">
+								<div id="treeChart"></div>
+							</div>
+						</div>
+						<div class="committee-overview-right-panel">
+							<div class="right-panel-top">
+								<div class="right-panel-column">
+									<div class="member-total">
+										<div class="member-label">党员总数</div>
+										<div class="member-count">{{ committeeLedger.member_total_count }}人</div>
+									</div>
+									<div class="column-content">
+										<div id="memberTypeChart" style="width: 100%; height: 200px"></div>
+									</div>
+								</div>
+								<div class="right-panel-column">
+									<div class="member-total">
+										<div class="member-label">入党积极分子人数</div>
+										<div class="member-count">{{ committeeLedger.activist_count }}人</div>
+									</div>
+									<div class="column-content">
+										<div id="activistChart" style="width: 100%; height: 200px"></div>
+									</div>
+								</div>
+								<div class="right-panel-column">
+									<div class="member-total">
+										<div class="member-label">党务工作者人数</div>
+										<div class="member-count">{{ committeeLedger.party_worker_count }}人</div>
+									</div>
+									<div class="column-content">
+										<div id="partyWorkerChart" style="width: 100%; height: 200px"></div>
+									</div>
+								</div>
+							</div>
+							<div class="right-panel-bottom">
+								<div class="bottom-header">
+									<h4>各支部党员和入党积极分子分布情况</h4>
+								</div>
+								<div class="bottom-content">
+									<div id="branchDistributionChart" style="width: 100%; height: 100%; min-height: 300px"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						electionDueOrganizations: [
+							{
+								uid: '9dc33300f0bc48e29c1f7c0d107e10b1',
+								org_abbr_name: '房联云党组织',
+								last_election_date: '2025-11-20T00:00:00',
+								org_full_name: '房联云有限公司党支部',
+								next_election_date: '2025-12-01T00:00:00',
+								org_status_code: 'operational',
+								days_remaining: 0
+							},
+							{
+								uid: '53abfdd6ba3f4433998f1410d043fcfa',
+								org_abbr_name: '成数党委',
+								last_election_date: '2023-01-05T00:00:00',
+								org_full_name: '成都数据集团党委',
+								next_election_date: '2026-01-05T00:00:00',
+								org_status_code: 'operational',
+								days_remaining: 35
+							},
+							{
+								uid: 'e626d25a42e248af94923233aa77a48d',
+								org_abbr_name: '数城党总支',
+								last_election_date: '2024-10-01T00:00:00',
+								org_full_name: '数字城市党总支',
+								next_election_date: '2026-02-28T00:00:00',
+								org_status_code: 'operational',
+								days_remaining: 89
+							}
+						],
+						ledgerTree: {
+							uid: '8926e79b118b466d97fdb4aa4cad6dac',
+							parent_id: '',
+							party_organizations_id: '53abfdd6ba3f4433998f1410d043fcfa',
+							org_abbr_name: '成都数据集团党委成都数据集团党委成都数据集团党委成都数据集团党委',
+							org_full_name: '成都数据集团党委',
+							org_category_code: 'party_committee',
+							children: [
+								{
+									uid: 'dab1f956baf54b73af746e1ee8bd88a0',
+									parent_id: '53abfdd6ba3f4433998f1410d043fcfa',
+									party_organizations_id: '9dc33300f0bc48e29c1f7c0d107e10b1',
+									org_abbr_name: '房联云有限公司党支部房联云有限公司党支部房联云有限公司党支部',
+									org_full_name: '房联云有限公司党支部',
+									org_category_code: 'party_cell',
+									children: []
+								},
+								{
+									uid: '7ef2cbfdad144343809d04c2e85bea5d',
+									parent_id: '53abfdd6ba3f4433998f1410d043fcfa',
+									party_organizations_id: 'e626d25a42e248af94923233aa77a48d',
+									org_abbr_name: '数字城市党总支数字城市党总支数字城市党总支数字城市党总支',
+									org_full_name: '数字城市党支部',
+									org_category_code: 'party_branch',
+									children: [
+										{
+											uid: '8aa54c3af55940d38bf1d6739a17ed99',
+											parent_id: 'e626d25a42e248af94923233aa77a48d',
+											party_organizations_id: 'dd1a4522ddbb4dc88215fb19d608a9c0',
+											org_abbr_name: '数字城市党支部数字城市党支部数字城市党支部数字城市党支部',
+											org_full_name: '数字城市党支部',
+											org_category_code: 'party_cell',
+											children: []
+										}
+									]
+								}
+							]
+						},
+						nodeCounts: {
+							total: 4,
+							committee: 1,
+							branch: 1,
+							cell: 2
+						},
+						committeeLedger: {
+							parent_name: '',
+							is_reported_to_branch: '0',
+							parent_org_category_code: '',
+							app_version: ' ',
+							is_in_chengdu: '1',
+							ledger_gen_status: '1',
+							sys_deleted: 0,
+							activist_count: 110,
+							committee_member_duty_name: '',
+							is_shoulder_responsibility: '0',
+							last_election_date: 1735660800000,
+							party_organizations_id: '53abfdd6ba3f4433998f1410d043fcfa',
+							process_key: 'ledger_approve_flow_ce1ycpwk',
+							org_full_name: '成都数据集团党委',
+							is_same_department: '1',
+							id: 49,
+							member_total_count: 6,
+							is_cross_appointment: '1',
+							create_time: 1764224792000,
+							is_appraisal_mechanism: '1',
+							next_election_date: 1830268800000,
+							planned_member_count: 2,
+							org_category_code: 'party_committee',
+							is_same_leader: '-1',
+							org_established_date: 1577808000000,
+							company_level: 'level_1',
+							term_period: '2025-01~2028-01',
+							probationary_member_count: 2,
+							parent_id: '',
+							process_status: 'COMPLETE',
+							is_reported_to_committee: '0',
+							company_name: '成都数据集团',
+							committee_id: '53abfdd6ba3f4433998f1410d043fcfa',
+							situation_description: '啊俄国人首套房贷语句块i了',
+							secretary_duty_name: '1.成都数据集团党委书记周小芳',
+							company_create_time: 1761202978000,
+							current_member_count: 2,
+							term_years: 3,
+							report_to_committee_time: null,
+							ledger_gen_time: null,
+							uid: '8926e79b118b466d97fdb4aa4cad6dac',
+							update_time: 1764232473000,
+							ledger_date: 1761926400000,
+							org_abbr_name: '成数党委',
+							formal_member_count: 4,
+							vice_secretary_duty_name: '1.成都数据集团党委副书记、纪委书记、组织委员李建国',
+							branch_id: '',
+							company_short_name: '成数',
+							is_research_list_established: '0',
+							creator: '063241004332987444',
+							construction_progress: '汪峰太感人换一台聚义u',
+							process_location: '',
+							ledger_approver: 'dwgly',
+							sort_weight: '3',
+							sys_update_user: '063241004332987444',
+							party_worker_count: 1,
+							is_term_extended: '0',
+							process_instance_id: '5e90d0d5-fa15-4929-b3a7-8349da2df1e8',
+							report_to_branch_time: null,
+							sys_audit_user: '063241004332987444',
+							is_equal_treatment: '1',
+							sys_audit_time: 1764232473000
+						},
+						partyCellDetails: [
+							{
+								uid: 'dab1f956baf54b73af746e1ee8bd88a0',
+								org_abbr_name: '房联云有限公司党支部',
+								member_total_count: 2,
+								formal_member_count: 2,
+								probationary_member_count: 0,
+								party_worker_count: 1,
+								activist_count: 50
+							},
+							{
+								uid: '8aa54c3af55940d38bf1d6739a17ed99',
+								org_abbr_name: '数字城市党支部',
+								member_total_count: 4,
+								formal_member_count: 2,
+								probationary_member_count: 2,
+								party_worker_count: 0,
+								activist_count: 60
+							}
+						],
+						colorPalette: [
+							'#E54E4E', // 更亮的红色
+							'#5A9DCC', // 更亮的蓝色
+							'#9FC79F', // 更亮的绿色
+							'#AD9670', // 更亮的棕色
+							'#8FB8C8', // 更亮的灰蓝
+							'#C13A52', // 更亮的深红
+							'#35B58A', // 更亮的绿色
+							'#4A575A', // 更亮的灰色
+							'#6A7B7C', // 更亮的青色
+							'#A691B3', // 更亮的紫色
+							'#D7B78E', // 更亮的黄色
+							'#917584', // 更亮的紫调
+							'#7F917F', // 更亮的绿色
+							'#627D32', // 更亮的橄榄绿
+							'#9F8766', // 更亮的棕色
+							'#8C7DAC', // 更亮的紫色
+							'#5A6B6C', // 更亮的灰色
+							'#B84926', // 更亮的赭石
+							'#759BA0', // 更亮的青灰
+							'#8C6757' // 更亮的褐色
+						]
+					};
+				},
+				computed: {
+					// 计算分页后的组织数据，每4个一页
+					paginatedOrganizations() {
+						const pageSize = 4;
+						const result = [];
+						// 将组织数据按每4个一组进行分组
+						for (let i = 0; i < this.electionDueOrganizations?.length; i += pageSize) {
+							result.push(this.electionDueOrganizations?.slice(i, i + pageSize));
+						}
+						// 如果最后一页不足4个，添加空占位符保证布局统一
+						if (result.length > 0 && result[result.length - 1].length < pageSize) {
+							const lastPage = result[result.length - 1];
+							const neededPlaceholders = pageSize - lastPage.length;
+							for (let i = 0; i < neededPlaceholders; i++) {
+								lastPage.push({ uid: `placeholder-${i}`, isPlaceholder: true });
+							}
+						}
+						return result;
+					}
+				},
+				mounted() {
+					this.initSwiper();
+					this.initTreeChart();
+					this.initMemberTypeChart();
+					this.initActivistChart();
+					this.initPartyWorkerChart();
+					this.initBranchDistributionChart();
+				},
+				methods: {
+					initSwiper() {
+						// 等待DOM更新完成
+						this.$nextTick(() => {
+							new Swiper('.swiper-container', {
+								slidesPerView: 1,
+								spaceBetween: 10,
+								loop: true,
+								pagination: {
+									el: '.swiper-pagination',
+									clickable: true
+								},
+								navigation: {
+									nextEl: '.swiper-button-next',
+									prevEl: '.swiper-button-prev'
+								},
+								// 允许鼠标拖动
+								allowTouchMove: true
+							});
+						});
+					},
+					// 格式化日期
+					formatDate(dateString) {
+						if (!dateString) return '';
+						const date = new Date(dateString);
+						const year = date.getFullYear();
+						const month = String(date.getMonth() + 1).padStart(2, '0');
+						const day = String(date.getDate()).padStart(2, '0');
+						return `${year}-${month}-${day}`;
+					},
+					// 根据剩余天数获取样式类
+					getDaysRemainingClass(daysRemaining) {
+						if (daysRemaining < 0) return 'days-expired';
+						if (daysRemaining <= 30) return 'days-urgent';
+						if (daysRemaining <= 60) return 'days-warning';
+						return 'days-normal';
+					},
+					// 格式化日期为年月格式
+					formatDateToYearMonth(timestamp) {
+						if (!timestamp) return '';
+						const date = new Date(timestamp);
+						const year = date.getFullYear();
+						const month = String(date.getMonth() + 1).padStart(2, '0');
+						return `${year}-${month}`;
+					},
+					getOrgTypeColor(orgCategoryCode) {
+						const colorMap = {
+							party_committee: this.colorPalette[0],
+							party_branch: this.colorPalette[1],
+							party_cell: this.colorPalette[2]
+						};
+						return colorMap[orgCategoryCode] || this.colorPalette[19];
+					},
+					// 初始化树图
+					initTreeChart() {
+						const chartDom = document.getElementById('treeChart');
+						if (!chartDom) return;
+
+						this.treeChart = echarts.init(chartDom);
+
+						// 递归处理树数据，转换为ECharts树图所需格式
+						const convertToTreeData = node => {
+							const result = {
+								name: node.org_abbr_name,
+								value: {
+									fullName: node.org_full_name,
+									org_category_code: node.org_category_code,
+									uid: node.uid,
+									process_instance_id: node.process_instance_id
+								},
+								itemStyle: {
+									color: this.getOrgTypeColor(node.org_category_code)
+								}
+							};
+
+							if (node.children && node.children.length > 0) {
+								result.children = node.children.map(child => convertToTreeData(child));
+							}
+
+							return result;
+						};
+
+						const treeData = convertToTreeData(this.ledgerTree);
+
+						const option = {
+							tooltip: {
+								trigger: 'item',
+								triggerOn: 'mousemove',
+								formatter: function (params) {
+									return params.value && params.value.fullName ? params.value.fullName : params.name;
+								}
+							},
+							series: [
+								{
+									type: 'tree',
+									data: [treeData],
+									left: '2%',
+									right: '2%',
+									symbol: 'rect',
+									symbolSize: [40, 120],
+									orient: 'vertical',
+									expandAndCollapse: false, // 禁用展开/收起功能
+									// 添加点击事件
+									emphasis: {
+										focus: 'series'
+									},
+									label: {
+										position: 'inside',
+										verticalAlign: 'middle',
+										align: 'center',
+										formatter: function (params) {
+											const name = params.name || '';
+											const maxTotalChars = 10; // 总共最多显示n个字
+
+											// 处理字符：最多n个字
+											let chars = name.split('');
+											if (chars.length > maxTotalChars) {
+												chars = chars.slice(0, maxTotalChars - 1); // 取前n-1个字
+												chars.push('...'); // 第n个字是省略号
+											}
+
+											// 每个字符占一行（竖排效果）
+											const result = chars.join('\n');
+
+											return '{a|' + result + '}';
+										},
+										rich: {
+											a: {
+												fontSize: 9,
+												color: '#fff',
+												lineHeight: 11
+											}
+										}
+									},
+									leaves: {
+										label: {
+											position: 'inside',
+											verticalAlign: 'middle',
+											align: 'center',
+											formatter: function (params) {
+												const name = params.name || '';
+												const maxTotalChars = 10; // 总共最多显示n个字
+
+												// 处理字符：最多n个字
+												let chars = name.split('');
+												if (chars.length > maxTotalChars) {
+													chars = chars.slice(0, maxTotalChars - 1); // 取前n-1个字
+													chars.push('...'); // 第n个字是省略号
+												}
+
+												// 每个字符占一行（竖排效果）
+												const result = chars.join('\n');
+
+												return '{a|' + result + '}';
+											},
+											rich: {
+												a: {
+													fontSize: 9,
+													color: '#fff',
+													lineHeight: 11
+												}
+											}
+										}
+									},
+									animationDurationUpdate: 750
+								}
+							]
+						};
+						this.treeChart.setOption(option);
+						// 添加点击事件监听器
+						this.treeChart.on('click', params => {
+							const { protocol, host } = window.location;
+							let targetUrl = `${protocol}//${host}/apps/desktop/process/app_mgt503l5m8/${params.value.process_instance_id}?additional_query={}`;
+							window.open(targetUrl, '_blank');
+						});
+						// 响应窗口大小变化
+						window.addEventListener('resize', () => {
+							this.treeChart.resize();
+						});
+					},
+					initMemberTypeChart() {
+						this.memberTypeChart = echarts.init(document.getElementById('memberTypeChart'));
+						const option = {
+							tooltip: {
+								trigger: 'item',
+								formatter: '{b}: {c}人'
+							},
+							series: [
+								{
+									name: '党员类型',
+									type: 'pie',
+									radius: ['40%', '70%'],
+									center: ['50%', '50%'], // 稍微调整图表中心位置，为顶部图例留出空间
+									labelLine: {
+										show: window.innerWidth <= 1560 ? false : true
+									},
+									data: [
+										{
+											value: this.committeeLedger.formal_member_count || 0,
+											name: '正式党员',
+											itemStyle: {
+												color: this.colorPalette[1]
+											}
+										},
+										{
+											value: this.committeeLedger.probationary_member_count || 0,
+											name: '预备党员',
+											itemStyle: {
+												color: this.colorPalette[2]
+											}
+										}
+									]
+								}
+							]
+						};
+						this.memberTypeChart.setOption(option);
+						window.addEventListener('resize', () => {
+							this.memberTypeChart.resize();
+						});
+					},
+					initActivistChart() {
+						this.activistChart = echarts.init(document.getElementById('activistChart'));
+						const option = {
+							tooltip: {
+								trigger: 'item',
+								formatter: '{b}: {c}人'
+							},
+							series: [
+								{
+									name: '入党积极分子分布',
+									type: 'pie',
+									radius: ['40%', '70%'],
+									center: ['50%', '50%'], // 稍微调整图表中心位置，为顶部图例留出空间
+									data: this.partyCellDetails.map((cell, index) => ({
+										value: cell.activist_count || 0,
+										name: cell.org_abbr_name,
+										itemStyle: {
+											color: this.colorPalette[index % this.colorPalette.length]
+										}
+									}))
+								}
+							]
+						};
+						this.activistChart.setOption(option);
+						window.addEventListener('resize', () => {
+							this.activistChart.resize();
+						});
+					},
+					// 党务工作者分布饼图 - 修改图例位置
+					initPartyWorkerChart() {
+						this.partyWorkerChart = echarts.init(document.getElementById('partyWorkerChart'));
+						const option = {
+							tooltip: {
+								trigger: 'item',
+								formatter: '{b}: {c}人'
+							},
+							series: [
+								{
+									name: '党务工作者分布',
+									type: 'pie',
+									radius: ['40%', '70%'],
+									center: ['50%', '50%'], // 稍微调整图表中心位置，为顶部图例留出空间
+									data: this.partyCellDetails.map((cell, index) => ({
+										value: cell.party_worker_count || 0,
+										name: cell.org_abbr_name,
+										itemStyle: {
+											color: this.colorPalette[index % this.colorPalette.length]
+										}
+									}))
+								}
+							]
+						};
+						this.partyWorkerChart.setOption(option);
+						window.addEventListener('resize', () => {
+							this.partyWorkerChart.resize();
+						});
+					},
+					// 初始化各支部党员和入党积极分子分布柱状图
+					initBranchDistributionChart() {
+						const chartDom = document.getElementById('branchDistributionChart');
+						if (!chartDom) return;
+
+						this.branchDistributionChart = echarts.init(chartDom);
+
+						const option = {
+							tooltip: {
+								trigger: 'axis',
+								axisPointer: {
+									type: 'shadow'
+								},
+								formatter: function (params) {
+									let result = params[0].axisValue + '<br/>';
+									params.forEach(param => {
+										result += `${param.seriesName}: ${param.value}人<br/>`;
+									});
+									return result;
+								}
+							},
+							legend: {
+								data: ['正式党员', '预备党员', '入党积极分子'],
+								top: '0%',
+								orient: 'horizontal',
+								left: 'center'
+							},
+							grid: {
+								left: '3%',
+								right: '4%',
+								bottom: '3%',
+								top: '15%',
+								containLabel: true
+							},
+							xAxis: {
+								type: 'category',
+								data: this.partyCellDetails.map(cell => cell.org_abbr_name),
+								axisLabel: {
+									interval: 0,
+									rotate: 0,
+									// formatter 函数接收原始的标签文本 value 和索引 index
+									formatter: function (value) {
+										// 定义最大字符数，例如 5 个字符
+										const maxLength = 5;
+										let formattedValue = String(value); // 确保 value 是字符串
+
+										if (formattedValue.length > maxLength) {
+											// 截取指定长度的字符，并添加省略号
+											// 注意：这里的长度是字符数，一个中文字符和一个英文字符都算作1个单位长度
+											// 如果你需要按像素宽度精确截断，会更复杂，需要借助 ECharts 的 measureText 或其他手段估算
+											formattedValue = formattedValue.substring(0, maxLength) + '...';
+										}
+
+										return formattedValue; // 返回处理后的标签文本
+									}
+								}
+							},
+							yAxis: {
+								type: 'value'
+							},
+							series: [
+								{
+									name: '正式党员',
+									type: 'bar',
+									barWidth: 20, // 设置柱子宽度为10px
+									emphasis: {
+										focus: 'series'
+									},
+									itemStyle: {
+										color: this.colorPalette[0]
+									},
+									data: this.partyCellDetails.map(cell => cell.formal_member_count || 0)
+								},
+								{
+									name: '预备党员',
+									type: 'bar',
+									barWidth: 20, // 设置柱子宽度为10px
+									emphasis: {
+										focus: 'series'
+									},
+									itemStyle: {
+										color: this.colorPalette[1]
+									},
+									data: this.partyCellDetails.map(cell => cell.probationary_member_count || 0)
+								},
+								{
+									name: '入党积极分子',
+									type: 'bar',
+									barWidth: 20, // 设置柱子宽度为10px
+									emphasis: {
+										focus: 'series'
+									},
+									itemStyle: {
+										color: this.colorPalette[2]
+									},
+									data: this.partyCellDetails.map(cell => cell.activist_count || 0)
+								}
+							]
+						};
+
+						this.branchDistributionChart.setOption(option);
+
+						// 响应窗口大小变化
+						window.addEventListener('resize', () => {
+							this.branchDistributionChart.resize();
+						});
+					}
+				}
+			}).mount('#app');
+		</script>
+	</body>
+</html>
