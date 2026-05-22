@@ -1,0 +1,31 @@
+计划类型-type: plan_type
+  标志性事件计划-sep_plan
+	个人管理力提升（IDP）计划-idp_plan
+
+计划阶段-type: plan_stage
+  期中计划-midterm_plan
+	期末计划-final_plan
+ 
+IDP评分角色-type: sep_evaluation_role
+  领导小组组长-group_leader
+	常务副组长-executive_deputy_leader
+	领导小组成员-group_member
+	外部专家-external_expert
+
+期末计划状态-type: final_plan_status
+	未提交-unsubmitted
+	待确认-pending_confirmation
+	已确认-confirmed
+	已备案-filed
+	已退回-returned
+
+期末评测状态-type: final_evaluation_status
+	未开始-not_started
+	进行中-in_progress
+	已完成-completed
+
+标志性事件评估等级-type: sep_grade
+	超额/超预期完成-exceeded_expectations
+	基本完成-basically_completed
+	未完成-not_completed
+ 

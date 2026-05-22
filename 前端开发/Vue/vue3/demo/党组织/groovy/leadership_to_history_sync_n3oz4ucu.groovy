@@ -129,8 +129,7 @@ def memberTransferHistory = callService("app_mgt503l5m8", "t_party_members_base_
 			value: ['1', '3'],
 			query_type: 3
 		]
-	]
-	]))
+	]]))
  
 
 if (currentTermInfo && currentTermInfo.size() > 0) {

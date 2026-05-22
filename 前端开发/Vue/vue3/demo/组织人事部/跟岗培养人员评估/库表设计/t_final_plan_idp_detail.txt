@@ -1,0 +1,12 @@
+跟岗培养评估期末计划IDP明细表-t_final_plan_idp_detail_xhftv7p9-包含以下信息
+
+主键
+外键-跟岗培养评估期末计划主表主键
+提升维度 improvement_dimension Ya87bOhRHO required
+提升目标 improvement_goal J0RQruKJ8k required
+实施措施 implementation_measures ICdzR2zY0E required
+完成时限 deadline hQyDJxngaz required
+预期结果 expected_result SHNdGjW76F required
+排序 sort
+
+请帮忙给出字段编码

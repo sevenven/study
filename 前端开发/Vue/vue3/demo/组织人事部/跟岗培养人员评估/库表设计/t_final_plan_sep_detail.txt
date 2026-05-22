@@ -1,0 +1,13 @@
+跟岗培养评估期末计划标志性事件明细表-t_final_plan_sep_detail_99d7f0ud-包含以下信息
+
+主键
+外键-跟岗培养评估期末计划主表主键
+事件名称 event_name r517XQPwKH
+事件目标 event_goal mvqVI0Gv7f
+实施步骤 steps bpXNSZlm9U
+完成时限-日期时间 deadline fZMZVhtHZZ
+验收标准 acceptance_criteria OEOiKVL36i
+选择理由 selection_reason ibB1MbPwEB
+排序 sort
+
+请帮忙给出字段编码

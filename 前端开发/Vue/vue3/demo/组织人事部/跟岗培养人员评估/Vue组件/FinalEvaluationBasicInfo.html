@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>基本信息</title>
+		<link rel="stylesheet" href="https://unpkg.com/swiper@11/swiper-bundle.min.css" />
+		<script type="text/javascript" src="../../../vue-3.4.27.global.min.js"></script>
+		<script type="text/javascript" src="https://unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script>
+		<script src="https://unpkg.com/swiper@11/swiper-bundle.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			html body {
+			}
+
+			.basic-info-wrapper {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 16px 24px;
+				background: #fff;
+				min-height: 120px;
+				border-radius: 8px;
+				color: #333;
+			}
+
+			/* 左侧姓名首字母 */
+			.basic-info-wrapper .left-section {
+				width: 64px;
+				height: 64px;
+				border-radius: 50%;
+				background: #f4f5f7;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 26px;
+				font-weight: bold;
+				color: #666;
+			}
+
+			/* 中间信息区域 */
+			.basic-info-wrapper .middle-section {
+				flex: 1;
+				margin: 0 30px;
+			}
+
+			.basic-info-wrapper .middle-top {
+				margin-bottom: 15px;
+			}
+
+			.basic-info-wrapper .user-name {
+				font-size: 18px;
+				font-weight: 500;
+				margin-right: 10px;
+			}
+
+			.basic-info-wrapper .middle-bottom {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 20px;
+			}
+
+			.basic-info-wrapper .info-item {
+				display: flex;
+				align-items: center;
+				font-size: 14px;
+			}
+
+			.basic-info-wrapper .info-label {
+				color: #999;
+				margin-right: 4px;
+			}
+
+			.basic-info-wrapper .info-value {
+				font-weight: 500;
+			}
+
+			/* 右侧得分区域 */
+			.basic-info-wrapper .right-section {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+			}
+
+			.basic-info-wrapper .score-box {
+				text-align: center;
+				background: #f4f5f7;
+				padding: 15px 20px;
+				border-radius: 8px;
+			}
+
+			.basic-info-wrapper .score-label {
+				font-size: 14px;
+				color: #999;
+				margin-bottom: 8px;
+			}
+
+			.basic-info-wrapper .score-value {
+				font-size: 18px;
+				font-weight: bold;
+				color: #5a9dcc;
+			}
+
+			.basic-info-wrapper .print-btn {
+				background: #f4f5f7;
+				color: #666;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 8px;
+				font-size: 14px;
+				font-weight: 400;
+				cursor: pointer;
+				transition: all 0.2s ease;
+			}
+
+			.basic-info-wrapper .print-btn:hover {
+				background: #e8e9eb;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="basic-info-wrapper">
+				<!-- 左侧姓名首字母 -->
+				<div class="left-section">{{ plan_user_name.charAt(0) }}</div>
+
+				<!-- 中间上下结构 -->
+				<div class="middle-section">
+					<div class="middle-top">
+						<span class="user-name">{{ plan_user_name }}</span>
+					</div>
+					<div class="middle-bottom">
+						<div class="info-item">
+							<span class="info-label">跟岗岗位：</span>
+							<span class="info-value">{{ post }}</span>
+						</div>
+						<div class="info-item">
+							<span class="info-label">导师：</span>
+							<span class="info-value">{{ mentor_name }}</span>
+						</div>
+						<div class="info-item">
+							<span class="info-label">教练：</span>
+							<span class="info-value">{{ coach_name }}</span>
+						</div>
+						<div class="info-item">
+							<span class="info-label">跟岗周期：</span>
+							<span class="info-value">{{ duration_start }} - {{ duration_end }}</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- 右侧期末评测综合得分以及PDF打印按钮 -->
+				<div class="right-section">
+					<div class="score-box">
+						<div class="score-label">期末评测综合得分</div>
+						<div class="score-value">{{ final_score }}</div>
+					</div>
+					<button class="print-btn" @click="printPDF">PDF打印</button>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						plan_user_name: '张三', // 跟岗人员姓名
+						post: '产品经理', // 跟岗岗位
+						mentor_name: '李四', // 导师姓名
+						coach_name: '王五', // 教练姓名
+						duration_start: '2024-01-01', // 跟岗期限开始日期
+						duration_end: '2024-12-31', // 跟岗期限结束日期
+						final_score: 85.5, // 期末评测综合得分
+						sep_score: 82.3, // 标志性事件总得分
+						idp_score: 88.7 // IDP事项总得分
+					};
+				},
+				mounted() {},
+				methods: {}
+			}).mount('#app');
+		</script>
+	</body>
+</html>

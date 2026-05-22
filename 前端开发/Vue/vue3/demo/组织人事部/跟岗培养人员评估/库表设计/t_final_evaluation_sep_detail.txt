@@ -1,0 +1,16 @@
+跟岗培养评估期末测评结果标志性事件评分明细表-t_final_evaluation_sep_detai_5bi149wk-包含以下信息
+
+主键
+外键-跟岗培养评估期末测评结果表主键
+评分角色code sep_evaluation_role_code
+评分权重 weight 
+评分用户id reviewer_user_id
+标志性事件标志性事件明细id-数组 final_plan_sep_detail_detail_ids
+标志事件评估等级-数组 sep_grades
+标志事件评分-数组 sep_scores
+标志事件评估说明-数组 sep_comments
+标志性事件单项平均得分 avg_sep_score
+加权分 weighted_score
+
+
+请帮忙给出字段编码

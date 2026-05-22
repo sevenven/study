@@ -1,6 +1,8 @@
 import groovy.json.JsonOutput
 
-logger.info("Groovy版本: " + GroovySystem.version)
+def ledgerDate = ${__input__.ledger_date}
+
+logger.info("Groovy版本: " + GroovySystem.version + ", 输入参数: " + JsonOutput.toJson(__input__))
 
 // 同时构建树和统计节点
 def buildTreeAndCount(allLedgers, ledgerMap, orgId, nodeCounts, partyCellData) {
@@ -88,24 +90,35 @@ def committeeOverview = [
   partyCellDetails: []  // 添加党小组详情数组
 ]
 
-// 获取台账日期最新的审核完成的党委建设台账信息
+// 构建查询条件
+def queryCriteria = [
+  [
+    "column_name_list": null,
+    "column_name": "org_category_code",
+    "value": ["party_committee"],
+    "query_type": 0
+  ],
+  [
+    "column_name_list": null,
+    "column_name": "process_status",
+    "value": ["COMPLETE"],
+    "query_type": 0
+  ]
+]
+// 如果传入了ledgerDate参数，则添加到查询条件中
+if (ledgerDate) {
+  queryCriteria.add([
+    "column_name_list": null,
+    "column_name": "ledger_date",
+    "value": [ledgerDate],
+    "query_type": 0
+  ])
+}
+// 获取党委建设台账信息
 def latestConstructionLedger = callService("app_mgt503l5m8", "t_organization_ledgers_rblschqz_selectMore", JsonOutput.toJson([
   "page_index": 1,
   "page_size": 1,
-  "query_criteria": [
-    [
-      "column_name_list": null,
-      "column_name": "org_category_code",
-      "value": ["party_committee"],
-      "query_type": 0
-    ],
-    [
-      "column_name_list": null,
-      "column_name": "process_status",
-      "value": ["COMPLETE"],
-      "query_type": 0
-    ]
-  ],
+  "query_criteria": queryCriteria,
   "sort_criteria": [
     "ledger_date": "DESC"
   ]
@@ -115,12 +128,11 @@ def latestConstructionLedger = callService("app_mgt503l5m8", "t_organization_led
 if (!latestConstructionLedger.isEmpty()) {
   def latestLedger = latestConstructionLedger[0]
   def orgId = latestLedger.party_organizations_id
-  def ledgerDate = latestLedger.ledger_date
 
   // 存储最新的建设台账信息
   committeeOverview.committeeLedger = latestLedger
   
-  logger.info("开始构建台账树，基准组织ID: " + orgId + "，台账日期: " + ledgerDate)
+  logger.info("开始构建台账树，基准组织ID: " + orgId + "，台账日期: " + latestLedger.ledger_date)
   
   // 查询该日期下的所有相关台账
   def allLedgers = callService("app_mgt503l5m8", "t_organization_ledgers_rblschqz_selectMore", JsonOutput.toJson([
@@ -130,7 +142,7 @@ if (!latestConstructionLedger.isEmpty()) {
       [
         "column_name_list": null,
         "column_name": "ledger_date",
-        "value": [ledgerDate],
+        "value": [latestLedger.ledger_date],
         "query_type": 0
       ]
     ],

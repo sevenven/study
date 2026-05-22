@@ -1,0 +1,20 @@
+跟岗培养评估期末测评结果主表-t_final_evaluation_l76l0srb-包含以下信息
+
+主键
+外键1-标志性事件计划主键 sep_plan_id
+外键2-IDP事件计划主键 idp_plan_id
+计划阶段code plan_stage_code  
+跟岗人员ID plan_user_id
+计划所属年度-日期 plan_year  
+期末评测状态 final_evaluation_status_code
+标志性事件总得分 sep_score
+IDP事项总得分 idp_score
+期末评测综合得分 final_score
+评估日期 eval_date
+评价节点领导小组组长角色成员 group_leader_user_id
+评价节点领导小组成员角色成员 group_member_user_id
+评价节点常务副组长角色成员 executive_deputy_user_id
+评价节点外部专家角色成员 external_expert_user_id
+计划所属年度中文描述 plan_year_name
+
+请帮忙给出字段编码

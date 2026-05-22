@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>期末测评得分</title>
+		<script type="text/javascript" src="../../../vue-3.4.27.global.min.js"></script>
+		<style>
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			html body {
+				padding: 10px;
+			}
+
+			/* 卡片容器 */
+			.score-cards-container {
+				width: 100%;
+				display: flex;
+				gap: 40px;
+				background-color: #ffffff;
+				justify-content: center;
+				align-items: center;
+			}
+
+			/* 分数卡片 */
+			.score-cards-container .score-card {
+				flex: 1;
+				background-color: #f4f5f7;
+				border-radius: 8px;
+				padding: 20px 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+			}
+
+			/* 卡片标题 */
+			.score-cards-container .score-card-title {
+				font-size: 14px;
+				color: #999;
+				text-align: center;
+			}
+
+			/* 分数数值 */
+			.score-cards-container .score-value {
+				font-size: 18px;
+				font-weight: bold;
+				color: #5a9dcc;
+				line-height: 1;
+				margin-top: 8px;
+			}
+
+			/* 第二个卡片分数颜色 - 黄色搭配 */
+			.score-cards-container .score-card:last-child .score-value {
+				color: #daa520;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<!-- 卡片容器 -->
+			<div class="score-cards-container">
+				<!-- 期末标志性计划表分数卡片 -->
+				<div class="score-card">
+					<div class="score-card-title">期末标志性计划表</div>
+					<div class="score-value">{{ sep_score }}</div>
+				</div>
+
+				<!-- IDP管理能力提升计划表分数卡片 -->
+				<div class="score-card">
+					<div class="score-card-title">IDP管理能力提升计划表</div>
+					<div class="score-value">{{ idp_score }}</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						sep_score: 8.17,
+						idp_score: 8.37
+					};
+				},
+				mounted() {},
+				methods: {}
+			}).mount('#app');
+		</script>
+	</body>
+</html>

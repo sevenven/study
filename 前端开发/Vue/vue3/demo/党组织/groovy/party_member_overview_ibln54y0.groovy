@@ -4,10 +4,7 @@ def cellId = ${__input__.cellId}
 def branchId = ${__input__.branchId}
 def committeeId = ${__input__.committeeId}
 
-// 打印输入参数信息 - 使用字符串拼接格式
-// logger.info("Groovy版本: " + GroovySystem.version + ", 输入参数 - cellId: " + cellId + ", branchId: " + branchId + ", committeeId: " + committeeId)
-// 打印groovy版本
-// logger.info("groovy版本: " + groovy.lang.GroovySystem.getVersion())
+logger.info("Groovy版本: " + GroovySystem.version + ", 输入参数: " + JsonOutput.toJson(__input__))
 
 // 创建组织ID查询条件函数 - 修改为接收参数
 def createOrgCriteria(cellId, branchId, committeeId) {
@@ -81,6 +78,11 @@ if (committeeId) {
     "column_name_list": null,
     "column_name": "party_member_source_code",
     "value": ["external_transfer_out"],
+    "query_type": 0
+  ], [
+    "column_name_list": null,
+    "column_name": "is_current",
+    "value": ["1"],
     "query_type": 0
   ]]
 } else if (cellId) {

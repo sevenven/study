@@ -1,0 +1,22 @@
+跟岗培养评估期末计划主表-t_final_plan_1cwu93rl-包含以下信息
+
+主键
+计划类型code plan_type_code
+计划阶段code plan_stage_code
+跟岗人员ID plan_user_id
+计划所属年度-日期 plan_year
+跟岗岗位 post
+跟岗期限开始日期 duration_start
+跟岗期限结束日期 duration_end
+导师 mentor_id
+教练 coach_id
+并签字段 mentor_coach_joint_sign_user_ids
+业务状态 final_plan_status_code
+填报时间 fill_time
+跟岗人员姓名 plan_user_name
+计划所属年度中文描述 plan_year_name
+计划阶段中文描述 plan_stage_name
+计划类型中文描述 plan_type_name
+
+
+请帮忙给出字段编码

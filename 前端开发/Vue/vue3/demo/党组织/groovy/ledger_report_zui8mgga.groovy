@@ -106,4 +106,3 @@ if (partyOrganizationInfo.org_category_code == "party_branch") {
     }
   }
 }
-  
