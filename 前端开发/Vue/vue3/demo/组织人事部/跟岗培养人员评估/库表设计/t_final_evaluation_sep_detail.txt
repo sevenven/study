@@ -5,7 +5,7 @@
 评分角色code sep_evaluation_role_code
 评分权重 weight 
 评分用户id reviewer_user_id
-标志性事件标志性事件明细id-数组 final_plan_sep_detail_detail_ids
+标志性事件标志性事件明细id-数组 sep_detail_ids
 标志事件评估等级-数组 sep_grades
 标志事件评分-数组 sep_scores
 标志事件评估说明-数组 sep_comments
