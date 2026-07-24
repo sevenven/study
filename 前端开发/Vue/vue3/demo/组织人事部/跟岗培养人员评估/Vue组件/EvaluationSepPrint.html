@@ -1,0 +1,677 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Sep评估打印</title>
+		<script type="text/javascript" src="../../../vue-3.4.27.global.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+		<style>
+			:root {
+				--bl-brand-c: #224585;
+				--bl-danger-c: #ff6459;
+			}
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			#app {
+				max-width: 1200px;
+				margin: 0 auto;
+			}
+			.loading-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(255, 255, 255, 0.95);
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				z-index: 9999;
+			}
+			.spinner {
+				width: 50px;
+				height: 50px;
+				border: 5px solid #f3f3f3;
+				border-top: 5px solid var(--bl-brand-c);
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+				margin-bottom: 20px;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			.progress-container {
+				width: 360px;
+				height: 16px;
+				background: #f8f9fa;
+				border-radius: 8px;
+				overflow: hidden;
+				margin: 15px 0;
+				border: 1px solid #e9ecef;
+			}
+			.progress-bar {
+				height: 100%;
+				background: linear-gradient(135deg, var(--bl-brand-c) 0%, #3a5bbf 100%);
+				border-radius: 8px;
+				transition: width 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+				color: white;
+				font-size: 11px;
+				font-weight: 500;
+				text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+			}
+			.status-text {
+				margin-top: 10px;
+				font-size: 16px;
+				color: #333;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="print-section" style="max-width: 1200px; width: 100%; overflow: hidden; font-size: 12px; line-height: 14px; margin: 20px 0">
+				<!-- 标题1：居左 -->
+				<div style="width: 100%; text-align: left; border: 1px solid #000; padding: 6px; font-size: 14px">期末标志性事件评估详情</div>
+				<!-- 基本信息行1：跟岗人员 | 跟岗岗位 | 评估阶段 -->
+				<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%">
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; border-right: 1px solid #000; border-bottom: 1px solid #000; border-left: 1px solid #000">
+						<span class="key" style="width: 100px; min-width: 100px; border-right: 1px solid #000; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%">跟岗人员</span>
+						<span class="value" style="width: calc(100% - 100px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%">{{ plan_user_name }}</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; border-right: 1px solid #000; border-bottom: 1px solid #000">
+						<span class="key" style="width: 100px; min-width: 100px; border-right: 1px solid #000; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%">跟岗岗位</span>
+						<span class="value" style="width: calc(100% - 100px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%">{{ post_label || '--' }}</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; border-right: 1px solid #000; border-bottom: 1px solid #000">
+						<span class="key" style="width: 100px; min-width: 100px; border-right: 1px solid #000; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%">评估阶段</span>
+						<span class="value" style="width: calc(100% - 100px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%">期末评估</span>
+					</div>
+				</div>
+				<!-- 基本信息行2：跟岗期限 | 导师 | 教练 -->
+				<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%; border-bottom: 1px solid #000">
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; border-right: 1px solid #000; border-left: 1px solid #000">
+						<span class="key" style="width: 100px; min-width: 100px; border-right: 1px solid #000; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%">跟岗期限</span>
+						<span class="value" style="width: calc(100% - 100px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%">{{ formatDate(duration_start) }} 至 {{ formatDate(duration_end) }}</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; border-right: 1px solid #000">
+						<span class="key" style="width: 100px; min-width: 100px; border-right: 1px solid #000; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%">导师</span>
+						<span class="value" style="width: calc(100% - 100px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%">{{ mentor_name }}</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; border-right: 1px solid #000">
+						<span class="key" style="width: 100px; min-width: 100px; border-right: 1px solid #000; display: flex; align-items: center; padding: 6px; flex-shrink: 0; height: 100%">教练</span>
+						<span class="value" style="width: calc(100% - 100px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%">{{ coach_name }}</span>
+					</div>
+				</div>
+				<!-- 标题2：居左 -->
+				<div style="width: 100%; text-align: left; border-left: 1px solid #000; border-right: 1px solid #000; padding: 6px; font-size: 14px; margin-top: 0">标志性事件评分详情</div>
+				<!-- 评分表格 -->
+				<table style="border-collapse: collapse; width: 100%; table-layout: fixed; border-left: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px solid #000">
+					<thead>
+						<tr>
+							<th style="width: 120px; border: 1px solid #000; padding: 10px; text-align: left; font-weight: normal">评分角色</th>
+							<th style="width: 100px; border: 1px solid #000; padding: 10px; text-align: left; font-weight: normal">评分人</th>
+							<th style="width: 80px; border: 1px solid #000; padding: 10px; text-align: left; font-weight: normal">权重</th>
+							<th v-for="(col, idx) in eventColumns" :key="col.key" :style="{ width: '100px', border: '1px solid #000', padding: '10px', textAlign: 'left', fontWeight: 'normal' }">{{ col.title }}</th>
+							<th style="width: 100px; border: 1px solid #000; padding: 10px; text-align: left; font-weight: normal">加权分</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(row, index) in renderedDetails" :key="index">
+							<td style="width: 120px; border: 1px solid #000; padding: 10px; vertical-align: top; word-break: break-all">{{ getRoleName(row.roleCode) }}</td>
+							<td style="width: 100px; border: 1px solid #000; padding: 10px; vertical-align: top; word-break: break-all">{{ row.reviewer_name }}</td>
+							<td v-if="row.showWeight" :rowspan="row.weightRowspan" style="width: 80px; border: 1px solid #000; padding: 10px; vertical-align: middle; word-break: break-all; text-align: center">{{ row.weightValue }}</td>
+							<td v-for="(col, idx) in eventColumns" :key="col.key" style="width: 100px; border: 1px solid #000; padding: 10px; vertical-align: top; word-break: break-all">{{ getEventScore(row, idx) }}</td>
+							<td style="width: 100px; border: 1px solid #000; padding: 10px; vertical-align: top; word-break: break-all">{{ row.weighted_score }}</td>
+						</tr>
+					</tbody>
+				</table>
+				<div style="width: 100%; border-left: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px solid #000; text-align: left; padding: 6px">期末标志性事件加权得分：{{ Number(sep_score).toFixed(2) }}</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					return {
+						plan_user_id: 'houxuanren004',
+						coach_name: 'jiaolian001',
+						plan_year: 1735660800000,
+						idp_final_evaluation_status_code: 'completed',
+						sys_deleted: 0,
+						sep_final_evaluation_status_code: 'in_progress',
+						uid: '1000017',
+						update_time: 1782359369000,
+						post: 'csyygscxyybfbz',
+						post_label: '超算运营公司创新应用部副部长',
+						duration_end: 1767196799000,
+						details: [
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'group_leader',
+								weight: 0.6,
+								sys_deleted: 0,
+								sys_update_user: '',
+								uid: '1000120',
+								update_time: 1782359367000,
+								sep_comments: '',
+								reviewer_user_id: 'sevenldxzzz',
+								sep_grades: '',
+								reviewer_name: 'seven领导小组组长',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							},
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'group_leader',
+								weight: 0.6,
+								sys_deleted: 0,
+								sys_update_user: '',
+								uid: '1000121',
+								update_time: 1782359367000,
+								sep_comments: '',
+								reviewer_user_id: 'lingdaoxiaozuzuzhang1',
+								sep_grades: '',
+								reviewer_name: 'xiaozuzuzhang1',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							},
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'group_member',
+								weight: 0.3,
+								sys_deleted: 0,
+								sys_update_user: '063241004332987444',
+								uid: '1000122',
+								update_time: 1782366286000,
+								sep_comments: '',
+								reviewer_user_id: 'sevenldxzcy',
+								sep_grades: '',
+								reviewer_name: 'seven领导小组成员',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							},
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'group_member',
+								weight: 0.3,
+								sys_deleted: 0,
+								sys_update_user: '063241004332987444',
+								uid: '1000123',
+								update_time: 1782366286000,
+								sep_comments: '',
+								reviewer_user_id: 'xiaozuchengyuan1',
+								sep_grades: '',
+								reviewer_name: 'lingdaoxiaozuchengyuan1',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							},
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'group_member',
+								weight: 0.3,
+								sys_deleted: 0,
+								sys_update_user: '063241004332987444',
+								uid: '1000124',
+								update_time: 1782366286000,
+								sep_comments: '',
+								reviewer_user_id: 'xiaozuchengyuan2',
+								sep_grades: '',
+								reviewer_name: 'lingdaoxiaozuchengyuan2',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							},
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'executive_deputy_leader',
+								weight: 0.6,
+								sys_deleted: 0,
+								sys_update_user: '063241004332987444',
+								uid: '1000125',
+								update_time: 1782366286000,
+								sep_comments: '',
+								reviewer_user_id: 'sevencwfzz',
+								sep_grades: '',
+								reviewer_name: 'seven常务副组长',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							},
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'external_expert',
+								weight: 0.1,
+								sys_deleted: 0,
+								sys_update_user: '',
+								uid: '1000126',
+								update_time: 1782359367000,
+								sep_comments: '',
+								reviewer_user_id: 'sevenwbzj',
+								sep_grades: '',
+								reviewer_name: 'seven外部专家',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							},
+							{
+								sep_detail_ids: '28dc33d514874dd4a20e89ad0a052b64#@#5d4f911cc4a947bcbc256d952ba67a45#@#8609ea91460c4428a33740bd0b7b00a2#@#d62475ba88c248a2a84294a1a82c4e38#@#0e0bd348a2064098a26cb554ca7f1678#@#046561d556a942ae8fceeaf24ff7e207',
+								weighted_score: null,
+								creator: '',
+								create_time: 1782359367000,
+								sep_evaluation_role_code: 'external_expert',
+								weight: 0.1,
+								sys_deleted: 0,
+								sys_update_user: '',
+								uid: '1000127',
+								update_time: 1782359367000,
+								sep_comments: '',
+								reviewer_user_id: 'waibuzhuanjia1',
+								sep_grades: '',
+								reviewer_name: 'waibuzhuanjia1',
+								sep_scores: '',
+								process_status: 'RUNNING',
+								t_final_evaluation_id: '1000017',
+								sys_audit_user: '',
+								avg_sep_score: '',
+								sys_audit_time: null
+							}
+						],
+						mentor_name: 'daoshi001',
+						duration_start: 1735660800000,
+						creator: 'houxuanren004',
+						create_time: 1782359265000,
+						idp_score: 9.9,
+						sepEvents: [
+							{
+								creator: '063241004332987444',
+								create_time: 1778726066000,
+								app_version: ' ',
+								self_evaluation: '完成情况1',
+								selection_reason: '选择理由1',
+								sort: '',
+								sys_deleted: 0,
+								steps: '实施步骤1',
+								sys_update_user: '063241004332987444',
+								uid: 'b8aaac4cd2774d748f070aca0f566145',
+								update_time: 1780039643000,
+								process_status: 'COMPLETE',
+								event_name: '事件名称1',
+								id: 1,
+								deadline: 1778688000000,
+								sys_audit_user: null,
+								event_goal: '事件目标1',
+								acceptance_criteria: '验收标准1',
+								t_final_plan_id: '0233f58b10334268a6192355f9622a16',
+								sys_audit_time: null
+							},
+							{
+								creator: '063241004332987444',
+								create_time: 1778825514000,
+								app_version: ' ',
+								self_evaluation: '完成情况1',
+								selection_reason: '选择理由1',
+								sort: 0,
+								sys_deleted: 0,
+								steps: '实施步骤1',
+								sys_update_user: '063241004332987444',
+								uid: '1a2863d422b74cd3891732ba27274bf1',
+								update_time: 1780039990000,
+								process_status: 'COMPLETE',
+								event_name: '事件名称1',
+								id: 2,
+								deadline: 1778774400000,
+								sys_audit_user: null,
+								event_goal: '事件目标1',
+								acceptance_criteria: '验收标准1',
+								t_final_plan_id: 'eda15fc79f944d06b2be49e095255004',
+								sys_audit_time: null
+							},
+							{
+								creator: 'houxuanren004',
+								create_time: 1779862814000,
+								app_version: ' ',
+								self_evaluation: '',
+								selection_reason: '1',
+								sort: '',
+								sys_deleted: 0,
+								steps: '1',
+								sys_update_user: 'houxuanren004',
+								uid: '19114b6fd749434cbbacd47ccb1f1d01',
+								update_time: 1779862814000,
+								process_status: 'DRAFT',
+								event_name: '1',
+								id: 3,
+								deadline: 1779811200000,
+								sys_audit_user: null,
+								event_goal: '1',
+								acceptance_criteria: '1',
+								t_final_plan_id: '7158ddfcc752469e86331f93a16c95a6',
+								sys_audit_time: null
+							},
+							{
+								creator: 'houxuanren004',
+								create_time: 1779869206000,
+								app_version: ' ',
+								self_evaluation: '',
+								selection_reason: '32132132131',
+								sort: 0,
+								sys_deleted: 0,
+								steps: '3213213',
+								sys_update_user: 'houxuanren004',
+								uid: 'fb8f7448018244f7a056629aaa73ff95',
+								update_time: 1779869206000,
+								process_status: 'TERMINATION',
+								event_name: '2321321313',
+								id: 4,
+								deadline: 1779811200000,
+								sys_audit_user: null,
+								event_goal: '3213123',
+								acceptance_criteria: '3213213123',
+								t_final_plan_id: '70e7d62611fd4e3b92a962d29464d2b9',
+								sys_audit_time: null
+							},
+							{
+								creator: 'houxuanren004',
+								create_time: 1779872024000,
+								app_version: ' ',
+								self_evaluation: '',
+								selection_reason: '3213213213',
+								sort: 0,
+								sys_deleted: 0,
+								steps: '3213213',
+								sys_update_user: 'houxuanren004',
+								uid: '2eeae6d27c8942ef965a8287d6e8dae2',
+								update_time: 1779872048000,
+								process_status: 'TERMINATION',
+								event_name: '213213313',
+								id: 5,
+								deadline: 1779811200000,
+								sys_audit_user: null,
+								event_goal: '32132131',
+								acceptance_criteria: '3213213',
+								t_final_plan_id: '792f7742ee04455fb5b57a70b5e020e9',
+								sys_audit_time: null
+							},
+							{
+								creator: 'houxuanren004',
+								create_time: 1779960962000,
+								app_version: ' ',
+								self_evaluation: '',
+								selection_reason: '32132131',
+								sort: 0,
+								sys_deleted: 0,
+								steps: '321312312',
+								sys_update_user: 'houxuanren004',
+								uid: 'e68c0c78593d4655b98b08f2d885e56a',
+								update_time: 1779960962000,
+								process_status: 'RUNNING',
+								event_name: '123213213',
+								id: 6,
+								deadline: 1779897600000,
+								sys_audit_user: null,
+								event_goal: '3213213',
+								acceptance_criteria: '32131',
+								t_final_plan_id: 'a6edbb4a07a14c569d06196a4c531ef9',
+								sys_audit_time: null
+							},
+							{
+								creator: 'houxuanren004',
+								create_time: 1780242345000,
+								app_version: ' ',
+								self_evaluation: null,
+								selection_reason: '',
+								sort: '',
+								sys_deleted: 0,
+								steps: '',
+								sys_update_user: 'houxuanren004',
+								uid: '2437400e494548a0972245668742d984',
+								update_time: 1780242345000,
+								process_status: 'DRAFT',
+								event_name: '123213213',
+								id: 7,
+								sys_audit_user: null,
+								deadline: null,
+								event_goal: '',
+								acceptance_criteria: '',
+								t_final_plan_id: '93d91e0019864800a0193bfee2c345fd',
+								sys_audit_time: null
+							},
+							{
+								creator: '063241004332987444',
+								create_time: 1780365627000,
+								app_version: ' ',
+								self_evaluation: 'seven完成情况1',
+								selection_reason: 'seven选择理由1',
+								sort: 0,
+								sys_deleted: 0,
+								steps: 'seven实施步骤1',
+								sys_update_user: '063241004332987444',
+								uid: '855da414344842c69d879e1d10781762',
+								update_time: 1780884147000,
+								process_status: 'COMPLETE',
+								event_name: 'seven事件名称1',
+								id: 16,
+								deadline: 1719676800000,
+								sys_audit_user: null,
+								event_goal: 'seven事件目标1',
+								acceptance_criteria: 'seven验收标准1',
+								t_final_plan_id: 'f983a648bd3f468d9433682fe3312755',
+								sys_audit_time: null
+							},
+							{
+								creator: '063241004332987444',
+								create_time: 1780365627000,
+								app_version: ' ',
+								self_evaluation: 'seven完成情况2',
+								selection_reason: 'seven选择理由2',
+								sort: 1,
+								sys_deleted: 0,
+								steps: 'seven实施步骤3',
+								sys_update_user: '063241004332987444',
+								uid: '292842375f2d410b82c5cbcff064e7cd',
+								update_time: 1780884147000,
+								process_status: 'COMPLETE',
+								event_name: 'seven事件名称2',
+								id: 17,
+								deadline: 1719676800000,
+								sys_audit_user: null,
+								event_goal: 'seven事件目标2',
+								acceptance_criteria: 'seven验收标准2',
+								t_final_plan_id: 'f983a648bd3f468d9433682fe3312755',
+								sys_audit_time: null
+							},
+							{
+								creator: 'houxuanren004',
+								create_time: 1780386754000,
+								app_version: ' ',
+								self_evaluation: null,
+								selection_reason: '选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由',
+								sort: 0,
+								sys_deleted: 0,
+								steps:
+									'实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤v',
+								sys_update_user: 'houxuanren004',
+								uid: '8d395b72f2794b32ab4594f9a5eaec84',
+								update_time: 1780386754000,
+								process_status: 'DRAFT',
+								event_name: 'v事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称',
+								id: 18,
+								deadline: 1780329600000,
+								sys_audit_user: null,
+								event_goal:
+									'事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标',
+								acceptance_criteria:
+									'验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准v',
+								t_final_plan_id: '754ad309ce094c5e96a14257c5b4287b',
+								sys_audit_time: null
+							},
+							{
+								creator: 'houxuanren004',
+								create_time: 1780387390000,
+								app_version: ' ',
+								self_evaluation: null,
+								selection_reason:
+									'选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由选择理由',
+								sort: 0,
+								sys_deleted: 0,
+								steps: '实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤实施步骤步骤实施步骤步骤实施步骤步骤实',
+								sys_update_user: 'houxuanren004',
+								uid: '521e1715ec974f3ab0fb9a71b2b9094a',
+								update_time: 1780387390000,
+								process_status: 'RUNNING',
+								event_name: '事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事件名称事',
+								id: 19,
+								deadline: 1780329600000,
+								sys_audit_user: null,
+								event_goal:
+									'事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标事件目标vv',
+								acceptance_criteria:
+									'验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准验收标准v',
+								t_final_plan_id: '32671245a9c942b995be035c0d14ea12',
+								sys_audit_time: null
+							}
+						],
+						plan_type_code: 'sep_plan',
+						sys_update_user: 'renshi001',
+						coach_id: 'jiaolian001',
+						mentor_id: 'daoshi001',
+						process_status: 'RUNNING',
+						plan_user_name: '候选人004',
+						sys_audit_user: '',
+						sep_score: 8.48
+					};
+				},
+				computed: {
+					eventColumns() {
+						const ids = this.details.length > 0 ? this.details[0].sep_detail_ids.split('#@#') : [];
+						return ids.map((id, index) => ({
+							key: `event_${index}`,
+							title: `标志性事件${index + 1}(${this.sepEvents[index].event_name})`
+						}));
+					},
+					renderedDetails() {
+						const details = this.details || [];
+						const leaderGroup = [];
+						const memberGroup = [];
+						const expertGroup = [];
+
+						details.forEach(d => {
+							if (d.sep_evaluation_role_code === 'group_leader' || d.sep_evaluation_role_code === 'executive_deputy_leader') {
+								leaderGroup.push(d);
+							} else if (d.sep_evaluation_role_code === 'group_member') {
+								memberGroup.push(d);
+							} else if (d.sep_evaluation_role_code === 'external_expert') {
+								expertGroup.push(d);
+							}
+						});
+
+						const rows = [];
+						const addGroup = (group, weightValue) => {
+							group.forEach((item, index) => {
+								rows.push({
+									...item,
+									roleCode: item.sep_evaluation_role_code,
+									weightValue: weightValue,
+									showWeight: index === 0,
+									weightRowspan: index === 0 ? group.length : 0
+								});
+							});
+						};
+
+						addGroup(leaderGroup, 0.6);
+						addGroup(memberGroup, 0.3);
+						addGroup(expertGroup, 0.1);
+
+						return rows;
+					}
+				},
+				methods: {
+					formatDate(timestamp) {
+						if (!timestamp) return '';
+						const date = new Date(Number(timestamp));
+						if (isNaN(date.getTime())) return '';
+						const y = date.getFullYear();
+						const m = String(date.getMonth() + 1).padStart(2, '0');
+						const d = String(date.getDate()).padStart(2, '0');
+						return `${y}-${m}-${d}`;
+					},
+					getRoleName(code) {
+						const map = {
+							group_leader: '领导小组组长',
+							group_member: '领导小组成员',
+							executive_deputy_leader: '常务副组长',
+							external_expert: '外部专家'
+						};
+						return map[code] || code;
+					},
+					getEventScore(detail, idx) {
+						const scores = detail.sep_scores?.split('#@#') || [];
+						const val = scores[idx];
+						return val !== undefined && val !== '' && val !== null ? Number(val).toFixed(2) : '';
+					}
+				},
+				mounted() {}
+			}).mount('#app');
+		</script>
+	</body>
+</html>

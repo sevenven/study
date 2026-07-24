@@ -28,4 +28,8 @@ IDP评分角色-type: sep_evaluation_role
 	超额/超预期完成-exceeded_expectations
 	基本完成-basically_completed
 	未完成-not_completed
+
+自评状态-type: self_evaluation_status
+  未开始-0
+	已完成-1
  

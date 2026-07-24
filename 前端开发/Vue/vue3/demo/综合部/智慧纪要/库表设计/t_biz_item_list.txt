@@ -1,0 +1,12 @@
+事项清单主表-t_biz_item_list_rpodqfdm
+
+主键 uid
+事项清单版本 version
+事项名称 item_name
+是否经法律审核 is_legal_review
+是否董事会授权事项 is_board_authorized
+主责部门编码 dept_code
+排序 order
+备注 remark
+
+请帮忙给出字段编码

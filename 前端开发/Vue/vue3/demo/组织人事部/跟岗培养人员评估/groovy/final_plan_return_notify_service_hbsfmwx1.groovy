@@ -18,11 +18,11 @@ def plan = callService(
   [uid: planId]
 )
 
-// 更新业务状态为“已退回”
+// 更新业务状态为“待提交”
 def updateResult = callService(
   "app_yqtmuhmhwy",
   "t_final_plan_1cwu93rl_update",
-  [uid: planId, final_plan_status_code: "returned"]
+  [uid: planId, final_plan_status_code: "unsubmitted"]
 )
 
 logger.info("更新状态结果: " + updateResult)
@@ -54,10 +54,10 @@ calendar.setTimeInMillis(planYearTimestamp)
 def planYear = calendar.get(Calendar.YEAR)
 
 // 计划类型中文
-def planType = planTypeCode == "sep_plan" ? "期末标志性计划表" : "IDP管理能力提升计划表"
+def planType = planTypeCode == "sep_plan" ? "期末标志性事件计划" : "期末个人管理力提升（IDP）计划"
 
-def content = "【跟岗评估】：您的" + planYear + "年度" + planType + "已被" + returnUserName + "退回\n" +
-        "【退回原因】：" + returnReason + "。\n请前往“工作台-全部应用-业务系统-智改数转-跟岗评估-期末评估-期末计划”中进行查看"
+def content = "【跟岗培养-期末计划】：您的" + planYear + "年度" + planType + "已被" + returnUserName + "退回。\n" +
+        "【退回原因】：" + returnReason + "。\n请前往“工作台-全部应用-业务系统-智改数转-跟岗评估-期末评估-期末计划”中进行处理。"
 
 // 发送钉钉通知
 callService(

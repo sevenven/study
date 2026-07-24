@@ -1,0 +1,334 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>计划打印</title>
+		<script type="text/javascript" src="../../../vue-3.4.27.global.min.js"></script>
+		<style>
+			:root {
+				--bl-brand-c: #224585;
+				--bl-danger-c: #ff6459;
+			}
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			#app {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+			/* 与打印无关的遮罩层可以保留样式但不使用 */
+			.loading-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(255, 255, 255, 0.95);
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				z-index: 9999;
+			}
+			.spinner {
+				width: 50px;
+				height: 50px;
+				border: 5px solid #f3f3f3;
+				border-top: 5px solid var(--bl-brand-c);
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+				margin-bottom: 20px;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			.progress-container {
+				width: 360px;
+				height: 16px;
+				background: #f8f9fa;
+				border-radius: 8px;
+				overflow: hidden;
+				margin: 15px 0;
+				border: 1px solid #e9ecef;
+			}
+			.progress-bar {
+				height: 100%;
+				background: linear-gradient(135deg, var(--bl-brand-c) 0%, #3a5bbf 100%);
+				border-radius: 8px;
+				transition: width 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+				color: white;
+				font-size: 11px;
+				font-weight: 500;
+				text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+			}
+			.status-text {
+				margin-top: 10px;
+				font-size: 16px;
+				color: #333;
+			}
+			/* 打印内容区域样式 */
+			.print-section {
+				font-size: 12px;
+				line-height: 14px;
+				color: #000;
+			}
+			.key-value-row {
+				display: flex;
+				flex-wrap: wrap;
+				width: 100%;
+			}
+			.key-value-pair {
+				display: flex;
+				align-items: center;
+				box-sizing: border-box;
+			}
+			.table-row {
+				display: flex;
+				width: 100%;
+			}
+			.table-cell {
+				padding: 6px;
+				display: flex;
+				align-items: center;
+				justify-content: start;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<!-- 没有下载遮罩和按钮 -->
+			<div class="print-section" style="max-width: 1200px; width: 100%; overflow: hidden; font-size: 12px; line-height: 14px; margin: 20px 0">
+				<!-- 基本信息表格 -->
+				<div style="width: 100%; border: 1px solid #000; border-bottom: none">
+					<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%; border-bottom: 1px solid #000">
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 50%; flex: 0 0 50%; border-right: 1px solid #000">
+							<span class="key" style="width: 120px; min-width: 120px; border-right: 1px solid #000; display: flex; justify-content: center; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 跟岗人员 </span>
+							<span class="value" style="width: calc(100% - 120px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%"> {{ planData.traineeName }} </span>
+						</div>
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 50%; flex: 0 0 50%">
+							<span class="key" style="width: 120px; min-width: 120px; border-right: 1px solid #000; display: flex; justify-content: center; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 跟岗岗位 </span>
+							<span class="value" style="width: calc(100% - 120px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%"> {{ planData.position }} </span>
+						</div>
+					</div>
+					<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%; border-bottom: 1px solid #000">
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 50%; flex: 0 0 50%; border-right: 1px solid #000">
+							<span class="key" style="width: 120px; min-width: 120px; border-right: 1px solid #000; display: flex; justify-content: center; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 跟岗期限 </span>
+							<span class="value" style="width: calc(100% - 120px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%"> {{ planData.duration }} </span>
+						</div>
+						<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 50%; flex: 0 0 50%">
+							<span class="key" style="width: 120px; min-width: 120px; border-right: 1px solid #000; display: flex; justify-content: center; align-items: center; padding: 6px; flex-shrink: 0; height: 100%"> 计划阶段 </span>
+							<span class="value" style="width: calc(100% - 120px); display: flex; align-items: center; padding: 6px; flex: 1; height: 100%">
+								<div style="display: flex; align-items: center; gap: 20px">
+									<label style="display: flex; align-items: center; gap: 6px; font-size: 13px">
+										<input type="checkbox" disabled style="width: 16px; height: 16px" />
+										期中计划
+									</label>
+									<label style="display: flex; align-items: center; gap: 6px; font-size: 13px">
+										<input type="checkbox" checked disabled style="width: 16px; height: 16px" />
+										期末计划
+									</label>
+								</div>
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- 标志性事件表格 -->
+				<div v-if="planData.planType === 'sep_plan'" style="width: 100%; border-left: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px solid #000">
+					<div class="table-row" style="display: flex; width: 100%; border-bottom: 1px solid #000">
+						<div class="table-cell" style="width: 17%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">事件名称</div>
+						<div class="table-cell" style="width: 17%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">事件目标</div>
+						<div class="table-cell" style="width: 22%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">实施步骤</div>
+						<div class="table-cell" style="width: 13%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">完成时限</div>
+						<div class="table-cell" style="width: 17%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">验收标准</div>
+						<div class="table-cell" style="width: 14%; padding: 6px; display: flex; align-items: center; justify-content: center">选择理由</div>
+					</div>
+					<div class="table-row" style="display: flex; width: 100%" v-for="(item, index) in planData.sepDetails" :key="index">
+						<div class="table-cell" :style="{ width: '17%', borderRight: '1px solid #000', borderBottom: (index === planData.sepDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.eventName }}</div>
+						<div class="table-cell" :style="{ width: '17%', borderRight: '1px solid #000', borderBottom: (index === planData.sepDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.objective }}</div>
+						<div class="table-cell" :style="{ width: '22%', borderRight: '1px solid #000', borderBottom: (index === planData.sepDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.steps }}</div>
+						<div class="table-cell" :style="{ width: '13%', borderRight: '1px solid #000', borderBottom: (index === planData.sepDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }">{{ item.deadline }}</div>
+						<div class="table-cell" :style="{ width: '17%', borderRight: '1px solid #000', borderBottom: (index === planData.sepDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.acceptanceCriteria }}</div>
+						<div class="table-cell" :style="{ width: '14%', borderBottom: (index === planData.sepDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.reason }}</div>
+					</div>
+					<div style="width: 100%; border-top: 1px solid #000; padding: 10px 16px; font-size: 13px">
+						<strong style="margin-right: 6px">备注：</strong>事件名称应明确、具体，贴合跟岗岗位实际；事件目标可量化、可验收，明确要达成的结果；实施步骤分阶段，明确各阶段核心任务及时间；验收标准需明确验收指标及合格要求；选择理由需阐明“为何选择该事项作为标志性事件，对公司有何意义等”
+					</div>
+				</div>
+
+				<!-- IDP计划表格 -->
+				<div v-if="planData.planType === 'idp_plan'" style="width: 100%; border: 1px solid #000; border-top: none; margin-top: 0">
+					<div class="table-row" style="display: flex; width: 100%; border-bottom: 1px solid #000">
+						<div class="table-cell" style="width: 20%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">提升维度</div>
+						<div class="table-cell" style="width: 22%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">提升目标</div>
+						<div class="table-cell" style="width: 27%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">实施措施</div>
+						<div class="table-cell" style="width: 13%; border-right: 1px solid #000; padding: 6px; display: flex; align-items: center; justify-content: center">完成时限</div>
+						<div class="table-cell" style="width: 18%; padding: 6px; display: flex; align-items: center; justify-content: center">预期成果</div>
+					</div>
+					<div class="table-row" style="display: flex; width: 100%" v-for="(item, index) in planData.idpDetails" :key="index">
+						<div class="table-cell" :style="{ width: '20%', borderRight: '1px solid #000', borderBottom: (index === planData.idpDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.dimension }}</div>
+						<div class="table-cell" :style="{ width: '22%', borderRight: '1px solid #000', borderBottom: (index === planData.idpDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.target }}</div>
+						<div class="table-cell" :style="{ width: '27%', borderRight: '1px solid #000', borderBottom: (index === planData.idpDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.measures }}</div>
+						<div class="table-cell" :style="{ width: '13%', borderRight: '1px solid #000', borderBottom: (index === planData.idpDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }">{{ item.deadline }}</div>
+						<div class="table-cell" :style="{ width: '18%', borderBottom: (index === planData.idpDetails.length - 1 ? 'none' : '1px solid #000'), padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'start' }">{{ item.expectedResult }}</div>
+					</div>
+					<div style="width: 100%; border-top: 1px solid #000; padding: 10px 16px; font-size: 13px">
+						<strong style="margin-right: 6px">备注：</strong>须结合本人大五职业性格测评报告中的内容进行表格填写，期中，提升维度可结合管理岗要求，如沟通协调、决策能力、团队管理等；提升目标具体可量化、可实现；实施措施明确具体行动，可落地；预期成果可检验，如技能提升、工作成果等。
+					</div>
+				</div>
+
+				<!-- 签名行：左右结构，一行三个，带签名图片占位（无实际图片时为空） -->
+				<div class="key-value-row" style="display: flex; flex-wrap: wrap; width: 100%; border: 1px solid #000; border-top: none; margin-top: 0">
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; padding: 10px">
+						<span class="key" style="min-width: 80px; display: flex; justify-content: center; align-items: center; padding: 6px; font-size: 12px">跟岗人员</span>
+						<span class="value" style="flex: 1; display: flex; align-items: center; padding: 6px; justify-content: center">
+							<!-- 无签名图片时留空，保留占位高度 -->
+							<div style="width: 100px; height: 40px"></div>
+						</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; padding: 10px">
+						<span class="key" style="min-width: 80px; display: flex; justify-content: center; align-items: center; padding: 6px; font-size: 12px">培养导师</span>
+						<span class="value" style="flex: 1; display: flex; align-items: center; padding: 6px; justify-content: center">
+							<div style="width: 100px; height: 40px"></div>
+						</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; padding: 10px">
+						<span class="key" style="min-width: 80px; display: flex; justify-content: center; align-items: center; padding: 6px; font-size: 12px">培养教练</span>
+						<span class="value" style="flex: 1; display: flex; align-items: center; padding: 6px; justify-content: center">
+							<div style="width: 100px; height: 40px"></div>
+						</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; padding: 10px">
+						<span class="key" style="min-width: 80px; display: flex; justify-content: center; align-items: center; padding: 6px; font-size: 12px">组织人事部部长</span>
+						<span class="value" style="flex: 1; display: flex; align-items: center; padding: 6px; justify-content: center">
+							<div style="width: 100px; height: 40px"></div>
+						</span>
+					</div>
+					<div class="key-value-pair" style="display: flex; align-items: center; box-sizing: border-box; width: 33.33%; flex: 0 0 33.33%; padding: 10px">
+						<span class="key" style="min-width: 80px; display: flex; justify-content: center; align-items: center; padding: 6px; font-size: 12px">常务副组长</span>
+						<span class="value" style="flex: 1; display: flex; align-items: center; padding: 6px; justify-content: center">
+							<div style="width: 100px; height: 40px"></div>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.createApp({
+				data() {
+					// 原始示例数据
+					const rawData = {
+						plan_user_id: '063241004332987444',
+						app_version: ' ',
+						plan_year: 1735660800000,
+						plan_type_name: 'IDP管理能力提升计划表',
+						sys_deleted: 0,
+						uid: '89d63da9b4274b4b8a28212481b3a856',
+						update_time: 1781143467000,
+						post: 'csyygszhglbfbz',
+						process_key: 'final_plan_sep_2y1srltk',
+						duration_end: 1798732799000,
+						is_self_evaluated: '1',
+						details: [
+							{
+								creator: '063241004332987444',
+								create_time: 1779175241000,
+								app_version: ' ',
+								self_evaluation: '完成情况',
+								sort: 0,
+								improvement_goal: '提升目标',
+								sys_deleted: 0,
+								sys_update_user: '063241004332987444',
+								improvement_dimension: '提升维度',
+								uid: '9b1b55dca6184fd7b3b0785c9de92a58',
+								update_time: 1781143467000,
+								implementation_measures: '实施措施',
+								process_status: 'COMPLETE',
+								id: 5,
+								deadline: 1779120000000,
+								sys_audit_user: null,
+								t_final_plan_id: '89d63da9b4274b4b8a28212481b3a856',
+								expected_result: '预期结果',
+								sys_audit_time: null
+							}
+						],
+						id: 6,
+						final_plan_status_code: 'filed',
+						duration_start: 1767196800000,
+						creator: '063241004332987444',
+						create_time: 1779175241000,
+						process_location: '',
+						plan_stage_name: '期末',
+						plan_type_code: 'idp_plan',
+						sys_update_user: '063241004332987444',
+						coach_id: 'sevenpeiyangjiaolian',
+						plan_year_name: '2025',
+						mentor_id: 'sevenpeiyangdaoshi',
+						process_instance_id: '7e7ecc26-e33f-4f81-900a-32b4ff6cd39b',
+						process_status: 'COMPLETE',
+						plan_user_name: '苏慧芬',
+						plan_stage_code: 'final_plan',
+						sys_audit_user: '',
+						sys_audit_time: null
+					};
+
+					const formatDate = timestamp => {
+						if (!timestamp) return '';
+						const date = new Date(timestamp);
+						const year = date.getFullYear();
+						const month = String(date.getMonth() + 1).padStart(2, '0');
+						const day = String(date.getDate()).padStart(2, '0');
+						return `${year}-${month}-${day}`;
+					};
+
+					const buildDetails = rawData => {
+						if (rawData.plan_type_code === 'idp_plan') {
+							return rawData.details.map(item => ({
+								dimension: item.improvement_dimension || '',
+								target: item.improvement_goal || '',
+								measures: item.implementation_measures || '',
+								deadline: formatDate(item.deadline),
+								expectedResult: item.expected_result || ''
+							}));
+						} else {
+							return rawData.details.map(item => ({
+								eventName: item.event_name || '',
+								objective: item.event_goal || '',
+								steps: item.steps || '',
+								deadline: formatDate(item.deadline),
+								acceptanceCriteria: item.acceptance_criteria || '',
+								reason: item.selection_reason || ''
+							}));
+						}
+					};
+
+					return {
+						planData: {
+							planType: rawData.plan_type_code,
+							traineeName: rawData.plan_user_name || '',
+							position: rawData.post || '',
+							duration: formatDate(rawData.duration_start) + ' ~ ' + formatDate(rawData.duration_end),
+							phase: rawData.plan_stage_name || '',
+							sepDetails: rawData.plan_type_code === 'sep_plan' ? buildDetails(rawData) : [],
+							idpDetails: rawData.plan_type_code === 'idp_plan' ? buildDetails(rawData) : []
+						}
+					};
+				},
+				mounted() {},
+				methods: {}
+			}).mount('#app');
+		</script>
+	</body>
+</html>

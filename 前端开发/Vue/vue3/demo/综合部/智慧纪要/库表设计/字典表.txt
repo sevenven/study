@@ -1,0 +1,68 @@
+t_app_g94x9xlscj_global_dict_s5wzq5os
+
+字典类型-type
+字典项编码-item_code
+字典项显示标签-item_label
+是否启用-enable
+顺序-order
+备注-remark
+
+-- 事项清单版本
+INSERT INTO t_app_g94x9xlscj_global_dict_s5wzq5os (type, item_code, item_label, enable, order, remark)
+VALUES ('ITEM_VERSION', 'v2025', '三重一大决策事项清单（2025版）', 1, 1, NULL);
+
+-- 主责部门
+INSERT INTO t_app_g94x9xlscj_global_dict_s5wzq5os (type, item_code, item_label, enable, order, remark)
+VALUES 
+('DEPT', 'DQGZB', '党群工作部', 1, 1, NULL),
+('DEPT', 'SCFZB', '市场发展部', 1, 2, NULL),
+('DEPT', 'ZZRSB', '组织人事部', 1, 3, NULL),
+('DEPT', 'SJB', '审计部', 1, 4, NULL),
+('DEPT', 'JWBGS', '纪委办公室', 1, 5, NULL),
+('DEPT', 'ZLFZB', '战略发展部', 1, 6, NULL),
+('DEPT', 'ZHGLB', '综合管理部', 1, 7, NULL),
+('DEPT', 'TZGLB', '投资管理部', 1, 8, NULL),
+('DEPT', 'SZXXJC', '数字新基建事业部', 1, 9, NULL),
+('DEPT', 'CPYCX', '产品与创新中心', 1, 10, NULL),
+('DEPT', 'CWGLB', '财务管理部', 1, 11, NULL),
+('DEPT', 'YYGLB', '运营管理部', 1, 12, NULL);
+
+-- 应出席人数占比
+INSERT INTO t_app_g94x9xlscj_global_dict_s5wzq5os (type, item_code, item_label, enable, order, remark)
+VALUES 
+('ATTENDANCE_RATIO', '1', '1', 1, 1, NULL),
+('ATTENDANCE_RATIO', '1/2', '1/2', 1, 2, NULL),
+('ATTENDANCE_RATIO', '2/3', '2/3', 1, 3, NULL),
+('ATTENDANCE_RATIO', '3/4', '3/4', 1, 4, NULL),
+('ATTENDANCE_RATIO', '4/5', '4/5', 1, 5, NULL),
+('ATTENDANCE_RATIO', '1/4', '1/4', 1, 6, NULL),
+('ATTENDANCE_RATIO', '3/5', '3/5', 1, 7, NULL),
+('ATTENDANCE_RATIO', '1/3', '1/3', 1, 8, NULL),
+('ATTENDANCE_RATIO', '1/6', '1/6', 1, 9, NULL),
+('ATTENDANCE_RATIO', '5/6', '5/6', 1, 10, NULL),
+('ATTENDANCE_RATIO', '2/7', '2/7', 1, 11, NULL),
+('ATTENDANCE_RATIO', '3/7', '3/7', 1, 12, NULL),
+('ATTENDANCE_RATIO', '4/7', '4/7', 1, 13, NULL),
+('ATTENDANCE_RATIO', '5/7', '5/7', 1, 14, NULL),
+('ATTENDANCE_RATIO', '6/7', '6/7', 1, 15, NULL),
+('ATTENDANCE_RATIO', '7/8', '7/8', 1, 16, NULL);
+
+-- 表决方式
+INSERT INTO t_app_g94x9xlscj_global_dict_s5wzq5os (type, item_code, item_label, enable, order, remark)
+VALUES 
+('VOTE_METHOD', 'ALL_PASS', '全票通过', 1, 1, NULL),
+('VOTE_METHOD', 'MORE_HALF_PRESENT', '赞成票超过到会成员人数的1/2', 1, 2, NULL),
+('VOTE_METHOD', 'MORE_TWO_THIRD_PRESENT', '赞成票超过到会成员人数的2/3', 1, 3, NULL),
+('VOTE_METHOD', 'MORE_THREE_FOURTH_PRESENT', '赞成票超过到会成员人数的3/4', 1, 4, NULL),
+('VOTE_METHOD', 'MORE_FOUR_FIFTH_PRESENT', '赞成票超过到会成员人数的4/5', 1, 5, NULL),
+('VOTE_METHOD', 'MORE_HALF_ALL', '赞成票超过应到会成员人数的1/2', 1, 6, NULL),
+('VOTE_METHOD', 'MORE_TWO_THIRD_ALL', '赞成票超过应到会成员人数的2/3', 1, 7, NULL),
+('VOTE_METHOD', 'MORE_THREE_FOURTH_ALL', '赞成票超过应到会成员人数的3/4', 1, 8, NULL),
+('VOTE_METHOD', 'MORE_FOUR_FIFTH_ALL', '赞成票超过应到会成员人数的4/5', 1, 9, NULL),
+('VOTE_METHOD', 'GM_RESPONSIBILITY', '总经理责任制', 1, 10, NULL),
+('VOTE_METHOD', 'MORE_THREE_FIFTH_PRESENT', '赞成票超过到会成员人数的3/5', 1, 11, NULL),
+('VOTE_METHOD', 'MORE_FOUR_SEVENTH_PRESENT', '赞成票超过到会成员人数的4/7', 1, 12, NULL),
+('VOTE_METHOD', 'MORE_FIVE_SEVENTH_PRESENT', '赞成票超过到会成员人数的5/7', 1, 13, NULL),
+('VOTE_METHOD', 'MORE_THREE_FIFTH_ALL', '赞成票超过应到会成员人数的3/5', 1, 14, NULL),
+('VOTE_METHOD', 'MORE_FOUR_SEVENTH_ALL', '赞成票超过应到会成员人数的4/7', 1, 15, NULL),
+('VOTE_METHOD', 'MORE_FIVE_SEVENTH_ALL', '赞成票超过应到会成员人数的5/7', 1, 16, NULL);

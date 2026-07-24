@@ -84,94 +84,86 @@
 计划阶段中文描述 plan_stage_name
 计划类型中文描述 plan_type_name
 
-找出reviewer_user_id等于employee_id的数据-只有一条-表格change时更新固定的这条数据;
 
-并展开这条数据生成一个表头为[事件名称、事件目标、实施步骤、完成时限、验收标准]--从t_final_plan_1cwu93rl中取、评估等级、对应赋分、评估说明的表格;
-代码参考：
-export const FinalPlanSepSubTable = {
+编写一个组件，用于展示跟岗培养评估期末测评结果标志性事件评分明细表中的数据
+组件名称：FinalEvaluationSepScoreTable
+一条明细一行
+表头
+评分方-展示【评分角色名：评分人】
+权重
+标志性事件1（事件名称）
+标志性事件2（事件名称）-有多少个标志性事件就有多少个表头
+加权分
+
+参考
+export const FinalEvaluationMySepScoreTable = {
   template: `
-    <div ref="sepSubTableContainer">
+    <div ref="tableContainer">
+      <!-- 调试信息（生产可删除） -->
+      <div>数据: {{ datas }}</div>
       <form_9op0vctrmq
+        :key="tableKey"
         :columns="columns"
         :datas="datas"
-        :showOperationRow="isEdit"
-        :showSelection="isEdit"
+        :showOperationRow="false"
+        :showSelection="false"
         :showIndex="false"
-        @add-row="handleAddRow"
-        @delete-row="handleDeleteRow"
       >
         <!-- 事件名称 -->
-        <template v-slot:column-r517XQPwKH="{ row, index }">
-          <a-textarea
-            v-if="isEdit"
-            :value="row.r517XQPwKH"
-            @change="(e) => handleInputChange(e, row, index, 'r517XQPwKH')"
-            placeholder="请输入"
-            :auto-size="{ minRows: 1, maxRows: 4 }"
-            :style="validationFailed && (row.r517XQPwKH === '' || row.r517XQPwKH == null) ? 'border: 1px solid var(--bl-danger-c)' : ''"
-          />
-          <span v-else>{{ row.r517XQPwKH }}11111</span>
+        <template v-slot:column-eventName="{ row }">
+          <span>{{ row.eventName }}</span>
         </template>
-
         <!-- 事件目标 -->
-        <template v-slot:column-mvqVI0Gv7f="{ row, index }">
-          <a-textarea
-            v-if="isEdit"
-            :value="row.mvqVI0Gv7f"
-            @change="(e) => handleInputChange(e, row, index, 'mvqVI0Gv7f')"
-            placeholder="请输入"
-            :auto-size="{ minRows: 1, maxRows: 4 }"
-          />
-          <span v-else>{{ row.mvqVI0Gv7f }}</span>
+        <template v-slot:column-eventGoal="{ row }">
+          <span>{{ row.eventGoal }}</span>
         </template>
-
         <!-- 实施步骤 -->
-        <template v-slot:column-bpXNSZlm9U="{ row, index }">
-          <a-textarea
-            v-if="isEdit"
-            :value="row.bpXNSZlm9U"
-            @change="(e) => handleInputChange(e, row, index, 'bpXNSZlm9U')"
-            placeholder="请输入"
-            :auto-size="{ minRows: 1, maxRows: 4 }"
-          />
-          <span v-else>{{ row.bpXNSZlm9U }}</span>
+        <template v-slot:column-steps="{ row }">
+          <span>{{ row.steps }}</span>
         </template>
-
         <!-- 完成时限 -->
-        <template v-slot:column-fZMZVhtHZZ="{ row, index }">
-          <a-date-picker
+        <template v-slot:column-deadline="{ row }">
+          <span>{{ row.deadline ? dayjs(row.deadline).format('YYYY-MM-DD') : '' }}</span>
+        </template>
+        <!-- 验收标准 -->
+        <template v-slot:column-acceptanceCriteria="{ row }">
+          <span>{{ row.acceptanceCriteria }}</span>
+        </template>
+        <!-- 评估等级 -->
+        <template v-slot:column-grade="{ row, index }">
+          <a-select
             v-if="isEdit"
-            :value="row.fZMZVhtHZZ ? dayjs(Number(row.fZMZVhtHZZ)) : null"
-            @change="(date, dateString) => handleDateChange(dateString, row, index, 'fZMZVhtHZZ')"
-            placeholder="完成时间"
-            format="YYYY-MM-DD"
+            :value="row.grade"
+            :options="gradeOptions"
+            @change="(value) => handleGradeChange(value, row, index)"
+            placeholder="请选择"
             style="width: 100%"
           />
-          <span v-else>{{ row.fZMZVhtHZZ ? dayjs(Number(row.fZMZVhtHZZ)).format('YYYY-MM-DD') : '' }}</span>
+          <span v-else>{{ row.grade || '--' }}</span>
         </template>
-
-        <!-- 验收标准 -->
-        <template v-slot:column-OEOiKVL36i="{ row, index }">
+        <!-- 对应赋分 -->
+        <template v-slot:column-score="{ row, index }">
+          <a-input-number
+            v-if="isEdit"
+            :value="row.score"
+            @change="(value) => handleScoreChange(value, row, index)"
+            :min="0"
+            :max="100"
+            placeholder="分数"
+            style="width: 100%"
+          />
+          <span v-else>{{ row.score != null ? row.score : '--' }}</span>
+        </template>
+        <!-- 评估说明 -->
+        <template v-slot:column-comment="{ row, index }">
           <a-textarea
             v-if="isEdit"
-            :value="row.OEOiKVL36i"
-            @change="(e) => handleInputChange(e, row, index, 'OEOiKVL36i')"
-            placeholder="请输入"
+            :value="row.comment"
+            @change="(e) => handleCommentChange(e, row, index)"
+            placeholder="请简要说明事件最终完成质量、实际价值、存在不足，若无可不写。"
             :auto-size="{ minRows: 1, maxRows: 4 }"
           />
-          <span v-else>{{ row.OEOiKVL36i }}</span>
-        </template>
-
-        <!-- 选择理由 -->
-        <template v-slot:column-ibB1MbPwEB="{ row, index }">
-          <a-textarea
-            v-if="isEdit"
-            :value="row.ibB1MbPwEB"
-            @change="(e) => handleInputChange(e, row, index, 'ibB1MbPwEB')"
-            placeholder="请输入"
-            :auto-size="{ minRows: 1, maxRows: 4 }"
-          />
-          <span v-else>{{ row.ibB1MbPwEB }}</span>
+          <span v-else>{{ row.comment || '--' }}</span>
         </template>
       </form_9op0vctrmq>
     </div>
@@ -180,88 +172,215 @@ export const FinalPlanSepSubTable = {
   emits: ['change'],
   components: { form_9op0vctrmq },
   data() {
-    // 定义可编辑场景：提交、草稿、指定待办节点
-    const isEdit = pageStatus === 'submit' || pageStatus === 'draft' || (processParam.node_id === 'UserTask_1' && processParam.type === 'TODO');
-
+    const isEdit = (processParam.node_id === 'UserTask_0qod27c' && processParam.type === 'TODO');
+    console.log('isEdit~~~', isEdit);
     return {
       pageStatus,
       processParam,
       isEdit,
-      // 表格列定义（key 与数据字段对应，标题为业务字段名）
       columns: [
-        { title: '事件名称', key: 'r517XQPwKH', width: '160px', required: true },
-        { title: '事件目标', key: 'mvqVI0Gv7f', width: '160px', required: true },
-        { title: '实施步骤', key: 'bpXNSZlm9U', width: '200px', required: true },
-        { title: '完成时限', key: 'fZMZVhtHZZ', width: '180px', required: true },
-        { title: '验收标准', key: 'OEOiKVL36i', width: '160px', required: true },
-        { title: '选择理由', key: 'ibB1MbPwEB', width: '160px', required: true },
+        { title: '事件名称', key: 'eventName', width: '150px' },
+        { title: '事件目标', key: 'eventGoal', width: '150px' },
+        { title: '实施步骤', key: 'steps', width: '180px' },
+        { title: '完成时限', key: 'deadline', width: '130px' },
+        { title: '验收标准', key: 'acceptanceCriteria', width: '150px' },
+        { title: '评估等级', key: 'grade', width: '120px' },
+        { title: '对应赋分', key: 'score', width: '100px' },
+        { title: '评估说明', key: 'comment', width: '200px' },
       ],
-      // 状态数据绑定（请根据实际上下文状态键修改）
-      datas: ctx.getState('ZVYcGPcTkM'),
-      validationFailed: false,
+      datas: [],
+      sepDetailList: [],
+      myDetail: null,
+      eventDetails: [],
+      gradeOptions: [],
+      gradeDictObj: {},
       dayjs,
+      tableKey: 0,       // 强制刷新表格的 key
     };
   },
+  mounted() {
+    this.init();
+  },
   methods: {
-    // 通用文本输入处理
-    handleInputChange(e, row, index, key) {
-      ctx.setState(key, e.target.value, index);
-      this.datas = [...ctx.getState('ZVYcGPcTkM')];
-    },
-    // 日期变更处理
-    handleDateChange(dateString, row, index, key) {
-      console.log('dateString~~', dateString)
-      if (dateString) {
-        const timestamp = dayjs(dateString).valueOf();   // 毫秒时间戳
-
-        ctx.setState(key, timestamp, index);
-      } else {
-        ctx.setState(key, '', index);
-      }
-      this.datas = [...ctx.getState('ZVYcGPcTkM')];
-    },
-    // 新增行
-    handleAddRow(insertIndex) {
-      const stateArr = ctx.getState('ZVYcGPcTkM');
-      if (stateArr.length >= 10) {
-        utils.toast('期末计划标志性事件明细最多可填写 10 条数据', "error", 'message');
+    async init() {
+      // 1. 获取评分明细列表（请根据实际状态 key 调整）
+      this.sepDetailList = ctx.getState('XCqQqDkcqc') || [];
+      
+      // 2. 查找当前用户的评分明细（假定 reviewer_user_id 字段为 kvhGWNpMdN）
+      this.myDetail = this.sepDetailList.find(item => {
+        const reviewers = item.kvhGWNpMdN || [];
+        return reviewers.includes(employee_id);
+      });
+      
+      if (!this.myDetail) {
+        console.warn('未找到当前用户的评分明细');
+        this.datas = [];
         return;
       }
-      const newRow = {
-        r517XQPwKH: '',
-        mvqVI0Gv7f: '',
-        bpXNSZlm9U: '',
-        fZMZVhtHZZ: '',
-        OEOiKVL36i: '',
-        ibB1MbPwEB: '',
-      };
-      if (insertIndex >= 0) {
-        stateArr.splice(insertIndex, 0, newRow);
-      } else {
-        stateArr.push(newRow);
-      }
-      this.datas = [...stateArr];
-    },
-    // 删除行
-    async handleDeleteRow(rows) {
-      if (!rows || rows.length === 0) return;
       
-      let confirmMessage = '';
-      if (rows.length === 1) {
-        const eventName = rows[0].r517XQPwKH || '未命名事件';
-        confirmMessage = `是否确认删除事件“${eventName}”？`;
-      } else {
-        confirmMessage = `是否确认删除选中的 ${rows.length} 个事件？`;
+      // 3. 加载评估等级字典 
+      await this.loadGradeDict();
+      
+      // 4. 查询标志性事件明细
+      await this.fetchEventDetails();
+      
+      // 5. 构建表格数据
+      this.buildTableData();
+      
+      // 6. 强制刷新子组件（确保表格重新渲染）
+      this.tableKey += 1;
+    },
+    
+    async loadGradeDict() {
+      try {
+        const result = await utils.querySvc({
+          app_id: 'app_yqtmuhmhwy',
+          query: {
+            page_index: 1,
+            page_size: 100,
+            query_criteria: [
+              { column_name: 'type', query_type: 0, value: ['sep_grade'] },
+              { column_name: 'enable', query_type: 0, value: ['1'] }
+            ],
+            sort_criteria: { dict_order: 'asc' }
+          },
+          svc_code: 't_app_yqtmuhmhwy_global_dict_7fq5m7kc_selectMore'
+        });
+        const dictList = result?.data?.value || [];
+        this.gradeOptions = dictList.map(item => ({
+          value: item.item_code,
+          label: item.item_label
+        }));
+        this.gradeDictObj = dictList.reduce((acc, cur) => {
+          acc[cur.item_code] = cur.item_label;
+          return acc;
+        }, {});
+      } catch (e) {
+        console.error('加载评估等级字典失败', e);
       }
-
-      const result = await utils.confirm(confirmMessage);
-      if (result === true) {
-        const stateArr = ctx.getState('ZVYcGPcTkM');
-        const indices = rows.map(row => row.index).sort((a, b) => b - a);
-        indices.forEach(i => stateArr.splice(i, 1));
-        ctx.setState('ZVYcGPcTkM', [...stateArr]);
-        this.datas = [...ctx.getState('ZVYcGPcTkM')];
+    },
+    
+    async fetchEventDetails() {
+      const detailIds = this.myDetail.kuHtyBS6h8 || [];
+      if (!detailIds.length) {
+        this.eventDetails = [];
+        return;
       }
+      
+      try {
+        const result = await utils.querySvc({
+          app_id: 'app_yqtmuhmhwy',
+          query: {
+            page_index: 1,
+            page_size: detailIds.length,
+            query_criteria: [
+              { column_name: 'uid', query_type: 3, value: detailIds },
+              { column_name: 'sys_deleted', query_type: 0, value: ['0'] }
+            ],
+            sort_criteria: { sort: 'asc' }
+          },
+          svc_code: 't_final_plan_sep_detail_99d7f0ud_selectMore'
+        });
+        const list = result?.data?.value || [];
+        // 按照 detailIds 顺序排列
+        this.eventDetails = detailIds.map(id => list.find(item => item.uid === id)).filter(Boolean);
+      } catch (e) {
+        console.error('查询标志性事件明细失败', e);
+        this.eventDetails = [];
+      }
+    },
+    
+    buildTableData() {
+      const detail = this.myDetail;
+      const eventList = this.eventDetails;
+      console.log('eventList~~~', eventList);
+      if (!eventList.length) {
+        this.datas = [];
+        return;
+      }
+      
+      // 解析评分数组
+      const grades = this.parseArrayField(detail.C7m6WKHnCe);
+      const scores = this.parseArrayField(detail.XhqTDmRvjx);
+      const comments = this.parseArrayField(detail.EAkuyWOQvW);
+      
+      // 构建表格数据，字段映射到实际事件明细字段
+      this.datas = eventList.map((event, idx) => ({
+        uid: event.uid,
+        eventName: event.event_name || '',
+        eventGoal: event.event_goal || '',
+        steps: event.steps || '',
+        deadline: event.deadline || null,
+        acceptanceCriteria: event.acceptance_criteria || '',
+        grade: grades[idx] || '',
+        score: scores[idx] != null ? Number(scores[idx]) : null,
+        comment: comments[idx] || ''
+      }));
+    },
+    
+    parseArrayField(field) {
+      if (!field) return [];
+      if (Array.isArray(field)) return field;
+      if (typeof field === 'string') {
+        try {
+          const parsed = JSON.parse(field);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return field.split(',').map(s => s.trim()).filter(s => s);
+        }
+      }
+      return [];
+    },
+    
+    saveMyDetail() {
+      if (!this.myDetail) return;
+      const grades = this.datas.map(row => row.grade);
+      const scores = this.datas.map(row => row.score != null ? row.score : '');
+      const comments = this.datas.map(row => row.comment);
+      
+      this.myDetail.C7m6WKHnCe = grades;
+      this.myDetail.XhqTDmRvjx = scores;
+      this.myDetail.EAkuyWOQvW = comments;
+      
+      // 计算平均分
+      const validScores = scores.filter(s => s !== '' && s !== null && !isNaN(Number(s)));
+      let avg = 0;
+      if (validScores.length > 0) {
+        const sum = validScores.reduce((a, b) => a + Number(b), 0);
+        avg = sum / validScores.length;
+      }
+      this.myDetail.vetbMCsPHd = [avg.toFixed(2)];
+      
+      // 计算加权分
+      const weight = Number(this.myDetail.lQOK2lNO2v) || 0;
+      this.myDetail.RMhgsv9T94 = avg * weight;
+      
+      // 更新状态
+      const list = this.sepDetailList.map(item => 
+        item.uid === this.myDetail.uid ? this.myDetail : item
+      );
+      ctx.setState('XCqQqDkcqc', list);
+      console.log("ctx.getState('XCqQqDkcqc')", ctx.getState('XCqQqDkcqc'));
+      this.sepDetailList = list;
+      
+      this.$emit('change', this.myDetail);
+    },
+    
+    handleGradeChange(value, row, index) {
+      row.grade = value;
+      this.datas = [...this.datas];
+      this.saveMyDetail();
+    },
+    handleScoreChange(value, row, index) {
+      row.score = value;
+      this.datas = [...this.datas];
+      this.saveMyDetail();
+    },
+    handleCommentChange(e, row, index) {
+      row.comment = e.target.value;
+      this.datas = [...this.datas];
+      this.saveMyDetail();
     }
   }
 };
+ 

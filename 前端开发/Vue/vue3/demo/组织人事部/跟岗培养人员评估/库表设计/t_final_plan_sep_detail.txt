@@ -8,6 +8,7 @@
 完成时限-日期时间 deadline fZMZVhtHZZ
 验收标准 acceptance_criteria OEOiKVL36i
 选择理由 selection_reason ibB1MbPwEB
+完成情况 self_evaluation E77OLmZatz
 排序 sort
 
 请帮忙给出字段编码
