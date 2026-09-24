@@ -1,7 +1,7 @@
 事项与事项目录关联表（多对多，解决一个事项可对应多个目录）-biz_item_category_rel_2cy61esf
 
 主键 uid
-事项ID t_biz_item_list_id
+事项ID biz_item_id
 事项目录ID（仅限最底层节点） category_id
 
 请帮忙给出字段编码

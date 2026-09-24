@@ -1,0 +1,9 @@
+会议决议明细表-t_meeting_resolutions_e5lxi0xr
+
+主键 uid
+会议纪要主键 t_meeting_minutes_id
+会议决议类型（关联全局字典 type=RESOLUTION_TYPE） resolution_type
+单个会议决议的JSON字符串 resolution_json
+顺序（按纪要子项顺序） sort_order
+
+请帮忙给出字段编码

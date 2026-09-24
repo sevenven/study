@@ -1,0 +1,104 @@
+{
+	"title": "成都数据集团党委会会议方案",
+	"issue": "2026年第x期",
+	"datetime": "2026年08月07日",
+	"venue": "数字会议室",
+	"chairperson": {
+		"name": "邓建平",
+		"position": null
+	},
+	"attendees": [
+		{ "name": "郭黎", "position": null },
+		{ "name": "范军", "position": null },
+		{ "name": "黄尉洪", "position": null }
+	],
+	"observers": [
+		{ "name": "李泉", "position": null },
+		{ "name": "李建国", "position": null },
+		{ "name": "姚远", "position": null },
+		{ "name": "张宇", "position": null },
+		{ "name": "杨勇", "position": null },
+		{ "name": "李亮", "position": null },
+		{ "name": "杨光", "position": null },
+		{ "name": "王莹", "position": null }
+	],
+	"proposal": [
+		{
+			"groupTitle": "传达学习上级重要会议、文件精神", // 不需要序号
+			"items": [
+				{
+					"id": "uuidxxx", // 用于唯一标识每个议题
+					"type": "SPIRIT",
+					"title": "第一议题：习近平在二十届中央纪委五次全会上发表重要讲话精神", // 不需要序号
+					"content": "", // 内容提取到这儿
+					"recordContent": "",
+					"match_id": null, // 三重一大uuid
+					"match_item": null
+				},
+				{
+					"id": "uuidxxx", // 用于唯一标识每个议题
+					"type": "SPIRIT",
+					"title": "1月13日市委常委会议精神",
+					"content": "",
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				}
+			]
+		},
+		{
+			"groupTitle": "研究讨论集团重大经营管理事项",
+			"items": [
+				{
+					"id": "uuidxxx", // 用于唯一标识每个议题
+					"type": "MATURITY",
+					"title": "研究关于英伟达显卡采购的议案",
+					"content": [
+						{
+							"type": "reportPerson",
+							"list": [{ "department": "", "person": "赖晓宇" }]
+						},
+						{
+							"type": "observerUnit",
+							"list": [
+								{ "department": "财务管理部", "person": "吴抒" },
+								{ "department": "运营管理部", "person": "徐忠波" }
+							]
+						}
+					],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				},
+				{
+					"id": "uuidxxx", // 用于唯一标识每个议题
+					"type": "PROPOSAL",
+					"title": "研究关于张三同志入党的议案",
+					"content": [
+						{
+							"type": "reportUnit",
+							"list": [{ "department": "党群工作部", "person": "兰轶" }]
+						}
+					],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				},
+				{
+					"id": "uuidxxx", // 用于唯一标识每个议题
+					"type": "PROPOSAL",
+					"title": "研究关于李四同志人事调动的议案",
+					"content": [
+						{
+							"type": "reportUnit",
+							"list": [{ "department": "组织人事部", "person": "邵祯祺" }]
+						}
+					],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				}
+			]
+		}
+	]
+}

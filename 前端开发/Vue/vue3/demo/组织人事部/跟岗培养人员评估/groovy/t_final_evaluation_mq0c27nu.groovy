@@ -14,7 +14,7 @@ if (!evaluationUids) {
 	return
 }
 
-// 将逗号分隔转为 #@# 分隔的辅助函数
+// 将逗号分隔转为 #@# 分隔的辅助函数---忽略这个 这个是一开始以为人员存储是#@#分隔的 后续发现是逗号分隔的
 def convertToHashAtAtHash(String value) {
 	if (value == null || value.trim() == '') return ''
 	return value.split(',')

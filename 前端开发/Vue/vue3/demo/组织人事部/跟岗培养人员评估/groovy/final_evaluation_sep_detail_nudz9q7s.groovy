@@ -16,10 +16,12 @@ def expectedRoleUsers = [
 	"group_member"           : groupMemberUserId?.toString()?.trim(),
 	"external_expert"        : externalExpertUserId?.toString()?.trim()
 ].findAll { it.value != null && it.value != '' }
+logger.info("期望的角色-用户映射：" + JsonOutput.toJson(expectedRoleUsers))
  // 将值转换为用户列表（按逗号拆分）
 def parsedRoleUsers = expectedRoleUsers.collectEntries { roleCode, userIdsStr ->
 	[roleCode, userIdsStr.split(',').collect { it.trim() }.findAll { it != '' }]
 }.findAll { it.value.size() > 0 } // 只保留至少有一个用户的角色
+logger.info("解析后的角色-用户映射：" + JsonOutput.toJson(parsedRoleUsers))
 
 // ==================== 1. 查询评估记录，获取 sep_plan_id ====================
 def evaluation = callService(

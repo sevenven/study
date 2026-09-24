@@ -3,8 +3,8 @@
 主键 uid
 事项清单版本 version
 事项名称 item_name
-是否经法律审核 is_legal_review
-是否董事会授权事项 is_board_authorized
+是否经法律审核（关联全局字典 type=SYS_YES_NO'） is_legal_review
+是否董事会授权事项（关联全局字典 type=SYS_YES_NO'） is_board_authorized
 主责部门编码 dept_code
 排序 order
 备注 remark

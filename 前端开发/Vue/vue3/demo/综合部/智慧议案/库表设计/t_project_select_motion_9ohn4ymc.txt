@@ -1,0 +1,54 @@
+选聘项目议案-t_project_select_motion_9ohn4ymc
+
+业务字段：
+- 已用
+部门id dept_id
+部门名称 dept_name
+上会原因 meeting_reason
+审批情况 approval_status
+项目基本情况 project_overview
+是否为承建类项目（new） is_construction_project
+承建类项目情况（new） construction_project_details
+是否已纳入季度采购计划完成审批（new） is_quarterly_plan_approved
+季度采购计划审批情况（new） quarterly_plan_approval
+选聘项目版本（new） project_select_motion_version
+采购内容及要求/选聘内容 procurement_details
+选聘控制价类型（new） selection_control_price_type -- 字典 supplier_type | motion_type
+第三方编制/专家评审情况（new） third_party_review_details
+供应商类型 supplier_type
+选聘方法 selection_method
+实施方式 Implementation
+选聘方式 selection_justification
+审批依据 approval_basis
+请示事项 request_matters
+附件 attachment
+当前时间 current_date
+- 当前版本暂时没有用到
+预算内文本 is_within_budget_content
+选聘结论 selection_result
+项目名称 project_name
+是否在预算内 is_within_budget
+会话id conversation_id
+委员会组成 committee_members
+采买业务范围 buis_scope
+供应商数量 supplier_count
+项目总成本 total_project_cost
+金额类型 money_type
+议案类型 motion_type
+前置审批 previous_approval
+审批对象 approval_subject
+
+
+系统字段：
+唯一标识符 uid
+主键 id（DDL 注释：供应商明细）
+逻辑删除 sys_deleted
+创建人 creator
+创建时间 create_time
+更新时间 update_time
+更新人 sys_update_user
+审核人 sys_audit_user
+审核时间 sys_audit_time
+流程状态 process_status
+
+请帮忙给出字段编码

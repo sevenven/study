@@ -4,7 +4,7 @@
 事项ID t_biz_item_list_id
 会议类型ID meeting_type_id
 过会顺序 sort_order 
-应出席人数占比（关联全局字典 type=ATTENDANCE_RATIO'） attendance_ratio
+应出席人数占比（关联全局字典 type=ATTENDANCE_RATIO） attendance_ratio
 表决方式（关联全局字典 type=VOTE_METHOD） vote_method
 审议权限（关联全局字典 type=REVIEW_AUTHORITY） review_authority
 

@@ -1,0 +1,17 @@
+会议纪要主表-t_meeting_minutes_gjdxaf5c
+
+主键 uid
+会议名称 meeting_name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+所属部门编码 dept_code
+会议纪要类型（关联全局字典 type=MEETING_TYPE） meeting_type
+当前所在步骤 cur_step
+会议方案docx文件名 plan_file_name
+会议方案docx文件存储位置 plan_file_path
+会议方案解析后的富文本内容(HTML) plan_content
+会议记录JSON字符串 meeting_record
+会议纪要JSON字符串 meeting_summary
+方案内容提取的智能体会话ID plan_extract_session_id
+纪要骨架生成的智能体会话ID summary_skeleton_session_id
+纪要每一项的内容生成的智能体会话ID summary_item_session_ids
+
+请帮忙给出字段编码

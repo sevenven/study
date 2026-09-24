@@ -1,0 +1,205 @@
+{
+	"title": "成都数据集团党委会会议方案",
+	"issue": "",
+	"datetime": "2026年9月2日",
+	"venue": "数字会议室",
+	"chairperson": {
+		"name": "邓建平",
+		"position": "党委书记、董事长"
+	},
+	"attendees": [
+		{
+			"name": "郭黎",
+			"position": "党委副书记"
+		},
+		{
+			"name": "范军",
+			"position": "党委委员、纪委书记"
+		},
+		{
+			"name": "黄尉洪",
+			"position": "党委委员、副总经理"
+		}
+	],
+	"observers": [
+		{
+			"name": "李泉",
+			"position": "党委副书记、总经理"
+		},
+		{
+			"name": "李建国",
+			"position": "副总经理"
+		},
+		{
+			"name": "姚远",
+			"position": "副总经理"
+		},
+		{
+			"name": "张宇",
+			"position": "副总经理"
+		},
+		{
+			"name": "杨勇",
+			"position": "总会计师"
+		},
+		{
+			"name": "李亮",
+			"position": "综合管理部部长"
+		},
+		{
+			"name": "杨光",
+			"position": "战略发展部部长"
+		},
+		{
+			"name": "王莹",
+			"position": "纪委办公室副部长"
+		}
+	],
+	"proposal": [
+		{
+			"groupTitle": "传达学习上级重要会议、文件精神",
+			"items": [
+				{
+					"type": "SPIRIT",
+					"title": "第一议题：习近平在二十届中央纪委五次全会上发表重要讲话精神",
+					"content": [],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				},
+				{
+					"type": "SPIRIT",
+					"title": "第二议题：习近平在二十届中央纪委五次全会上发表重要讲话精神",
+					"content": [],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				},
+				{
+					"type": "SPIRIT",
+					"title": "第三议题：习近平在二十届中央纪委五次全会上发表重要讲话精神",
+					"content": [],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				},
+				{
+					"type": "SPIRIT",
+					"title": "1月13日市委常委会议精神",
+					"content": [],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				}
+			]
+		},
+		{
+			"groupTitle": "研究讨论集团重大经营管理事项",
+			"items": [
+				{
+					"type": "PROPOSAL",
+					"title": "研究关于事项1的议案",
+					"content": [
+						{
+							"type": "reportUnit",
+							"list": [
+								{
+									"department": "投资管理部",
+									"person": "赖晓宇"
+								}
+							]
+						},
+						{
+							"type": "observerUnit",
+							"list": [
+								{
+									"department": "财务管理部",
+									"person": "吴抒"
+								},
+								{
+									"department": "运营管理部",
+									"person": "徐忠波"
+								}
+							]
+						}
+					],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				},
+				{
+					"type": "PROPOSAL",
+					"title": "研究关于事项2的议案",
+					"content": [],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				}
+			]
+		},
+		{
+			"groupTitle": "研究审议集团改革发展及党建相关重点工作",
+			"items": [
+				{
+					"type": "PROPOSAL",
+					"title": "研究关于事项4的议案",
+					"content": [
+						{
+							"type": "reportUnit",
+							"list": [
+								{
+									"department": "党群工作部",
+									"person": "兰轶"
+								}
+							]
+						}
+					],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				}
+			]
+		},
+		{
+			"groupTitle": "研究审议组织人事相关事项",
+			"items": [
+				{
+					"type": "PROPOSAL",
+					"title": "研究关于事项5的议案",
+					"content": [
+						{
+							"type": "reportUnit",
+							"list": [
+								{
+									"department": "组织人事部",
+									"person": "邵祯祺"
+								}
+							]
+						}
+					],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				},
+				{
+					"type": "PROPOSAL",
+					"title": "研究关于事项6的议案",
+					"content": [
+						{
+							"type": "reportUnit",
+							"list": [
+								{
+									"department": "组织人事部",
+									"person": "邵祯祺"
+								}
+							]
+						}
+					],
+					"recordContent": "",
+					"match_id": null,
+					"match_item": null
+				}
+			]
+		}
+	]
+}

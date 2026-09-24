@@ -1,0 +1,14 @@
+会议类型字典表-t_biz_meeting_type_bxdi9cpf
+
+主键 uid
+会议类型编码 code
+会议名称（总经理办公会、党委会、董事会） name
+顺序 order
+是否启用 enable
+
+请帮忙给出字段编码
+
+INSERT INTO t_biz_meeting_type_bxdi9cpf (uid, code, name, `order`, enable) VALUES
+(REPLACE(UUID(), '-', ''), 'general_manager', '总经理办公会', 1, 1),
+(REPLACE(UUID(), '-', ''), 'party_committee', '党委会', 2, 1),
+(REPLACE(UUID(), '-', ''), 'board', '董事会', 3, 1);

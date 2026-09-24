@@ -1,0 +1,7 @@
+人员职务表-t_app_g94x9xlscj_position_io8z5a7c
+
+主键 uid
+name_code 人员姓名编码
+position 职务
+enable 是否启用
+remark 备注
