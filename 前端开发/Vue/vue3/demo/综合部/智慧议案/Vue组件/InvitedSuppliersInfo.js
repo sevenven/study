@@ -79,6 +79,7 @@ export const InvitedSuppliersInfo = {
 				ctx.setState(
 					ctx.rawStore.INSTANCE.t_invited_suppliers_info_uc8g08lq,
 					this.suppliers.map(item => ({
+						uid: item.uid,
 						[ctx.rawStore.INSTANCE['t_invited_suppliers_info_uc8g08lq$company_name']]: item.company_name,
 						[ctx.rawStore.INSTANCE['t_invited_suppliers_info_uc8g08lq$initial_quote']]: item.initial_quote,
 						[ctx.rawStore.INSTANCE['t_invited_suppliers_info_uc8g08lq$tax_rate']]: item.tax_rate
@@ -101,7 +102,6 @@ export const InvitedSuppliersInfo = {
 				company_name: '',
 				initial_quote: '',
 				tax_rate: '',
-				uid: '',
 				...overrides
 			};
 		},

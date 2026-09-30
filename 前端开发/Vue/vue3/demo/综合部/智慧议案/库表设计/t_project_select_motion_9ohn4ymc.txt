@@ -20,9 +20,12 @@
 实施方式 Implementation
 选聘方式 selection_justification
 审批依据 approval_basis
-请示事项 request_matters
-附件 attachment
+请示事项（new） request_matters
+附件（new） attachment
 当前时间 current_date
+计划情况（new） plan_situation
+成交单位形式方式（new） deal_unit_form_type
+选聘方案其他内容（new） selection_plan_other_content
 - 当前版本暂时没有用到
 预算内文本 is_within_budget_content
 选聘结论 selection_result
